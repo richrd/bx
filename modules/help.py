@@ -17,7 +17,7 @@ class Help(Command):
     def general_help(self, user):
         """Display general help."""
         lines = [
-            "You can run commands by typing a '"+self.bot.config["cmd_prefix"]+"' at the beginning of a message.",
+            "You can run commands by typing a '" + self.bot.config["cmd_prefix"] + "' at the beginning of a message.",
             "To see what commands are available use 'cmds'",
             "and to see what a command does, use 'help command'.",
             "You can login with 'auth' and logout with 'deauth'.",
@@ -33,6 +33,6 @@ module = {
     "class": Help,
     "type": MOD_COMMAND,
     "level": 0,
-    "zone":IRC_ZONE_BOTH,
-    "throttle":60
+    "zone": IRC_ZONE_BOTH,
+    "throttle": 60
 }
