@@ -23,12 +23,11 @@ class Help(Command):
             "You can login with 'auth' and logout with 'deauth'.",
             "To check your permission level, use 'perm'.",
             "To ask me to remember your account, use 'trustme'.",
+            "Check out the code @ github: https://github.com/richrd/bx",
             "Peace.",
             ]
         for line in lines:
             user.Privmsg(line)
-
-
 
 module = {
     "class": Help,
