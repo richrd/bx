@@ -1,0 +1,35 @@
+{
+    "accounts": {
+        "admin": {
+            "hostnames": [],
+            "level": 5,
+            "name": "admin",
+            "pw": "insert-md5-hash"
+        }
+    },
+    "avoid_cmd_crash": true,
+    "channels": {
+        "#bx-test": {
+            "modes": "stnCN"
+        },
+    },
+    "cmd_prefix": ".",
+    "cmd_throttle": 1.5,
+    "default_log_limit": 1000,
+    "default_mods": ["*"],
+    "default_send": "privmsg",
+    "host": "localhost",
+    "ident": "bx",
+    "ignore_nicks": [],
+    "log_send_interval": 3,
+    "modules": {},
+    "nick_suffix": "_",
+    "nicks": [
+        "bx"
+    ],
+    "port": 6667,
+    "realname": "bx",
+    "send_throttle": 1.8,
+    "throttle_add": 120,
+    "throttle_wait": 400
+}
