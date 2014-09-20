@@ -93,6 +93,12 @@ class BotConfig:
         }
         return True
 
+    def AddChannel(self, name):
+        if not name in self.config["channels"].keys():
+            self.config["channels"][name] = {}
+            return True
+        return False
+
     def GetAccountByName(self, name):
         if name in self.config["accounts"].keys():
             return self.config["accounts"][name]
