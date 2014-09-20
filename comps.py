@@ -47,16 +47,16 @@ class Event:
 
     def __str__(self):
         s = "Event("
-        s += ","+str(self.id)
-        s += ","+str(self.win)
-        s += ","+str(self.user)
-        s += ","+safe_escape(self.msg)
+        s += "," + str(self.id)
+        s += "," + str(self.win)
+        s += "," + str(self.user)
+        s += "," + safe_escape(self.msg)
 
-        s += ","+str(self.modes)
-        s += ","+str(self.mode_oper)
+        s += "," + str(self.modes)
+        s += "," + str(self.mode_oper)
 
-        s += ","+str(self.cmd)
-        s += ","+str(self.cmd_args)
+        s += "," + str(self.cmd)
+        s += "," + str(self.cmd_args)
         s += ")"
         return s
 
