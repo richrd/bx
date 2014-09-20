@@ -205,8 +205,8 @@ class IRCBot(irc.IRCClient):
             self.BotLog("RunCommand(", command, user, data, ")")
             inst.Execute(win, user, data)
         else:
-            self.HandleEvent(Event(IRC_EVT_UNKNOWN_CMD, win, user, cmd = command, cmd_args=data))
-            win.Privmsg("don't understand")
+            if not self.HandleEvent(Event(IRC_EVT_UNKNOWN_CMD, win, user, cmd = command, cmd_args=data)):
+                win.Privmsg("don't understand")
     
     def RunListener(self, name):
         listener = self.listeners[name]
@@ -215,13 +215,16 @@ class IRCBot(irc.IRCClient):
         instance.init()
 
     def HandleEvent(self, event):
+        handled = False
         for listener in self.listeners_cache.keys():
             lstn = self.listeners_cache[listener]
             if IRC_EVT_ANY in lstn.events:
                 lstn.event(event)
             if event.id in lstn.events:
-                lstn.event(event)
-        return False
+                value = lstn.event(event)
+                if not handled:
+                    handled = value or True
+        return handled
 
 
 
