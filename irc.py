@@ -484,92 +484,76 @@ class IRCClient:
                     modes = parts[3]
                     self.OnMyModesChanged(modes)
                 else:
-                    types=["-","+"]
+                    types = ["-", "+"]
                     modes = parts[3]
                     
                     if len(parts) > 4:      # Channel user modes are being set
                         nicks = parts[4:]
-                        i=0
+                        i = 0
                         operation = True
                         users = []
                         for mode in modes:
                             char = modes[i]
                             if char in types:
-                                if char == "-":operation = False
-                                if char == "+":operation = True
-                                modes=modes[1:]
+                                if char == "-": operation = False
+                                elif char == "+": operation = True
+                                modes = modes[1:]
                                 continue
                             modechr = modes[i]
-                            user = (nicks[i],modechr,operation)
+                            user = (nicks[i], modechr, operation)
                             users.append(user)
-                            i+=1
-                        self.OnChannelUserModesChanged(target,users,nick)
+                            i += 1
+                        self.OnChannelUserModesChanged(target, users, nick)
                     else:
                         modes = parts[3]
-                        # modes = []
-                        # i=0
-                        # operation = True
-                        # for mode in modes:
-                        #     char = modes[i]
-                        #     if char in types:
-                        #         if char == "-":operation = False
-                        #         if char == "+":operation = True
-                        #         modes=modes[1:]
-                        #         continue
-                        #     modechr = modes[i]
-                        #     mode = (modechr,operation)
-                        #     modes.append(mode)
-
-
-                        self.OnChannelModesChanged(target,modes,nick)
+                        self.OnChannelModesChanged(target, modes, nick)
             else:
-                self.DebugLog("\t\tParseLine(",line,")","unknown text cmd")
+                self.DebugLog("\t\tParseLine(", line, ")","unknown text cmd")
                 return False
 
 
         elif self.LineIsNumeric(line):
             numeric = int(parts[1])
-            if numeric in [1,2,3]:      # Welcome info
+            if numeric in [1, 2, 3]:      # Welcome info
                 self.OnWelcomeInfo(txt_data)
             elif numeric == 4:
-                self.OnWelcomeInfo( " ".join(parts[3:]) )
+                self.OnWelcomeInfo(" ".join(parts[3:]))
             elif numeric == 5:
-                self.OnSupportInfo( " ".join(parts[3:]) )
-            elif numeric in [251,252,253,254,255]:
-                self.OnServerInfo( " ".join(parts[3:]) )
+                self.OnSupportInfo(" ".join(parts[3:]))
+            elif numeric in [251, 252, 253, 254, 255]:
+                self.OnServerInfo(" ".join(parts[3:]))
                 
-            #elif numeric in [311,312,318,319]:         # Parse whois responses
             elif numeric in [311]:         # Parse whois responses
                 nick = parts[3]
                 if numeric == 311:
-                    hostname = parts[4]+"@"+parts[5]
+                    hostname = parts[4] + "@" + parts[5]
                     self.OnWhoisHostname(nick,hostname)
                 
-            elif numeric in [375,372]:      # Start of MOTD, First line of MOTD
+            elif numeric in [375, 372]:      # Start of MOTD, First line of MOTD
                 self.OnMotdLine(txt_data)
-            elif numeric in [376,422]:    # End of MOTD, No MOTD
+            elif numeric in [376, 422]:    # End of MOTD, No MOTD
                 self.OnReady()
-            elif numeric in [324,329,332,333,353,366,473]:  # Channel numerics
+            elif numeric in [324, 329, 332, 333, 353, 366, 473]:  # Channel numerics
             
                 # Channel specific stuff
                 chan = parts[3]
                 
-                if numeric in [324,329]:
+                if numeric in [324, 329]:
                     value = parts[4] 
                     if numeric == 329:                                  # channel creation time
-                        self.OnChannelCreated(chan,value)
+                        self.OnChannelCreated(chan, value)
                     elif numeric == 324:                                # channel modes
-                        modes = list(value.replace("+",""))
-                        self.OnChannelModesAre(chan,modes)
+                        modes = list(value.replace("+", ""))
+                        self.OnChannelModesAre(chan, modes)
                         
                 elif numeric == 332:                                    # channel topic
                     topic = self.GetTextData(line)
-                    self.OnChannelTopicIs(chan,topic)
+                    self.OnChannelTopicIs(chan, topic)
                     
                 elif numeric == 333:                                    # channel topic metadata
                     nick = parts[4]
                     utime = int(parts[5])
-                    self.OnChannelTopicMeta(chan,nick,utime)
+                    self.OnChannelTopicMeta(chan, nick, utime)
                     
                 elif numeric == 353:                                    # Reply to NAMES
                     chan = parts[4]
@@ -578,26 +562,24 @@ class IRCClient:
                     for raw_nick in nicks:
                         nick = self.GetCleanNick(raw_nick)
                         mode = self.GetMode(raw_nick)
-                        users.append( (nick,mode) )
-                    self.OnChannelHasUsers(chan,users)
+                        users.append( (nick, mode) )
+                    self.OnChannelHasUsers(chan, users)
                 elif numeric == 366:                                    # End of NAMES
                     pass
                 elif numeric == 473:                                    # Channel is invite only
-                    #:servercentral.il.us.quakenet.org 473 ib2 #wavi :Cannot join channel, you must be invited (+i)
-                    self.OnChannelInviteOnly(chan,txt_data)
+                    self.OnChannelInviteOnly(chan, txt_data)
                 elif numeric == 475:
-                    #:underworld1.no.quakenet.org 475 ib2 #wavi :Cannot join channel, you need the correct key (+k)
-                    self.OnChannelNeedsPassword(chan,txt_data)
+                    self.OnChannelNeedsPassword(chan, txt_data)
             elif numeric == 433:                                        # Nick in use
                 nick = parts[3]
                 self.OnNickInUse(nick,txt_data)
             elif numeric == 465:
                 self.OnConnectThrottled(txt_data)
             else:
-                self.DebugLog("\t\tParseLine(",line,")","unknown numeric")
+                self.DebugLog("\t\tParseLine(", line, ")", "unknown numeric")
                 return False
         else:
-            self.DebugLog("\t\tParseLine(",line,")","failed to parse")
+            self.DebugLog("\t\tParseLine(", line, ")", "failed to parse")
             return False
     # ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ====  
       
@@ -606,31 +588,31 @@ class IRCClient:
     # Receive
     #
     
-    def DataEncode(self,data):
+    def DataEncode(self, data):
         return data.encode(self.encoding)
 
-    def DataDecode(self,data):
+    def DataDecode(self, data):
         for enc in self.decodings:
             try:
                 return data.decode(enc)
-            except Exception,err:
+            except Exception, err:
                 continue
         return safe_escape(data)
         
     def ReceiveToBuffer(self):
         try:
-          received = self.sock.recv(self.read_chunk_size)
+            received = self.sock.recv(self.read_chunk_size)
         except socket.timeout, e:
-          err = e.args[0]
-          self.DebugLog("ReceiveToBuffer()","timed out")
-          if err == "timed out":
-            return True
+            err = e.args[0]
+            self.DebugLog("ReceiveToBuffer()", "timed out")
+            if err == "timed out":
+                return True
         except socket.error, e:
-          self.DebugLog("ReceiveToBuffer()","failed sock.recv",e)
-          return False
+            self.DebugLog("ReceiveToBuffer()", "failed sock.recv", e)
+            return False
         if len(received) == 0:
-          self.DebugLog("ReceiveToBuffer()","received empty data")
-          return False
+            self.DebugLog("ReceiveToBuffer()", "received empty data")
+            return False
 
         if received:
             data = self.DataDecode(received)
@@ -657,15 +639,15 @@ class IRCClient:
     # Send
     #
             
-    def Send(self,data):
+    def Send(self, data):
         #self.DebugLog("Send(",data[:-2],")")
         data = self.DataEncode(data)
         self.send_buffer.append(data)
 
-    def LoopingSend(self,data):
+    def LoopingSend(self, data):
         #self.DebugLog("LoopingSend(",data[:-2],")")
         left = data
-        while left!="":
+        while left != "":
             try:
                 sent = self.sock.send(left)
                 if len(left) == sent:
@@ -674,7 +656,8 @@ class IRCClient:
             except:
                 return False
 
-    def ProcessSend(self,data):              # This is where data to be sent finally ends up.
+    def ProcessSend(self, data):
+        """This is where data to be sent finally ends up."""
         if self.irc_running & self.irc_connected:
             #self.DebugLog("ProcessSend(",data[:-2],")")
             try:
@@ -687,20 +670,21 @@ class IRCClient:
             self.DebugLog("ProcessSend","not running & connected -> can't send!")
             return False
             
-    def SendLines(self,lines):
+    def SendLines(self, lines):
         for line in lines:
             self.SendLine(line)
         
-    def SendLine(self,line):            # Send one line to the server via the send buffer. FIXME CANT BE MORE THAN 512 CHARS LONG
-        if len(line) > 510:self.DebugLog("SendLine(): line too long!")
+    def SendLine(self, line):            # Send one line to the server via the send buffer. FIXME CANT BE MORE THAN 512 CHARS LONG
+        if len(line) > 510:
+            self.DebugLog("SendLine(): line too long!")
         self.Send(line + "\r\n")
 
-    def SendRaw(self,line):            # Send one line to the 
+    def SendRaw(self, line):            # Send one line to the 
         self.SendLine(line)
         
     def ProcessSendBuffer(self):        # send line from buffer if not throttled
         if self.send_buffer != []:
-            if self.send_time == None or time.time()-self.send_time > self.send_throttling:
+            if self.send_time == None or time.time() - self.send_time > self.send_throttling:
                 line = self.send_buffer.pop(0)
                 if not self.ProcessSend(line):
                     return False
@@ -712,7 +696,7 @@ class IRCClient:
     # Start & Maintain Connection
     #
         
-    def RunCmd(self,cmd):
+    def RunCmd(self, cmd):
         try:
             exec(cmd)
         except Exception,e:
@@ -729,14 +713,14 @@ class IRCClient:
         return True
 
     def Connect(self):
-        self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if "settimeout" in dir(self.sock):
             self.sock.settimeout(self.sock_timeout) # This needs to be stoppable
-        self.DebugLog("Connect()","connecting to "+self.host+":"+str(self.port)+"...")
+        self.DebugLog("Connect()","connecting to " + self.host + ":" + str(self.port) + "...")
         try:
-            self.sock.connect((self.host,self.port))
-        except socket.error,err:
-            self.DebugLog("Connect()","error connecting:",str(socket.error),str(err))
+            self.sock.connect((self.host, self.port))
+        except socket.error, err:
+            self.DebugLog("Connect()", "error connecting:", str(socket.error), str(err))
             return False
         self.irc_connected = 1
         return True
@@ -754,10 +738,10 @@ class IRCClient:
         self.OnDisconnected()
 
     def KeepAlive(self):
-        if self.last_receive!=None:
-          elapsed = time.time()-self.last_receive
+        if self.last_receive != None:
+            elapsed = time.time() - self.last_receive
         else:
-          return
+            return
         # Ping the server after inactivity and wait for reply.
         # If no timely response is received, cut the connection and reconnect.
         if elapsed > self.max_inactivity:
@@ -771,10 +755,11 @@ class IRCClient:
            self.ProcessRecvBuffer()
            self.KeepAlive()
         except Exception,e:
-            # try:
-            import traceback
-            print traceback.format_exc()
-            # except:pass
+            try:
+                import traceback
+                print traceback.format_exc()
+            except:
+                pass
             print sys.exc_info()[0]
             self.DebugLog("Process()",e)
 
@@ -784,11 +769,11 @@ class IRCClient:
             try:
                 sockl = [self.sock]
                 if not s60:
-                    readable, writable, errored = select.select(sockl, sockl, sockl,self.select_timeout)
+                    readable, writable, errored = select.select(sockl, sockl, sockl, self.select_timeout)
                 else:
-                    readable, writable, errored = select.select(sockl, [], [],self.select_timeout)
+                    readable, writable, errored = select.select(sockl, [], [], self.select_timeout)
                 time.sleep(self.select_timeout)
-            except socket.error,err:
+            except socket.error, err:
                 self.DebugLog("IRCMainloop()","select error:",socket.error,err)
                 return False
             if self.sock in readable:
@@ -802,7 +787,7 @@ class IRCClient:
                 return False
             elif self.sock in writable or s60:
                 ok = self.ProcessSendBuffer()   # Try to send and break on failure
-                if ok==False:
+                if ok == False:
                     return False
             else:
                 self.DebugLog("IRCMainloop()","socket inaccessible")
@@ -819,7 +804,7 @@ class IRCClient:
                 return False
 
     # Connect and run irc client
-    def StartClient(self,block=True):
+    def StartClient(self, block=True):
         self.DebugLog("StartClient()") 
         connected = self.Connect()
         if connected:
