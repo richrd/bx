@@ -22,11 +22,10 @@ Modular Python IRC bot made from scratch.
 ### Features
 * Implement ignoring users that haven't authed
 * Commands
-    * Change module level
-    * Change user level
-    * Kick
-    * Bot host status information
-    * Command for taking photos and uploading them to a server
-    * Command for adding channel to autojoin
+  * Change module level
+  * Change user level
+  * Bot host status information
+  * Command for taking photos and uploading them to a server
+  * Command for adding channel to autojoin
 
 * PyS60-specific functionality
