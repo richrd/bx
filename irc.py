@@ -174,6 +174,9 @@ class IRCClient:
         self.last_ping_pong = time.time()
         self.SendLine("PONG %s" % data)
         
+    def OnPong(self, data=False):
+        self.last_ping_pong = time.time()
+        
     def OnWelcomeInfo(self,info):
         self.DebugLog("OnWelcomeInfo(",info,")")
         
@@ -191,63 +194,63 @@ class IRCClient:
         self.DebugLog("OnReady()")
         self.throttled = 0
         
-    def OnUserHostname(self,nick,hostname):
-        #self.DebugLog("OnUserHostname(",nick,",",hostname,")")
+    def OnUserHostname(self, nick, hostname):
+        #self.DebugLog("OnUserHostname(", nick, ", ", hostname, ")")
         pass
 
-    def OnWhoisHostname(self,nick,hostname):
-        self.DebugLog("OnWhoisHostname(",nick,",",hostname,")")
+    def OnWhoisHostname(self, nick, hostname):
+        self.DebugLog("OnWhoisHostname(", nick, ",", hostname, ")")
         pass
         
-    def OnUserNickChange(self,nick,new_nick):
-        self.DebugLog("OnUserNickChange(",nick,new_nick,")")
+    def OnUserNickChange(self, nick, new_nick):
+        self.DebugLog("OnUserNickChange(", nick, new_nick, ")")
         
-    def OnUserQuit(self,nick,reason):
-        self.DebugLog("OnUserQuit(",nick,reason,")")
+    def OnUserQuit(self, nick, reason):
+        self.DebugLog("OnUserQuit(", nick, reason, ")")
 
-    def OnPrivmsg(self,by,to,msg):
-        self.DebugLog("OnPrivmsg(",by,"->",to,"::",msg,")")
+    def OnPrivmsg(self, by, to, msg):
+        self.DebugLog("OnPrivmsg(", by, "->", to, "::", msg, ")")
 
-    def OnNotice(self,by,to,msg):
-        self.DebugLog("OnNotice(",by,"->",to,"::",msg,")")
+    def OnNotice(self, by, to, msg):
+        self.DebugLog("OnNotice(", by, "->", to, "::", msg, ")")
 
-    def OnMyModesChanged(self,modes):
-        self.DebugLog("OnMyModesChanged(",modes,")")
+    def OnMyModesChanged(self, modes):
+        self.DebugLog("OnMyModesChanged(", modes, ")")
         
-    def OnIJoined(self,chan):
-        self.DebugLog("OnIJoined(",chan,")")
+    def OnIJoined(self, chan):
+        self.DebugLog("OnIJoined(", chan, ")")
 
-    def OnChannelInviteOnly(self,chan,reason):
+    def OnChannelInviteOnly(self, chan, reason):
         """ Called when the server indicates which users are present on a channel. """
-        self.DebugLog("OnChannelInviteOnly(",chan,",",reason,")")
+        self.DebugLog("OnChannelInviteOnly(", chan, ",", reason, ")")
     
-    def OnChannelNeedsPassword(chan,reason):
-        self.DebugLog("OnChannelNeedsPassword(",chan,",",reason,")")
+    def OnChannelNeedsPassword(chan, reason):
+        self.DebugLog("OnChannelNeedsPassword(", chan, ",", reason, ")")
         
-    def OnChannelHasUsers(self,chan,users):
+    def OnChannelHasUsers(self, chan, users):
         """ Called when the server indicates which users are present on a channel. """
-        self.DebugLog("OnChannelHasUsers(",chan,",",users,")")
+        self.DebugLog("OnChannelHasUsers(", chan, ",", users, ")")
         
-    def OnChannelJoin(self,chan,nick):
-        self.DebugLog("OnChannelJoin(",chan,nick,")")
+    def OnChannelJoin(self, chan, nick):
+        self.DebugLog("OnChannelJoin(", chan, nick, ")")
 
-    def OnChannelPart(self,chan,nick,reason):
-        self.DebugLog("OnChannelPart(",chan,nick,reason,")")
+    def OnChannelPart(self, chan, nick, reason):
+        self.DebugLog("OnChannelPart(", chan, nick, reason, ")")
         
-    def OnChannelKick(self,chan,who,nick,reason):
-        self.DebugLog("OnChannelKick(",target,",",who,nick,reason,")")
+    def OnChannelKick(self, chan, who, nick, reason):
+        self.DebugLog("OnChannelKick(", chan, ",", who, nick, reason, ")")
         
-    def OnChannelCreated(self,chan,value):
-        self.DebugLog("OnChannelCreated(",chan,value,")")
+    def OnChannelCreated(self, chan, value):
+        self.DebugLog("OnChannelCreated(", chan, value, ")")
     
-    def OnChannelModesAre(self,chan,modes):
-        self.DebugLog("OnChannelModesAre(",chan,modes,")")
+    def OnChannelModesAre(self, chan, modes):
+        self.DebugLog("OnChannelModesAre(", chan, modes, ")")
         
-    def OnChannelModesChanged(self,chan,modes,nick):
-        self.DebugLog("OnChannelModesChanged(",chan,modes,")")
+    def OnChannelModesChanged(self, chan, modes, nick):
+        self.DebugLog("OnChannelModesChanged(", chan, modes, ")")
         
-    def OnChannelUserModesChanged(self,chan,modes,by):
-        self.DebugLog("OnChannelUserModesChanged(",chan,modes,by,")")
+    def OnChannelUserModesChanged(self, chan, modes, by):
+        self.DebugLog("OnChannelUserModesChanged(", chan, modes, by, ")")
 
     def IsConnected(self):
         return self.irc_connected
@@ -308,8 +311,8 @@ class IRCClient:
         keylist = ",".join(keys)
         self.SendLine("JOIN %s %s" % (chanlist, keylist))
         
-    def PartChannels(self,chans):
-        if type(chans) in [type(u""),type("")]:
+    def PartChannels(self, chans):
+        if type(chans) in [type(u""), type("")]:
             chans = [chans]
         chanlist = ",".join(chans)
         self.SendLine("PART %s" % chanlist)
@@ -318,36 +321,40 @@ class IRCClient:
         self.SendLine("KICK %s %s %s" % (chan, nick, message))
 
     def Privmsg(self,dest,msg):
-        if not msg:return False
-        lines = self.WrapLine(u"PRIVMSG "+dest+u" :",msg)
+        if not msg:
+            return False
+        lines = self.WrapLine(u"PRIVMSG " + dest + u" :",msg)
         self.SendLines(lines)
 
-    def Notice(self,dest,msg):
-        if not msg:return False
-        self.SendLine(u"NOTICE "+dest+u" :"+msg)
+    def Notice(self, dest, msg):
+        if not msg:
+            return False
+        self.SendLine(u"NOTICE " + dest + u" :" + msg)
 
-    def SetChannelUserModes(self,chan,nickmodes,operation=True):
-        if operation:modes = "+"
-        else:        modes = "-"
+    def SetChannelUserModes(self, chan, nickmodes, operation=True):
+        if operation:
+            modes = "+"
+        else:
+            modes = "-"
         nicks = []
         for item in nickmodes:
             nicks.append(item[0])
-            modes+=item[1]
-        s = u"MODE "+chan+" "+modes+" "+(" ".join(nicks))
+            modes += item[1]
+        s = u"MODE " + chan + " " + modes + " " + (" ".join(nicks))
         self.SendLine(s)
      
-    def SetChannelTopic(self,chan,topic):
-        self.SendLine("TOPIC "+chan+" :"+topic)
+    def SetChannelTopic(self, chan, topic):
+        self.SendLine("TOPIC " + chan + " :" + topic)
 
-    def SetChannelModes(self,chan,modes):
-        self.SendLine("MODE "+chan+" "+modes)
+    def SetChannelModes(self, chan, modes):
+        self.SendLine("MODE " + chan + " " + modes)
       
     #
     # Protocol Implementation & Parsing
     #      
       
     # Returns the last (multi-word) parameter in the line, or False if not present
-    def GetTextData(self,line):
+    def GetTextData(self, line):
         line = line[1:]
         index = line.find(":")
         if index != -1:
@@ -355,18 +362,18 @@ class IRCClient:
         else:
             return False
       
-    def GetCleanNick(self,nick):
+    def GetCleanNick(self, nick):
         if self.GetModeChr(nick) != IRC_MODE_CHR_NONE:
             return nick[1:]
         return nick
         
     def GetModeChr(self,s):
-        if s[:1] in [IRC_MODE_CHR_VOICE,IRC_MODE_CHR_OP]:
+        if s[:1] in [IRC_MODE_CHR_VOICE, IRC_MODE_CHR_OP]:
             return s[:1]
         return IRC_MODE_CHR_NONE
 
-    def IsChannelName(self,name):
-        if name[0] in ["#","&"]:
+    def IsChannelName(self, name):
+        if name[0] in ["#", "&"]:
             return True
         return False
         
@@ -441,11 +448,15 @@ class IRCClient:
                 
         elif self.LineIsCommand(line):
             command = parts[1].lower()
-            nick,hostname = self.ParseNickHost(line)
-            if command == "join":
-                if txt_data != False:target=txt_data
-                else:target  = parts[2]
-                nick,hostname = self.ParseNickHost(line)
+            nick, hostname = self.ParseNickHost(line)
+            if command == "pong":
+                self.OnPing(txt_data)
+            elif command == "join":
+                if txt_data != False:
+                    target = txt_data
+                else:
+                    target  = parts[2]
+                nick, hostname = self.ParseNickHost(line)
                 if nick == self.current_nick:
                     self.OnIJoined(target)
                 else:
@@ -464,26 +475,26 @@ class IRCClient:
             elif command == "privmsg":
                 target  = parts[2]
                 nick,hostname = self.ParseNickHost(line)
-                self.OnPrivmsg(nick,target,txt_data)
+                self.OnPrivmsg(nick, target, txt_data)
             elif command == "notice":
                 target  = parts[2]
-                nick,hostname = self.ParseNickHost(line)
+                nick, hostname = self.ParseNickHost(line)
                 if nick:
-                    self.OnNotice(nick,target,txt_data)
+                    self.OnNotice(nick, target, txt_data)
             elif command == "quit":
                 reason = self.GetTextData(line)
-                nick,hostname = self.ParseNickHost(line)
-                self.OnUserQuit(nick,reason)
+                nick, hostname = self.ParseNickHost(line)
+                self.OnUserQuit(nick, reason)
             elif command == "kick":
-                nick,hostname = self.ParseNickHost(line)
+                nick, hostname = self.ParseNickHost(line)
                 target  = parts[2]
                 who = parts[3]
                 reason = self.GetTextData(line)
-                self.OnChannelKick(target,who,nick,reason)
+                self.OnChannelKick(target, who, nick, reason)
             elif command == "nick":
                 newnick = self.GetTextData(line)
-                nick,host = self.ParseNickHost(line)
-                self.OnUserNickChange(nick,newnick)
+                nick, host = self.ParseNickHost(line)
+                self.OnUserNickChange(nick, newnick)
             elif command == "mode":
                 self.DebugLog("\t\tParseLine(",line,")")
                 target = parts[2]
