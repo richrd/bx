@@ -373,7 +373,7 @@ class IRCClient:
         return IRC_MODE_CHR_NONE
 
     def IsChannelName(self, name):
-        if name[0] in ["#", "&"]:
+        if name[0] in ["#", "&", "!"]:
             return True
         return False
         
