@@ -30,7 +30,7 @@ class Event:
     Stores events to facilitate passing events around easily
 
     """
-    def __init__(self, id, win=None, user=None, msg=None, modes=None, mode_oper=None, cmd=None, cmd_args=None):
+    def __init__(self, id, win=None, user=None, msg=None, modes=None, mode_oper=None, cmd=None, cmd_args=None, by=None):
         self.time = time.time()
         self.id = id
         self.win = win
@@ -42,6 +42,8 @@ class Event:
 
         self.cmd = cmd
         self.cmd_args = cmd_args
+
+        self.by = by
 
     def __str__(self):
         s = "Event("
@@ -476,6 +478,13 @@ class Channel(BotWindow):
         user.OnAction()
         self.bot.HandleEvent(Event(IRC_EVT_CHAN_PART, self, user))
 
+    def OnKick(self, by, user, reason):
+        #OnKick(self.GetUser(who), self.GetUser(nick), reason)
+        self.DebugLog("*KICK*", user, "by", by, "(", reason, ")")
+        self.RemoveUser(user)
+        user.OnAction()
+        self.bot.HandleEvent(Event(IRC_EVT_CHAN_KICK, self, user, by=by, msg=reason))
+
     def OnQuit(self, user, reason):
         self.RemoveUser(user)
         
@@ -545,3 +554,6 @@ class Channel(BotWindow):
         
     def SetTopic(self, topic):
         self.bot.SetChannelTopic(self.GetName(), topic)
+
+    def Kick(self, user, reason=""):
+        self.bot.Kick(self.GetName(), user.GetNick(), reason)
