@@ -400,20 +400,14 @@ class IRCBot(irc.IRCClient):
         #self.DebugLog("OnChannelTopicIs(",chan,",",topic,")")
         self.GetWindow(chan).OnTopicIs(topic)
         
-        
     def OnChannelTopicMeta(self, chan, nick, utime):
         #self.DebugLog("OnChannelTopicMeta(",chan,",",nick,",",utime,")")
         self.GetWindow(chan).OnTopicMeta(nick, utime)
-        
-        
         
     def OnChannelTopicChanged(self, chan, by, topic):
         #self.DebugLog("OnChannelTopicChanged(",chan,",",topic,",",by,")")
         user = self.GetUser(by)
         self.GetWindow(chan).OnTopicChanged(topic, user)
-        
-        
-        
         
     def RunBot(self):
         self.BotLog("Run()")
