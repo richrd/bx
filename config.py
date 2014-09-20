@@ -93,9 +93,21 @@ class BotConfig:
         }
         return True
 
+    def RemoveAccount(self, name):
+        if name in self.config["accounts"].keys():
+            del self.config["accounts"][name]
+            return True
+        return False
+
     def AddChannel(self, name):
         if not name in self.config["channels"].keys():
             self.config["channels"][name] = {}
+            return True
+        return False
+
+    def RemoveChannel(self, name):
+        if name in self.config["channels"].keys():
+            del self.config["channels"][name]
             return True
         return False
 
