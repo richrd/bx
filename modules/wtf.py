@@ -395,7 +395,7 @@ class Wtf(Command):
 
     def run(self, win, user, data, caller=None):
         args = Args(data)
-        if len(args) > 0:
+        if args.Empty():
             key = args[0].lower()
             if key in self.acronyms.keys():
                 win.Send(self.acronyms[key])
