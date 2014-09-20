@@ -280,35 +280,42 @@ class IRCClient:
         self.SendLine("PING "+self.current_nick)
         self.pinged_server = time.time()
 
-    def ChangeNick(self,nick=None):
-        self.DebugLog("ChangeNick(",nick,")")
-        if nick==None:nick=self.def_nick
+    def ChangeNick(self, nick=None):
+        self.DebugLog("ChangeNick(", nick, ")")
+        if nick == None:
+            nick = self.def_nick
         self.SetNick(nick)
         self.SendLine("NICK %s" % nick)
       
-    def DoIntroduce(self,nick=None,ident=None,realname=None):   # Send NICK and USER messages
-        self.DebugLog("DoIntroduce(",nick,ident,realname,")")
-        if nick==None:nick=self.def_nick
-        if ident==None:ident=self.def_ident
-        if realname==None:realname=self.def_realname
+    def DoIntroduce(self, nick=None, ident=None, realname=None):   # Send NICK and USER messages
+        self.DebugLog("DoIntroduce(", nick, ident, realname, ")")
+        if nick == None:
+            nick = self.def_nick
+        if ident == None:
+            ident = self.def_ident
+        if realname == None:
+            realname = self.def_realname
         self.ChangeNick(nick)
         self.SendLine("USER %s 8 * :%s" % (ident, realname))
       
-    def DoWhois(self,nick):
-        self.SendLine("WHOIS %s %s" % (nick,nick))
+    def DoWhois(self, nick):
+        self.SendLine("WHOIS %s %s" % (nick, nick))
       
-    def JoinChannels(self,chans,keys=[]):
-        if type(chans) in [type(u""),type("")]:
+    def JoinChannels(self, chans, keys=[]):
+        if type(chans) in [type(u""), type("")]:
             chans = [chans]
         chanlist = ",".join(chans)
         keylist = ",".join(keys)
-        self.SendLine("JOIN %s %s" % (chanlist,keylist))
+        self.SendLine("JOIN %s %s" % (chanlist, keylist))
         
     def PartChannels(self,chans):
         if type(chans) in [type(u""),type("")]:
             chans = [chans]
         chanlist = ",".join(chans)
         self.SendLine("PART %s" % chanlist)
+
+    def Kick(self, chan, nick, message=""):
+        self.SendLine("KICK %s %s %s" % (chan, nick, message))
 
     def Privmsg(self,dest,msg):
         if not msg:return False
