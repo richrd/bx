@@ -5,9 +5,9 @@ Modular Python IRC bot made from scratch.
 
 ## Features
 * 40+ modules with general features
+* Integrated help available
 * Supports user accounts and access control
 * Simple to extend if you know Python
-* Integrated help available
 * Aims to be compatible with Symbian S60 for hosting a bot on a phone :)
   * Comming later: module for shooting and uploading pictures from a phone
 
@@ -16,12 +16,17 @@ Modular Python IRC bot made from scratch.
 ### Documentation
 * More comments
 * General docs
+* Add module list to README.md
 * Module API reference
 
 ### Features
 * Implement ignoring users that haven't authed
-* Command for changing module level
-* Command for changing user level
-* Kick command
-* Command for adding channel to autojoin
+* Commands
+    * Change module level
+    * Change user level
+    * Kick
+    * Bot host status information
+    * Command for taking photos and uploading them to a server
+    * Command for adding channel to autojoin
+
 * PyS60-specific functionality
