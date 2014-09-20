@@ -31,51 +31,56 @@ class Args:
         self.original = list(arg_list)
         self.args = list(arg_list)
 
-    def __getitem__(self,item):
+    def __getitem__(self, item):
         return self.original[item]
 
-    def __setitem__(self,item,value):
-        self.original[item]=value
+    def __setitem__(self, item, value):
+        self.original[item] = value
 
     def __len__(self):
         return len(self.original)
 
     def FirstArg(self):
-        if len(self.original)!=0:
+        if len(self.original) != 0:
             return self.original[0]
         return ""
 
-    def Range(self,start,end=None):
+    def Empty(self):
+        if len(self.args) == 0:
+            return True
+        return False
+
+    def Range(self, start, end=None):
         if end == None:
             end = len(self.original)
         return (" ".join(self.original[start:end]))
 
-    def Drop(self,what=0):              # drops a selected arg from list
-        if type(what)==type(1):
+    def Drop(self, what=0):              # drops a selected arg from list
+        if type(what) == type(1):
             self.args.pop(what)
         else:
             self.args.pop(self.args.index(what))
 
-    def IsStrSearch(sef,s):
-        if s[0]!="?":return False
+    def IsStrSearch(sef, s):
+        if s[0] != "?":return False
         return True
 
-    def IsChannel(self,s):
-        return s[0]=="#"
+    def IsChannel(self, s):
+        return s[0] in ["#", "&", "!"]
 
-    def IsNick(self,s):
-        return s[0]=="~"
+    def IsNick(self, s):
+        return s[0] == "~"
 
-    def IsNAccount(self,name):
+    def IsNAccount(self, name):
         return name in self.bot.config["accounts"].keys()
 
-    def HasType(self,what):             # checks if a type is found in args
+    def HasType(self, what):             # checks if a type is found in args
         return self.FindType(what)
 
-    def Take(self,what):                # returns type matched
-        return self.FindType(what,True)
+    def Take(self, what):                # returns type matched
+        return self.FindType(what, True)
 
-    def FindType(self,what,commit=False):
+    def FindType(self, what, commit=False):
         for arg in self.args:
             if what == "duration":
                 val = str_to_seconds(arg)
