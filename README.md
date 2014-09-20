@@ -26,6 +26,5 @@ Modular Python IRC bot made from scratch.
   * Change user level
   * Bot host status information
   * Command for taking photos and uploading them to a server
-  * Command for adding channel to autojoin
 
 * PyS60-specific functionality
