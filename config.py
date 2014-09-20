@@ -78,36 +78,21 @@ class BotConfig:
     def keys(self):
         return self.config.keys()
         
-    def GetAutoJoinChannels(self):
-        return self.config["channels"].keys()
-        
     def AccountExists(self, name):
         return name.lower() in self.config["accounts"].keys()
 
     def AddAccount(self, name, password):
         self.config["accounts"][name] = {
-            "name":name,
-            "pw":md5hd(password),
-            "level":1,
-            "hostnames":[]
+            "name": name,
+            "pw": md5hd(password),
+            "level": 1,
+            "hostnames": []
         }
         return True
 
     def RemoveAccount(self, name):
         if name in self.config["accounts"].keys():
             del self.config["accounts"][name]
-            return True
-        return False
-
-    def AddChannel(self, name):
-        if not name in self.config["channels"].keys():
-            self.config["channels"][name] = {}
-            return True
-        return False
-
-    def RemoveChannel(self, name):
-        if name in self.config["channels"].keys():
-            del self.config["channels"][name]
             return True
         return False
 
@@ -125,10 +110,28 @@ class BotConfig:
                 return True
         return False
 
+    def AddChannel(self, name):
+        if not name in self.config["channels"].keys():
+            self.config["channels"][name] = {}
+            return True
+        return False
+
+    def RemoveChannel(self, name):
+        if name in self.config["channels"].keys():
+            del self.config["channels"][name]
+            return True
+        return False
+
+    def GetChannels(self):
+        return self.config["channels"].keys()
+
+    def GetAutoJoinChannels(self):
+        return self.GetChannels()
+
     def AuthenticateUser(self, name, pw):
         if self.AccountExists(name):
             account = self.config["accounts"][name]
-            h = md5hd(u""+pw)
+            h = md5hd(u"" + pw)
             if h == account["pw"]:
                 return account
         return False
@@ -172,6 +175,7 @@ class BotConfig:
         return enabled
 	
     def ApplyModConfig(self, module):
+        """Apply configuration options to a module dict and return it."""
         keys = ["throttle", "level", "zone", "aliases", "interval"]
         if module["name"] in self.config["modules"].keys():
             mod = self.config["modules"][module["name"]]
