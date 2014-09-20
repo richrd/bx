@@ -238,12 +238,15 @@ class IRCBot(irc.IRCClient):
             self.windows.append(win)
         return win
         
-    def GetWindow(self, name):
+    def GetWindow(self, name, create=True): # FIXME: default create to False
         for win in self.windows:
             if win.GetName() == name:
                 return win
-        win = self.MakeWindow(name)
-        return win
+        if create:
+            win = self.MakeWindow(name)
+            return win
+        else:
+            return False
         
     def MakeUser(self, nick):
         user = User(self, nick)
