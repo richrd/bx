@@ -1,6 +1,7 @@
 from mod_base import*
 
 class AutoOP(Listener):
+    """Automatically give OP to authed users"""
     def init(self):
         self.events = [IRC_EVT_USER_AUTHED, IRC_EVT_CHAN_JOIN, IRC_EVT_CHAN_USER_MODE_CHANGE]
         

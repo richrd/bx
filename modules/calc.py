@@ -1,7 +1,7 @@
 from mod_base import *
 
 class Calc(Command):
-    """Calculate math and python expressions. e.g. calc 2+3*5"""
+    """Calculate math and python expressions. e.g. calc 3+4*6"""
 
     def run(self, win, user, data, caller=None):
         """Evaluate a python expression semi-safely."""

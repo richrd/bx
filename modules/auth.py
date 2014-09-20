@@ -11,7 +11,7 @@ class Auth(Command):
             win.Send("please give a username and password (auth user pass)")
         else:
             if self.bot.AuthenticateUser(user,args[0], args[1]):
-                win.Send("authed! you are now level "+str(user.GetPermission())+". use 'deauth' to log out.")
+                win.Send("authed! you are now level " + str(user.GetPermission()) + ". use 'deauth' to log out.")
             else:
                 win.Send("wrong username or password!")
 
@@ -19,5 +19,5 @@ module = {
     "class": Auth,
     "type": MOD_COMMAND,
     "level": 0,
-    "zone":IRC_ZONE_QUERY,
+    "zone": IRC_ZONE_QUERY,
 }

@@ -8,7 +8,7 @@ class AutoChanMode(Listener):
                         ]
         self.all_modes = "cCDilmMnNoprstTuv"
         
-    def RepairModes(self,event):
+    def RepairModes(self, event):
         if event.id == IRC_EVT_CHAN_MODE_CHANGE and event.user == self.bot.me:
             return False
         valid = self.bot.config.GetChannelModes(event.win)
@@ -23,7 +23,8 @@ class AutoChanMode(Listener):
 
     def event(self, event):
         m = self.bot.config.GetChannelModes(event.win)
-        if m == None:return False
+        if m == None:
+            return False
 
         if event.id == IRC_EVT_CHAN_MODE_CHANGE:
             if self.bot.me.HasOP(event.win):

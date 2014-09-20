@@ -19,5 +19,5 @@ module = {
     "class": AddChan,
     "type": MOD_COMMAND,
     "level": 5,
-    "zone":IRC_ZONE_BOTH
+    "zone": IRC_ZONE_BOTH
 }
