@@ -254,6 +254,6 @@ class Listener(Module):
         self.events = []
         self.init()
 
-    def event(self,event):
+    def event(self, event):
         pass
 
