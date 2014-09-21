@@ -223,7 +223,7 @@ class IRCBot(irc.IRCClient):
             if event.id in lstn.events:
                 value = lstn.event(event)
                 if not handled:
-                    handled = value or True
+                    handled = value or False
         return handled
 
 
