@@ -1,7 +1,55 @@
 from mod_base import *
-import re, string
+import re, string, random
 
-# Try to respond to verbal queries without fancy logic
+# Try to respond to verbal queries without (too) fancy logic.
+# This is mainly just an experiment for fun,
+# and for learning list comprehensions and regex.
+
+class Context:
+    def __init__(self, sentence):
+        self.sentence = sentence
+        self.words = self.GetWords(sentence)
+        self.reply = ""
+        self.context_values = {}
+
+    def AssignContext(self, name, value):
+        self.context_values[name] = value
+
+    def ReplaceWords(self, replacements):
+        i = 0
+        new = []
+        for word in self.words:
+            if word.lower() in replacements.keys():
+                repl = replacements[word.lower()]
+                parts = repl.split(" ")
+                for part in parts:
+                    new.append(part)
+            else:
+                new.append(word)
+            i += 1
+        self.words = new
+
+    def GetWords(self, data):
+        # words = re.findall('[\w]+[\ ]*', data)
+        words = re.findall('[\#\w\-]*', data)
+        words = map(lambda s:s.strip(), words)
+        words = [word for word in words if word != ""]
+        return words
+
+    def SetReply(self, reply):
+        self.reply = reply
+
+    def ChooseReply(self, replys):
+        self.reply = random.choice(replys)
+        print self.reply
+
+    def ReplaceReply(self):
+        for key in self.context_values.keys():
+            self.reply = self.reply.replace(key, self.context_values[key])
+
+    def GetReply(self):
+        return self.reply
+
 
 class UnknownCMD(Listener):
     """Intercept unknown commands and try to respond. Experimental!"""
@@ -62,25 +110,39 @@ class UnknownCMD(Listener):
         }
 
         self.responses = [
-            ("what your name", "my name is [nick]"),
+            ("what your name", "My name is [nick]"),
             ("what are you", "I'm an IRC bot. What about you, mortal?"),
-            ("who are you", "I'm [nick]"),
-            ("who you trust", "I trust [trusted_users]"),
-            ("where you live", "i live at [source_link]"),
-            ("how old you", "I'm eternal and immortal, but i've been here since [time_connected]"),
-            ("channels you on", "I'm hanging out on [channel_names]"),
-            ("are you bot", "yep, call me [nick]"),
             ("what you do", "say help or cmds to know what I do"),
             ("what commands", "you can use the following commands: [command_names]"),
+            ("what time", "the time is [current_time]"),
+            ("who are you", [
+                            "I'm [nick]",
+                            "My name is [nick]",
+                            ]
+                ),
+            ("who you trust", "I trust [trusted_users]"),
+            ("who is [known_nick]", "[known_nick] is my friend"),
+            ("who is", "I don't know"),
+            ("been to [unknown_channel]", "No i haven't"),
+            ("been to [known_channel]", "Sure, [known_channel] is one of my favourite places"),
+            ("what about [known_channel]", "I like it"),
+            ("why are you", "I like to be"),
+            ("are you friend", "yeah, ofcourse I am"),
+            ("are you bot", "yep, call me [nick]"),
+            ("are you on [known_channel]", "Yeah, I'm on [known_channel]"),
+            ("are you on [unknown_channel]", "No, I'm not there"),
+            ("where you live", "I live at [source_link]"),
             ("where you", "I'm at [channel_names]"),
             ("where we", "we're at [current_win]"),
-            ("what time", "the time is [current_time]"),
+            ("how old you", "I'm eternal and immortal, but i've been here since [time_connected]"),
+            ("channels you on", "I'm hanging out on [channel_names]"),
             ("many users", "I know [user_count] users"),
             ("many channels", "I know [channel_count] channels"),
             ("am i vip", "[user_authed]"),
             ("like me", "me is liek a bot."),
             ("my level", "your level is [user_level]"),
             ("trust me", "[trust]"),
+            ("do trust [authed_nick]", "ofcourse I trust [authed_nick]"),
             ("what up", "just stalking..."),
             ("use you", "say help and I'll tell you"),
             ("hello", "hi [user_nick]"),
@@ -93,9 +155,11 @@ class UnknownCMD(Listener):
             ("here", "or maybe there? or somewhere else..."),
             ("what", "no idea"),
             ("party", "party so hard!"),
+            ("dafuq", "dafuq you back")
         ]
 
-        self.substitutions = {
+        # Substitutions for replys
+        self.reply_subst = {
             "user_count": lambda event: len(self.bot.users),
             "channel_count": lambda event: len([win for win in self.bot.windows if win.zone == IRC_ZONE_CHANNEL]),
             "time_connected": lambda event: time_stamp_numeric(self.bot.connection_time),
@@ -112,68 +176,80 @@ class UnknownCMD(Listener):
             "trusted_users": lambda event: ", ".join([user.nick for user in self.bot.users if user.IsAuthed() and user.IsOnline()] or "nobody"),
         }
 
+        # Substitution tests for inputs
+        self.input_subst = {
+            "known_nick": lambda word: word in [user.GetNick() for user in self.bot.users],
+            "authed_nick": lambda word: word in [user.GetNick() for user in self.bot.users if user.IsAuthed()],
+            "known_channel": lambda word: word in [win.name for win in self.bot.windows if win.zone == IRC_ZONE_CHANNEL],
+            "unknown_channel": lambda word: self.bot.IsChannelName(word) and (not word in [win.GetName() for win in self.bot.windows if win.zone == IRC_ZONE_CHANNEL]),
+        }
+
     def event(self, event):
         data = event.cmd
         if event.cmd_args:
             data += " " + event.cmd_args
-        data = " " + data + " "
         sentences = re.findall('[\w\d][\w\d\s]*[^\.\!\?]*[\.\!\?]*', data)
+        matched = False
         if sentences:
             for sentence in sentences:
-                reply = self.GetReply(sentence)
-                if reply:
+                context = Context(sentence)
+                match = self.Match(context)
+                if match:
+                    matched = True
+                    context.ReplaceReply()
+                    reply = context.GetReply()
                     reply = self.SubstituteReply(reply, event)
                     event.win.Send(reply)
-                    return True
+        return matched
 
+    def Match(self, context):
+        print "Match"
+        context.ReplaceWords(self.replacements)
+        print "CTX:WORDS:",context.words
+        for data_in, data_out in self.responses:
+            words_in = data_in.split(" ")
+            if self.WordsInSequence(context, words_in):
+                if type(data_out) == type([]):
+                    context.ChooseReply(data_out)
+                else:
+                    context.SetReply(data_out)
+                return True
+        return False
+
+    def WordsInSequence(self, context, sequence):
+        i = 0
+        for word in context.words:
+            if i == len(sequence):
+                break
+            word = word.strip()
+
+            if word == sequence[i]:
+                i += 1
+            else:
+                found_var = self.FindInputSubst(sequence[i], word)
+                if found_var:
+                    context.AssignContext(sequence[i], word)
+                    i += 1
+
+        if i == len(sequence):
+            return True
+        return False
+
+    def FindInputSubst(self, key, word):
+        for subst in self.input_subst.keys():
+            s = "["+subst+"]"
+            if s == key:
+                return self.input_subst[subst](word)
+                return True
+        return False
+        
     def SubstituteReply(self, reply, event):
-        for key in self.substitutions.keys():
-            subst = self.substitutions[key]
+        for key in self.reply_subst.keys():
+            subst = self.reply_subst[key]
             if type(subst) != type(""):
                 subst = str(subst(event))
             reply = reply.replace("["+key+"]", subst)
         return reply
-
-    def GetReply(self, data):
-        data = self.ReplaceWords(data)
-        words = self.GetWords(data)
-        print data, words
-        for s_in, s_out in self.responses:
-            resp_list = s_in.split(" ")
-            if self.WordsInSequence(words, resp_list):
-                return s_out
-        return False
-
-
-    def GetWords(self, data):
-        return re.findall('[\w]+[\ ]*', data)
-
-    # Check wether the list of words, contains the
-    # words of a given sequence in the right order
-    def WordsInSequence(self, words, sequence, debug=0):
-        i = 0
-        print words, len(words), sequence, len(sequence)
-        for word in words:
-            word = word.strip()
-            if word == sequence[i]:
-                if i == len(sequence) - 1:
-                    return True
-                i += 1
-        return False
-
-    def ReplaceWords(self, data):
-        """Replace words with normalized equivalents"""
-        words = re.findall('[\w]*', data)
-        new = []
-        for word in words:
-            if word in self.replacements.keys():
-                word = self.replacements[word]
-            new.append(word)
-        return " ".join(new)
-
-
-
-
 
 module = {
     "class": UnknownCMD,
