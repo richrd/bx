@@ -131,7 +131,7 @@ class Module:
 class Command(Module):
     def __init__(self, bot, properties):
         Module.__init__(self, bot)
-        
+
         self.name = properties["name"]
         self.level = properties["level"]
         self.zone = properties["zone"]
@@ -257,8 +257,17 @@ class Listener(Module):
         pass
 
     def ExecuteEvent(self, event):
-        self.last_exec = time.time()
-        self.event(event)
+        if self.bot.config["avoid_cmd_crash"]:
+            try:
+                self.last_exec = time.time()
+                self.event(event)
+            except Exception,e:
+                # win.Privmsg("failed to run:"+str(e))
+                print traceback.format_exc()
+                print sys.exc_info()[0]
+        else:
+            self.last_exec = time.time()
+            self.event(event)
 
 # Hybrid class
 class Hybrid(Command, Listener):
