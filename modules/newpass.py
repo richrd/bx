@@ -6,8 +6,8 @@ class NewPass(Command):
     Usage: newpass oldpassword newpassword newpassword
     """
     def run(self,win,user,data,caller=None):
-        args = self.args
-        if not args or len(args)<3:
+        args = Args(data)
+        if len(args) < 3:
             win.Send("Usage: newpass oldpassword newpassword newpassword")
             return False
 
@@ -29,5 +29,5 @@ module = {
     "class": NewPass,
     "type": MOD_COMMAND,
     "level": 0,
-    "zone":IRC_ZONE_QUERY,
+    "zone": IRC_ZONE_QUERY,
 }
