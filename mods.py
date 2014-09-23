@@ -3,6 +3,8 @@
 
 Loader for commands and listeners.
 
+TODO:
+* Refactor<3
 """
 
 import os
@@ -30,11 +32,19 @@ import re
 def LoadAll():
     dirlist = os.listdir("modules/")
     modules = {}
+
+    writedocs = True
+    docs = []
+
     for item in dirlist:
         module = LoadSingle(item)
         if module:
             name = module[0]
             mod = module[1]
+
+            if "__doc__" in dir(mod["class"]):
+                docs.append((name, mod["class"].__doc__))
+
 
             mod["name"] = name
             
@@ -51,6 +61,18 @@ def LoadAll():
                 mod["zone"] = IRC_ZONE_BOTH
 
             modules[module[0]] = module[1]
+
+    if writedocs:
+        docs.sort()
+        s = ""
+        for doc in docs:
+            s += "*  " + doc[0] + "\n"
+            s += "   > " + doc[1]
+            s += "\n\n"
+        f = open("mod_docs.txt","w")
+        f.write(s)
+        f.close()
+
     return modules
 
 def LoadSingle(filename):
