@@ -76,6 +76,8 @@ def LoadAll():
     return modules
 
 def LoadSingle(filename):
+    if filename[0] == ".":
+        return False
     parts = filename.split(".")
     if len(parts) < 2: return False
     name = parts[0]
