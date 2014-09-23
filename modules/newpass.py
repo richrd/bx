@@ -5,7 +5,7 @@ class NewPass(Command):
 
     Usage: newpass oldpassword newpassword newpassword
     """
-    def run(self,win,user,data,caller=None):
+    def run(self, win, user, data, caller=None):
         args = Args(data)
         if len(args) < 3:
             win.Send("Usage: newpass oldpassword newpassword newpassword")
