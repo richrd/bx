@@ -710,6 +710,9 @@ class IRCClient:
         else:
             return None
 
+    def DropSendBuffer(self):
+        self.send_buffer = []
+
     #
     # Start & Maintain Connection
     #
