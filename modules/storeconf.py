@@ -1,7 +1,7 @@
 from mod_base import*
 
 class StoreConf(Command):
-    """Store configuration"""
+    """Store configuration."""
     def run(self, win, user, data, caller=None):
         if self.bot.config.Store():
             win.Send("stored config")

@@ -1,7 +1,10 @@
 from mod_base import*
 
 class Auth(Command):
-    """Identify yourself with the bot (login). Usage: auth <user> <pass>"""
+    """Identify yourself with the bot (login).
+
+    Usage: auth user pass
+    """
     def run(self, win, user, data, caller=None):
         if user.IsAuthed():
             win.Send("you've already authed")

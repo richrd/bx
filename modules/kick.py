@@ -1,7 +1,10 @@
 from mod_base import *
 
 class Kick(Command):
-    """Kick a user off a channel. Usage: kick [#channel] nick"""
+    """Kick a user off a channel.
+
+    Usage: kick [#channel] nick
+    """
 
     def run(self, win, user, data, caller=None):
         args = Args(data)

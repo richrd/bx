@@ -6,6 +6,7 @@ class Nick(Command):
         args = Args(data)
         if len(args) == 1:
             self.bot.me.Nick(args[0])
+            self.bot.config["nicks"] = [args[0]]
         else:
             win.Privmsg("nick can't contain spaces")
             return False

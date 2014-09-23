@@ -1,6 +1,7 @@
 from mod_base import*
 
 class AutoChanMode(Listener):
+    """Automatically manage channel modes according to config."""
     def init(self):
         self.events = [
                         IRC_EVT_CHAN_USER_MODE_CHANGE,

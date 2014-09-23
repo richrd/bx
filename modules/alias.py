@@ -1,7 +1,10 @@
 from mod_base import *
 
 class Alias(Command):
-    """Defines a new command alias. Usage: alias new_name command."""
+    """Defines a new command alias.
+
+    Usage: alias new_name command
+    """
 
     def run(self, win, user, data, caller=None):
         args = Args(data)

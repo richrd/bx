@@ -1,7 +1,10 @@
 from mod_base import*
 
 class NewPass(Command):
-    """Change your password. Usage: newpass oldpassword newpassword newpassword"""
+    """Change your password.
+
+    Usage: newpass oldpassword newpassword newpassword
+    """
     def run(self,win,user,data,caller=None):
         args = self.args
         if not args or len(args)<3:
@@ -12,12 +15,10 @@ class NewPass(Command):
             win.Send("you've not logged in")
             return False
 
-        oldpass = args[0]
-        pass1 = args[1]
-        pass2 = args[2]
+        oldpass, pass1, pass2 = args[0:3]
 
         if pass1 == pass2:
-            if self.config.ChangeAccountPass(user.account["name"],oldpass,pass1):
+            if self.config.ChangeAccountPass(user.account["name"], oldpass, pass1):
                 win.Send("password changed!")
             else:
                 win.Send("failed to change password! make sure your old password is correct.")

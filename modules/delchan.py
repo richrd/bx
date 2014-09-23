@@ -1,7 +1,7 @@
 from mod_base import*
 
 class DelChan(Command):
-    """Change the nick of the bot."""
+    """Remove a channel from the autojoin list."""
     def run(self, win, user, data, caller=None):
         args = Args(data)
         if args.Empty():

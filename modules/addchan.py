@@ -1,7 +1,7 @@
 from mod_base import*
 
 class AddChan(Command):
-    """Change the nick of the bot."""
+    """Add a channel to the autojoin list."""
     def run(self, win, user, data, caller=None):
         args = Args(data)
         if args.Empty():

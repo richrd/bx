@@ -1,7 +1,10 @@
 from mod_base import*
 
 class Wtf(Command):
-    """Show definitions for common acronyms. Usage: wtf acronym."""
+    """Show definitions for common acronyms.
+
+    Usage: wtf acronym
+    """
 
     def init(self):
         self.acronyms = {

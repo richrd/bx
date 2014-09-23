@@ -1,7 +1,10 @@
 from mod_base import*
 
 class AddAccount(Command):
-    """Create a new account. Usage: addaccount name password password"""
+    """Create a new account.
+
+    Usage: addaccount name password password
+    """
     def run(self, win, user, data, caller=None):
         args = self.args
         if len(args) < 3:

@@ -1,7 +1,10 @@
 from mod_base import *
 
 class Help(Command):
-    """Provide basic instructions on using the bot."""
+    """Provide basic instructions on using the bot.
+    
+    Usage: help [module]
+    """
 
     def run(self, win, user, data, caller=None):
         """Display information about a specific command."""

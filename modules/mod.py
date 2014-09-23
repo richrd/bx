@@ -1,7 +1,11 @@
 from mod_base import*
 
 class Mod(Command):
-    """View or modify enabled modules (commands & listeners)."""
+    """View or modify enabled modules (commands & listeners).
+
+    Usage: mod [-/+]module_name
+    e.g. prefix module name with - or + for disable or enable
+    """
     def run(self, win, user, data, caller=None):
         args = Args(data)
         if len(args) == 0:
@@ -27,5 +31,5 @@ module = {
     "class": Mod,
     "type": MOD_COMMAND,
     "level": 5,
-    "zone":IRC_ZONE_BOTH
+    "zone": IRC_ZONE_BOTH
 }
