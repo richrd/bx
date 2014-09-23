@@ -28,18 +28,27 @@ Modular Python IRC bot made from scratch.
 * Module API reference
 
 ### Features
-* Implement ignoring users that haven't authed
-* Commands
+* Core
+  * Implement broadcast channels, for sending out notifications
+  * Make console output sane and readable
+  * Implement ignoring users that haven't authed
+* Modules
   * Change module level
   * Change user level
   * Bot host status information
   * Command for taking photos and uploading them to a server
   * Ignore and unignore users
-
+  * Broadcast text or command output on intervals or events
 * PyS60-specific functionality
 
+### Protocol
+* Implement hooks for
+  * 042 RPL_YOURID
+  * 265 RPL_LOCALUSERS
+  * 266 RPL_GLOBALUSERS
 
-### Module List
+
+## Module List
 *   addaccount
     > Create a new account.
 
