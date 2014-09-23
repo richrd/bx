@@ -30,7 +30,6 @@ class Context:
         self.words = new
 
     def GetWords(self, data):
-        # words = re.findall('[\w]+[\ ]*', data)
         words = re.findall('[\#\w\-]*', data)
         words = map(lambda s:s.strip(), words)
         words = [word for word in words if word != ""]
@@ -218,9 +217,7 @@ class UnknownCMD(Listener):
         return matched
 
     def Match(self, context):
-        print "Match"
         context.ReplaceWords(self.replacements)
-        print "CTX:WORDS:",context.words
         for data_in, data_out in self.responses:
             words_in = data_in.split(" ")
             if self.WordsInSequence(context, words_in):
