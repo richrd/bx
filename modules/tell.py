@@ -1,8 +1,9 @@
 from mod_base import*
 
-class Tell(Command):
+class Tell(Command, Listener):
     """Send a message to a user when they come online. Usage: tell <nick> <message>"""
     def init(self):
+        self.events = [IRC_EVT_CHAN_JOIN]
         self.queue = {}
 
     def run(self, win, user, data, caller=None):
@@ -14,10 +15,13 @@ class Tell(Command):
         self.AddTell(user, args[0], args.Range(1))
         win.Send("Added message")
         return True
+        
+    def event(self, event):
+        self.OnOnline(event.user)
 
     def AddTell(self, user, search, message):
         arr = [search, time_stamp_short() + " <" + user.GetNick() + "> " + message]
-        self.queue[time.time()]=arr
+        self.queue[time.time()] = arr
 
     def DoTell(self, user, key):
         entry = self.queue[key]
@@ -35,7 +39,7 @@ class Tell(Command):
 
 module = {
     "class": Tell,
-    "type": MOD_COMMAND,
+    "type": MOD_BOTH,
     "level": 2,
     "zone":IRC_ZONE_BOTH
 }

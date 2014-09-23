@@ -33,5 +33,7 @@ IRC_EVT_CHAN_USER_MODE_CHANGE = "chanusermodechng"
 
 # Bot specific
 IRC_EVT_UNKNOWN_CMD = "unknowncmd"
+
 MOD_COMMAND = 1
 MOD_LISTENER = 2
+MOD_BOTH = 3

@@ -124,12 +124,16 @@ class IRCBot(irc.IRCClient):
         modules = mods.modules
 
         for name in modules.keys():
-            if not name in use: continue
+            if not name in use:
+                continue
             mod = modules[name]
             mod = self.config.ApplyModConfig(mod)
             if mod["type"] == MOD_COMMAND:
                 self.commands[name] = mod
             if mod["type"] == MOD_LISTENER:
+                self.listeners[name] = mod
+            if mod["type"] == MOD_BOTH:
+                self.commands[name] = mod
                 self.listeners[name] = mod
                 self.RunListener(name)
             
