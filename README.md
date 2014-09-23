@@ -32,6 +32,9 @@ Modular Python IRC bot made from scratch.
   * Implement broadcast channels, for sending out notifications
   * Make console output sane and readable
   * Implement ignoring users that haven't authed
+  * Better config grouping
+  * Multi server support?
+  * Data store for modules
 * Modules
   * Change module level
   * Change user level
@@ -39,6 +42,7 @@ Modular Python IRC bot made from scratch.
   * Command for taking photos and uploading them to a server
   * Ignore and unignore users
   * Broadcast text or command output on intervals or events
+  * Add github commit notifier
 * PyS60-specific functionality
 
 ### Protocol
