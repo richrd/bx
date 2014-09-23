@@ -30,6 +30,7 @@ IRC_EVT_MSG = "msg"
 IRC_EVT_PRIVMSG = "privmsg"
 IRC_EVT_CHAN_MODE_CHANGE = "chanmodechng"
 IRC_EVT_CHAN_USER_MODE_CHANGE = "chanusermodechng"
+IRC_EVT_INTERVAL = "interval"
 
 # Bot specific
 IRC_EVT_UNKNOWN_CMD = "unknowncmd"

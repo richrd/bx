@@ -134,7 +134,6 @@ class IRCBot(irc.IRCClient):
                 self.listeners[name] = mod
                 self.RunListener(name)
             if mod["type"] == MOD_BOTH:
-                self.commands[name] = mod
                 self.listeners[name] = mod
                 self.RunListener(name)
             
@@ -151,6 +150,19 @@ class IRCBot(irc.IRCClient):
         self.LoadModules()
         return True
 
+    def EnableModule(self, name):
+        if not name in mods.modules.keys():
+            return False
+        self.config.EnableMod(name)
+        if name in self.listeners.keys():
+            self.RunListener(name)
+
+    def DisableModule(self, name):
+        if not name in mods.modules.keys():
+            return False
+        self.config.DisableMod(name)
+        if name in self.listeners_cache.keys():
+            del self.listeners_cache[name]
 
     #
     #   Run commands and events
@@ -217,6 +229,8 @@ class IRCBot(irc.IRCClient):
     def RunListener(self, name):
         listener = self.listeners[name]
         instance = listener["class"](self, listener)
+        if listener["type"] == MOD_BOTH:
+            self.commands_cache[name] = instance
         self.listeners_cache[name] = instance
         return instance.init()
 
@@ -305,6 +319,16 @@ class IRCBot(irc.IRCClient):
     #   Events
     #
         
+    def OnLoop(self):
+        for listener in self.listeners_cache.keys():
+            lstn = self.listeners_cache[listener]
+            if IRC_EVT_INTERVAL in lstn.events:
+                if not lstn.last_exec:
+                    lstn.ExecuteEvent(Event(IRC_EVT_INTERVAL))
+                elif time.time()-lstn.last_exec > lstn.interval:
+                    lstn.ExecuteEvent(Event(IRC_EVT_INTERVAL))
+                    
+
     def OnClientLog(self, line): # Route irc client class logging to BotLog
         pass
         # self.BotLog(line)

@@ -13,17 +13,17 @@ class Mod(Command):
             win.Send("to add or remove, use +/-modulename")
             return
 
-        val = args[0]
+        val = args[0].lower()
         if val[0] == "-":
             val = val[1:]
-            self.bot.config.DisableMod(val)
+            self.bot.DisableModule(val)
             self.bot.ReloadModules()
             win.Send("disabled module '" + val + "'")
 
         else:
             if val[0] == "+":
                 val = val[1:]
-            self.bot.config.EnableMod(val)
+            self.bot.EnableModule(val)
             self.bot.ReloadModules()
             win.Send("enabled module '" + val + "'")
 

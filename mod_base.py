@@ -121,6 +121,7 @@ class Module:
     def __init__(self, bot):
         self.bot = bot
         self.debug = 1
+        self.last_exec = None
 
     def init(self):
         pass
@@ -129,7 +130,7 @@ class Module:
 # Baseclass for commands
 class Command(Module):
     def __init__(self, bot, properties):
-        Module.__init__(self,bot)
+        Module.__init__(self, bot)
         
         self.name = properties["name"]
         self.level = properties["level"]
@@ -244,7 +245,6 @@ class Command(Module):
 class Listener(Module):
     def __init__(self, bot, properties):
         Module.__init__(self, bot)
-
         self.name = properties["name"]
         self.zone = properties["zone"]
 
@@ -252,8 +252,16 @@ class Listener(Module):
         self.last_exec = None
 
         self.events = []
-        self.init()
 
     def event(self, event):
         pass
 
+    def ExecuteEvent(self, event):
+        self.last_exec = time.time()
+        self.event(event)
+
+# Hybrid class
+class Hybrid(Command, Listener):
+    def __init__(self, bot, properties):
+        Command.__init__(self, bot, properties)
+        Listener.__init__(self, bot, properties)
