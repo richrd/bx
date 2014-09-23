@@ -33,7 +33,7 @@ def LoadAll():
     dirlist = os.listdir("modules/")
     modules = {}
 
-    writedocs = True
+    writedocs = False
     docs = []
 
     for item in dirlist:
