@@ -55,8 +55,8 @@ class UnknownCMD(Listener):
     """Intercept unknown commands and try to respond. Experimental!"""
     def init(self):
         self.events = [IRC_EVT_UNKNOWN_CMD]
-        self.happy_smileys = [":D",":)",":>","=)","=>","xD",":P","=P","=]",":]","=}",":}","(:"]
-        self.sad_smileys = [":(","=(",":[","=[",":{","={",":/",":\\"]
+        self.happy_smileys = [":-)", ":)", ":D", ":>", "=)", "xD", ":P", "=P", "=]", ":]", "=}", ":}", "(:", ":3"]
+        self.sad_smileys = [":(", ";(", "=(", ":[", ";[", "=[", ":{", "={", ":/", ":\\", ";_;"]
         
         self.replacements = {
             # Questions
@@ -73,11 +73,14 @@ class UnknownCMD(Listener):
             "hows": "how is",
             "abt": "about",
 
+            "gimme": "give me",
+
             # Abbreviations
             "r": "are",
             "u": "you",
             "yo": "you",
             "ur": "your",
+            "youre": "you are",
             "doin": "doing",
             "kool'": "cool",
             "livin": "living",
@@ -88,7 +91,6 @@ class UnknownCMD(Listener):
             "m / f": "male or female",
             "f / m": "male or female",
             "wbu": "what about you",
-            "fack": "fuck",
             "frm": "from",
             "m or f": "male of female",
             "f or m": "male of female",
@@ -110,52 +112,62 @@ class UnknownCMD(Listener):
         }
 
         self.responses = [
-            ("what your name", "My name is [nick]"),
+            ("what your name", "My name is [my_nick]"),
             ("what are you", "I'm an IRC bot. What about you, mortal?"),
             ("what you do", "say help or cmds to know what I do"),
             ("what commands", "you can use the following commands: [command_names]"),
             ("what time", "the time is [current_time]"),
             ("who are you", [
-                            "I'm [nick]",
-                            "My name is [nick]",
-                            ]
-                ),
+                "I'm [my_nick]",
+                "My name is [my_nick]",
+            ]),
             ("who you trust", "I trust [trusted_users]"),
+            ("who is [my_nick]", "hey thats me [happy_smiley]"),
             ("who is [known_nick]", "[known_nick] is my friend"),
             ("who is", "I don't know"),
             ("been to [unknown_channel]", "No i haven't"),
             ("been to [known_channel]", "Sure, [known_channel] is one of my favourite places"),
-            ("what about [known_channel]", "I like it"),
+            ("what about [known_channel]", "I like it [happy_smiley]"),
             ("why are you", "I like to be"),
             ("are you friend", "yeah, ofcourse I am"),
-            ("are you bot", "yep, call me [nick]"),
+            ("are you at [known_channel]", "yeah, I am"),
+            ("are you bot", "yep, call me [my_nick]"),
             ("are you on [known_channel]", "Yeah, I'm on [known_channel]"),
             ("are you on [unknown_channel]", "No, I'm not there"),
+            ("you listening", "yep, all the time [happy_smiley]"),
             ("where you live", "I live at [source_link]"),
+            ("how old you", "I'm eternal and immortal, but i've been here since [time_connected]"),
+            ("how many channels on", "I'm on [channel_count] channels"),
             ("where you", "I'm at [channel_names]"),
             ("where we", "we're at [current_win]"),
-            ("how old you", "I'm eternal and immortal, but i've been here since [time_connected]"),
+            ("give me", "sorry, I can't"),
             ("channels you on", "I'm hanging out on [channel_names]"),
             ("many users", "I know [user_count] users"),
             ("many channels", "I know [channel_count] channels"),
             ("am i vip", "[user_authed]"),
-            ("like me", "me is liek a bot."),
+            ("like me", ["ofcourse.", "sure [happy_smiley]", "yeah [user_nick]"]),
             ("my level", "your level is [user_level]"),
             ("trust me", "[trust]"),
             ("do trust [authed_nick]", "ofcourse I trust [authed_nick]"),
+            ("thanks", "no problem [user_nick] [happy_smiley]"),
+            ("thank you", "your welcome [happy_smiley]"),
+            ("sorry", "oh thats ok [user_nick]"),
             ("what up", "just stalking..."),
+            ("nope", "not nope!"),
             ("use you", "say help and I'll tell you"),
-            ("hello", "hi [user_nick]"),
-            ("hi", "greetings [user_nick]"),
+            ("hate you", "[user_nick] makes me sad [sad_smiley]"),
+            ("you stupid", "sry im not so smart [sad_smiley]"),
+            ("hello", "hi [user_nick], how are you?"),
+            ("hi", "greetings [user_nick] [happy_smiley] can I help you?"),
             ("you", "me? dunno."),
             ("me", "i don't know about you"),
-            ("nom", "so munchy, so nom"),
+            ("nom", "so munchy, so nom [happy_smiley]"),
             ("doge", "yeah me so doge"),
             ("if", "maybe!"),
             ("here", "or maybe there? or somewhere else..."),
             ("what", "no idea"),
             ("party", "party so hard!"),
-            ("dafuq", "dafuq you back")
+            ("dafuq", "dafuq you back"),
         ]
 
         # Substitutions for replys
@@ -166,7 +178,7 @@ class UnknownCMD(Listener):
             "channel_names": lambda event: ", ".join([win.name for win in self.bot.windows if win.zone == IRC_ZONE_CHANNEL]),
             "command_names": lambda event: ", ".join(self.bot.GetCommandsByPermission(event.user.GetPermission())),
             "current_win": lambda event: event.win.GetName(),
-            "nick": lambda event: self.bot.me.GetNick(),
+            "my_nick": lambda event: self.bot.me.GetNick(),
             "user_nick": lambda event: event.user.GetNick(),
             "user_level": lambda event: event.user.GetPermission(),
             "user_authed": lambda event: "yes" if event.user.IsAuthed() else "no",
@@ -174,6 +186,8 @@ class UnknownCMD(Listener):
             "current_time": lambda event: time_stamp_short(),
             "source_link": "https://github.com/richrd/bx",
             "trusted_users": lambda event: ", ".join([user.nick for user in self.bot.users if user.IsAuthed() and user.IsOnline()] or "nobody"),
+            "happy_smiley": lambda event: random.choice(self.happy_smileys),
+            "sad_smiley": lambda event: random.choice(self.sad_smileys),
         }
 
         # Substitution tests for inputs
@@ -182,6 +196,7 @@ class UnknownCMD(Listener):
             "authed_nick": lambda word: word in [user.GetNick() for user in self.bot.users if user.IsAuthed()],
             "known_channel": lambda word: word in [win.name for win in self.bot.windows if win.zone == IRC_ZONE_CHANNEL],
             "unknown_channel": lambda word: self.bot.IsChannelName(word) and (not word in [win.GetName() for win in self.bot.windows if win.zone == IRC_ZONE_CHANNEL]),
+            "my_nick": lambda word: word == self.bot.me.GetNick(),
         }
 
     def event(self, event):
