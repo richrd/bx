@@ -155,15 +155,15 @@ class Command(Module):
         return argobj
 
     def GetMan(self):
-        try:
-            alias_str = ""
-            aliases = self.bot.config.GetAliases(self.name)
-            if aliases:
-                alias_str = " (" + ", ".join(aliases) + ")"
-            man = self.name + alias_str + " [" + str(self.level) + "]: " + self.__doc__
-            return man
-        except:
-            return "sry, no description for that command"
+        docstr = "-no description-"
+        if "__doc__" in dir(self):
+            docstr = " ".join(map(lambda s: s.strip(), self.__doc__.split("\n")))
+        alias_str = ""
+        aliases = self.bot.config.GetAliases(self.name)
+        if aliases:
+            alias_str = " (" + ", ".join(aliases) + ")"
+        man = self.name + alias_str + " [" + str(self.level) + "]: " + docstr
+        return man
     
     def IsAllowedWin(self, win):
         if self.zone == IRC_ZONE_BOTH:
