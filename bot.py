@@ -132,6 +132,7 @@ class IRCBot(irc.IRCClient):
                 self.commands[name] = mod
             if mod["type"] == MOD_LISTENER:
                 self.listeners[name] = mod
+                self.RunListener(name)
             if mod["type"] == MOD_BOTH:
                 self.commands[name] = mod
                 self.listeners[name] = mod
@@ -140,6 +141,7 @@ class IRCBot(irc.IRCClient):
     def ReloadModules(self):
         try:
             import bot
+            reload(__import__("mod_base"))
             reload(mods)
         except Exception,e:
             print traceback.format_exc()
@@ -216,7 +218,7 @@ class IRCBot(irc.IRCClient):
         listener = self.listeners[name]
         instance = listener["class"](self, listener)
         self.listeners_cache[name] = instance
-        instance.init()
+        return instance.init()
 
     def HandleEvent(self, event):
         handled = False
