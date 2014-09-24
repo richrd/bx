@@ -23,18 +23,15 @@ class GitHubNotifier(Listener):
     def FindNew(self, old, new):
         old_commits = self.GetCommits(old)
         new_commits = self.GetCommits(new)
-        print old_commits
         for commit in old_commits:
             if commit in new_commits:
                 new_commits.pop(new_commits.index(commit))
-        print "new_commits", new_commits
         return new_commits
 
     def GetCommits(self, data):
         commits = []
         for item in data:
             if "commits" in item["payload"].keys():
-                print item, item.keys()
                 for commit in item["payload"]["commits"]:
                     commits.append(commit["message"])
         return commits
@@ -64,5 +61,5 @@ module = {
     "class": GitHubNotifier,
     "type": MOD_LISTENER,
     "zone": IRC_ZONE_CHANNEL,
-    "interval": 60,
+    "interval": 60*10,
 }
