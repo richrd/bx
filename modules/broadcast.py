@@ -19,24 +19,12 @@ class Broadcast(Hybrid):
             elif time.time()-broadcast["last_exec"] > broadcast["interval"]:
                 self.RunBroadcast(broadcast)
 
-    def RunBroadcast(self, broadcast):
-        broadcast["last_exec"] = time.time()
-        if broadcast["cmd"][0] != ":":
-            cmd = self.bot.GetCommand(broadcast["cmd"])
-            for target in broadcast["targets"]:
-                win = self.bot.GetWindow(target)
-                cmd.run(win, self.bot.me, broadcast["cmd_args"])
-        else:
-            for target in broadcast["targets"]:
-                win = self.bot.GetWindow(target)
-                msg = broadcast["cmd"][1:]+" "+broadcast["cmd_args"]
-                win.Send(msg)
-
     def run(self, win, user, data, caller=None):
         args = Args(data)
         hint = "provide [+-]action, targets, interval and command"
         if args.Empty():
             win.Send(hint)
+            return False
 
         name = args[0]
         if name[0] == "-":
@@ -75,6 +63,19 @@ class Broadcast(Hybrid):
         self.AddBroadcast(name, targets, interval, cmd, cmd_args)
         win.Send("broadcast added")
         return True
+
+    def RunBroadcast(self, broadcast):
+        broadcast["last_exec"] = time.time()
+        if broadcast["cmd"][0] != ":":
+            cmd = self.bot.GetCommand(broadcast["cmd"])
+            for target in broadcast["targets"]:
+                win = self.bot.GetWindow(target)
+                cmd.run(win, self.bot.me, broadcast["cmd_args"])
+        else:
+            for target in broadcast["targets"]:
+                win = self.bot.GetWindow(target)
+                msg = broadcast["cmd"][1:]+" "+broadcast["cmd_args"]
+                win.Send(msg)
 
     def AddBroadcast(self, name, targets, interval, cmd, cmd_args):
         broadcast = {
