@@ -52,7 +52,7 @@ class GitHubNotifier(Listener):
         for win in self.bot.windows:
             if win.zone == IRC_ZONE_CHANNEL:
                 for item in new_items:
-                    win.Send(self.ItemStr(item))
+                    win.Send("New Git commit: "+item)
 
     def event(self, event):
         new_items = self.GetNewCommits()
