@@ -1,10 +1,13 @@
 from mod_base import *
 
 class Broadcast(Hybrid):
-    """Broadcast messages or command out put to channels and/or users.
+    """Broadcast messages or command out put to channels and/or users (targets).
 
-    Usage: broadcast [+-]name [channel,channel,...] [command] [args]
+    Usage: broadcast [+-]name target[,target,...] interval command [args]
+    Usage: broadcast [+-]name target[,target,...] interval :message
+    Usage: broadcast +hello #chan1,#chan2 1h :hello world!
     """
+    
     def init(self):
         self.events = [IRC_EVT_INTERVAL]
         self.broadcasts = {}
@@ -17,17 +20,12 @@ class Broadcast(Hybrid):
             elif time.time()-broadcast["last_exec"] > broadcast["interval"]:
                 self.RunBroadcast(broadcast)
 
-    def RunBroadcast(self, broadcast):
-        broadcast["last_exec"] = time.time()
-        cmd = self.bot.GetCommand(broadcast["cmd"])
-        win = self.bot.GetWindow(broadcast["targets"])
-        cmd.run(win, self.bot.me, broadcast["cmd_args"])
-
     def run(self, win, user, data, caller=None):
         args = Args(data)
         hint = "provide [+-]action, targets, interval and command"
         if args.Empty():
             win.Send(hint)
+            return False
 
         name = args[0]
         if name[0] == "-":
@@ -36,15 +34,14 @@ class Broadcast(Hybrid):
                 return True
             win.Send("no broadcast with that name")
             return False
-
-        if name[0] == "+":
+        elif name[0] == "+":
             name = name[1:]
 
         if len(args) < 4:
             win.Send(hint)
             return False
 
-        targets = args[1]
+        targets = args[1].split(",")
         interval = str_to_seconds(args[2])
         if not interval:
             win.Send("invalid interval")
@@ -55,18 +52,32 @@ class Broadcast(Hybrid):
         if len(args) > 3:
             cmd_args = args.Range(4)
 
-        command = self.bot.GetCommand(cmd)
-        if not command:
-            win.Send("cmd does not exists")
-            return False
+        if cmd[0] != ":":
+            command = self.bot.GetCommand(cmd)
+            if not command:
+                win.Send("cmd does not exists")
+                return False
 
-        if command.level > user.GetPermission():
-            win.Send("sry, you can't add that command")
-            return False
+            if command.level > user.GetPermission():
+                win.Send("sry, you can't add that command")
+                return False
 
         self.AddBroadcast(name, targets, interval, cmd, cmd_args)
         win.Send("broadcast added")
         return True
+
+    def RunBroadcast(self, broadcast):
+        broadcast["last_exec"] = time.time()
+        if broadcast["cmd"][0] != ":":
+            cmd = self.bot.GetCommand(broadcast["cmd"])
+            for target in broadcast["targets"]:
+                win = self.bot.GetWindow(target)
+                cmd.run(win, self.bot.me, broadcast["cmd_args"])
+        else:
+            for target in broadcast["targets"]:
+                win = self.bot.GetWindow(target)
+                msg = broadcast["cmd"][1:]+" "+broadcast["cmd_args"]
+                win.Send(msg)
 
     def AddBroadcast(self, name, targets, interval, cmd, cmd_args):
         broadcast = {
@@ -90,4 +101,5 @@ module = {
     "level": 2,
     "zone": IRC_ZONE_BOTH,
     "interval": 1,
+    "aliases": ["bc"],
 }

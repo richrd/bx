@@ -136,6 +136,7 @@ class IRCBot(irc.IRCClient):
                 self.RunListener(name)
             if mod["type"] == MOD_BOTH:
                 self.listeners[name] = mod
+                self.commands[name] = mod
                 self.RunListener(name)
             
     def ReloadModules(self):
@@ -338,7 +339,6 @@ class IRCBot(irc.IRCClient):
                 elif time.time()-lstn.last_exec > lstn.interval:
                     lstn.ExecuteEvent(Event(IRC_EVT_INTERVAL))
                     
-
     def OnClientLog(self, line): # Route irc client class logging to BotLog
         pass
         # self.BotLog(line)
@@ -349,22 +349,23 @@ class IRCBot(irc.IRCClient):
         self.DebugLog("OnConnected()")
         self.DoIntroduce(self.me.nick,self.config["ident"],self.config["realname"])
         
+    def OnReady(self):
+        self.BotLog("OnReady()")
+        self.throttled = 0
+        self.HandleEvent(Event(IRC_EVT_READY))
+        self.DoAutoJoin()
+
     def OnNickInUse(self, nick, reason):
         self.BotLog("OnNickInUse(", nick, reason, ")")
         self.me.TryNewNick()
         
     def OnUserHostname(self, nick, hostname):
-        #self.BotLog("OnUserHostname(",nick,",",hostname,")")
         self.GetUser(nick).SetHostname(hostname)
-        pass
 
     def OnWhoisHostname(self, nick, hostname):
-        #self.BotLog("OnWhoisHostname(",nick,",",hostname,")")
         self.GetUser(nick).SetHostname(hostname)
-        pass
         
     def OnUserNickChange(self, nick, new_nick):
-        #self.BotLog("OnUserNickChange(",nick,new_nick,")")
         self.GetUser(nick).OnNickChanged(nick,new_nick)
         
     def OnUserQuit(self, nick, reason):
@@ -375,15 +376,7 @@ class IRCBot(irc.IRCClient):
             if win.zone == IRC_ZONE_CHANNEL:
                 if win.HasUser(user):
                     win.OnQuit(user,reason)
-                
 
-        
-        
-    def OnReady(self):
-        self.BotLog("OnReady()")
-        self.throttled = 0
-        self.HandleEvent(Event(IRC_EVT_READY))
-        self.DoAutoJoin()
         
     def OnPrivmsg(self, by, to, msg):
         user = self.GetUser(by)
@@ -408,11 +401,8 @@ class IRCBot(irc.IRCClient):
         win.OnIJoined()
         win.AddUser(self.me)
 
-        
-        
     def OnChannelHasUsers(self, chan, users):
         """ Called when the server indicates which users are present on a channel. """
-        #self.DebugLog("OnChannelHasUsders(",chan,",",users,")")
         self.GetWindow(chan).OnHasUsers(users)
         
     def OnChannelModesChanged(self, chan, modes, nick):
@@ -430,7 +420,6 @@ class IRCBot(irc.IRCClient):
     def OnChannelJoin(self, chan, nick):
         win = self.GetWindow(chan)
         win.OnJoin(self.GetUser(nick))
-        #self.DebugLog("OnChannelJoin(",chan,nick,")")
 
     def OnChannelPart(self, chan, nick, reason):
         self.DebugLog("OnChannelPart(", chan, nick, reason, ")")
@@ -440,15 +429,12 @@ class IRCBot(irc.IRCClient):
         self.GetWindow(chan).OnKick(self.GetUser(who), self.GetUser(nick), reason)
         
     def OnChannelTopicIs(self, chan, topic):
-        #self.DebugLog("OnChannelTopicIs(",chan,",",topic,")")
         self.GetWindow(chan).OnTopicIs(topic)
         
     def OnChannelTopicMeta(self, chan, nick, utime):
-        #self.DebugLog("OnChannelTopicMeta(",chan,",",nick,",",utime,")")
         self.GetWindow(chan).OnTopicMeta(nick, utime)
         
     def OnChannelTopicChanged(self, chan, by, topic):
-        #self.DebugLog("OnChannelTopicChanged(",chan,",",topic,",",by,")")
         user = self.GetUser(by)
         self.GetWindow(chan).OnTopicChanged(topic, user)
         
@@ -457,12 +443,12 @@ class IRCBot(irc.IRCClient):
         self.bot_running = 1
 
         self.BotLog("Run()","starting bot...")
-        self.SetHost(self.config["host"])
-        self.SetPort(self.config["port"])
+        self.SetHost(self.config["server"]["host"])
+        self.SetPort(self.config["server"]["port"])
         self.SetSendThrottling(self.config["send_throttle"])
         
         status = self.BotLoop()
-        self.BotLog("Run()","bot loop returned status",status)
+        self.BotLog("Run()","bot loop returned status", status)
         self.BotLog("Run()","terminated!")
         return status
 

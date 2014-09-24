@@ -32,8 +32,10 @@ class BotConfig:
     def __init__(self, filename = None):
         self.filename = filename
         self.config = {
-                "host":"irc.example.com",
-                "port":6667,
+                "server": {
+                    "host": "localhost",
+                    "port": 6667,
+                },
                 
                 "throttle_wait":400,     # how long to/ wait before reconnecting after throttle (too many clones)
                 "throttle_add":120,     # How many seconds to add after each consecutive throttle
