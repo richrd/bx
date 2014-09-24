@@ -16,29 +16,28 @@ class GitHubNotifier(Listener):
             return False
         else:
             new_data = self.GetData()
-            new_items = self.FindNew(self.api_data, new_data)
-
-            if not new_items:
-                return False
-
-            commits = []
-            for item in new_items:
-                messages = [commit["message"] for commit in item["payloads"]["commits"]]
-                commits += messages
+            commits = self.FindNew(self.api_data, new_data)
+            self.api_data = new_data
             return commits
 
     def FindNew(self, old, new):
-        old_ids = [item["id"] for item in old]
-        new_ids = [item["id"] for item in new]
-        for i in old_ids:
-            if i in new_ids:
-                del new_ids[new_ids.index(i)]
+        old_commits = self.GetCommits(old)
+        new_commits = self.GetCommits(new)
+        print old_commits
+        for commit in old_commits:
+            if commit in new_commits:
+                new_commits.pop(new_commits.index(commit))
+        return new_commits
 
-        final = []
-        for item in new:
-            if new["id"] in new_ids:
-                final.append(item)
-        return final
+    def GetCommits(self, data):
+        commits = []
+        for item in data:
+            if "commits" in item["payload"].keys():
+                print item, item.keys()
+                for commit in item["payload"]["commits"]:
+                    commits.append(commit["message"])
+        return commits
+
 
     def GetData(self):
         req = urllib2.Request(self.url)
