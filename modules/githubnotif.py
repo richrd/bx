@@ -27,6 +27,7 @@ class GitHubNotifier(Listener):
         for commit in old_commits:
             if commit in new_commits:
                 new_commits.pop(new_commits.index(commit))
+        print "new_commits", new_commits
         return new_commits
 
     def GetCommits(self, data):
