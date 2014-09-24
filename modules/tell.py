@@ -1,7 +1,10 @@
 from mod_base import*
 
 class Tell(Command, Listener):
-    """Send a message to a user when they come online. Usage: tell <nick> <message>"""
+    """Send a message to a user when they come online.
+
+    Usage: tell nick message
+    """
     def init(self):
         self.events = [IRC_EVT_CHAN_JOIN]
         self.queue = {}

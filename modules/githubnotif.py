@@ -3,7 +3,7 @@ import urllib2
 import json
 
 class GitHubNotifier(Listener):
-    """Sends notification of new github commits to all channels"""
+    """Sends notification of new github commits to all channels."""
     def init(self):
         self.events = [IRC_EVT_INTERVAL]
         self.url = "https://api.github.com/repos/richrd/bx/events"

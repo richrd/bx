@@ -66,8 +66,10 @@ def LoadAll():
         docs.sort()
         s = ""
         for doc in docs:
-            s += "*  " + doc[0] + "\n"
-            s += "   > " + doc[1]
+            s += "*   " + doc[0] + "\n"
+            parts = doc[1].split("\n")
+            lines = ["    > "+line.strip() for line in parts if line.strip()]
+            s += "\n".join(lines)
             s += "\n\n"
         f = open("mod_docs.txt","w")
         f.write(s)

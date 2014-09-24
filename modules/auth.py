@@ -1,9 +1,9 @@
 from mod_base import*
 
 class Auth(Command):
-    """Identify yourself with the bot (login).
+    """Identify yourself with the bot (login). Only works via private messages.
 
-    Usage: auth user pass
+    Usage: auth username password
     """
     def run(self, win, user, data, caller=None):
         if user.IsAuthed():

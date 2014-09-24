@@ -1,7 +1,7 @@
 from mod_base import*
 
 class Mod(Command):
-    """View or modify enabled modules (commands & listeners).
+    """Enable or disable modules (commands & listeners).
 
     Usage: mod [-/+]module_name
     e.g. prefix module name with - or + for disable or enable

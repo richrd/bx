@@ -55,27 +55,24 @@ Modular Python IRC bot made from scratch.
 ## Module List
 *   addaccount
     > Create a new account.
-
-    > Usage: addaccount name password password
+    > Usage: addaccount username password password
 
 *   addchan
     > Add a channel to the autojoin list.
 
 *   alias
     > Defines a new command alias.
-
     > Usage: alias new_name command
 
 *   auth
-    > Identify yourself with the bot (login).
-
-    > Usage: auth user pass
+    > Identify yourself with the bot (login). Only works via private messages.
+    > Usage: auth username password
 
 *   autochanmode
     > Automatically manage channel modes according to config.
 
 *   autoop
-    > Automatically give OP to authed users
+    > Automatically give OP to authed users.
 
 *   calc
     > Calculate math and python expressions. e.g. calc 3+4*6
@@ -101,6 +98,9 @@ Modular Python IRC bot made from scratch.
 *   die
     > Kill the bot.
 
+*   dropsend
+    > Clear the outgoing message buffer. Warning: removes all data queued for sending to the IRC server.
+
 *   evl
     > Evaluate a python expression.
 
@@ -110,9 +110,11 @@ Modular Python IRC bot made from scratch.
 *   gainop
     > Have the bot request OPs from QuakeNet (if channel has no OPs).
 
+*   githubnotif
+    > Sends notification of new github commits to all channels.
+
 *   help
     > Provide basic instructions on using the bot.
-
     > Usage: help [module]
 
 *   highlight
@@ -123,7 +125,6 @@ Modular Python IRC bot made from scratch.
 
 *   kick
     > Kick a user off a channel.
-
     > Usage: kick [#channel] nick
 
 *   logs
@@ -133,10 +134,8 @@ Modular Python IRC bot made from scratch.
     > View your permission level (or someone elses).
 
 *   mod
-    > View or modify enabled modules (commands & listeners).
-
+    > Enable or disable modules (commands & listeners).
     > Usage: mod [-/+]module_name
-    
     > e.g. prefix module name with - or + for disable or enable
 
 *   msg
@@ -147,7 +146,6 @@ Modular Python IRC bot made from scratch.
 
 *   newpass
     > Change your password.
-
     > Usage: newpass oldpassword newpassword newpassword
 
 *   nick
@@ -181,7 +179,8 @@ Modular Python IRC bot made from scratch.
     > Store configuration.
 
 *   tell
-    > Send a message to a user when they come online. Usage: tell <nick> <message>
+    > Send a message to a user when they come online.
+    > Usage: tell nick message
 
 *   topic
     > Change the channel topic. To add to the current topic, start your topic with a '+' symbol.
@@ -203,6 +202,5 @@ Modular Python IRC bot made from scratch.
 
 *   wtf
     > Show definitions for common acronyms.
-
     > Usage: wtf acronym
 
