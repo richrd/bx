@@ -134,5 +134,5 @@ module = {
     "class": Logs,
     "type": MOD_COMMAND,
     "level": 2,
-    "zone":IRC_ZONE_CHANNEL,
+    "zone":IRC_ZONE_BOTH,
 }
