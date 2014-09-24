@@ -119,6 +119,7 @@ class Args:
 # Baseclas for all modules
 class Module:
     def __init__(self, bot):
+        """Base class for modules."""
         self.bot = bot
         self.debug = 1
         self.last_exec = None
@@ -126,6 +127,17 @@ class Module:
     def init(self):
         pass
         
+
+    def GetMan(self):
+        docstr = "-no description-"
+        if "__doc__" in dir(self):
+            docstr = " ".join(map(lambda s: s.strip(), self.__doc__.split("\n")))
+        alias_str = ""
+        aliases = self.bot.config.GetAliases(self.name)
+        if aliases:
+            alias_str = " (" + ", ".join(aliases) + ")"
+        man = self.name + alias_str + " [" + str(self.level) + "]: " + docstr
+        return man
 
 # Baseclass for commands
 class Command(Module):
@@ -154,17 +166,6 @@ class Command(Module):
         data = data.strip()
         argobj = Args(data.split(" "))
         return argobj
-
-    def GetMan(self):
-        docstr = "-no description-"
-        if "__doc__" in dir(self):
-            docstr = " ".join(map(lambda s: s.strip(), self.__doc__.split("\n")))
-        alias_str = ""
-        aliases = self.bot.config.GetAliases(self.name)
-        if aliases:
-            alias_str = " (" + ", ".join(aliases) + ")"
-        man = self.name + alias_str + " [" + str(self.level) + "]: " + docstr
-        return man
     
     def IsAllowedWin(self, win):
         if self.zone == IRC_ZONE_BOTH:

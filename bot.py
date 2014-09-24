@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """
 Cross platform IRC Bot.
@@ -207,6 +208,15 @@ class IRCBot(irc.IRCClient):
             self.commands_cache[name] = instance
             instance.init()
             return instance
+        return False
+
+    def GetModule(self, name):
+        mod = self.GetCommand(name)
+        if mod:
+            return mod
+
+        if name in self.listeners.keys():
+            return self.listeners_cache[name]
         return False
         
     def GetCommandsByPermission(self, level = 0):
