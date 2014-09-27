@@ -34,7 +34,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
 
 ### Features
 * Core
-  * Implement broadcast channels, for sending out notifications
+  * Make module reloader skip modules with errors
   * Make console output sane and readable
   * Implement ignoring users that haven't authed
   * Better config grouping
