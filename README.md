@@ -2,18 +2,23 @@
 
 Modular Python IRC bot made from scratch.
 
+Come and talk to me at #bxbot @ QuakeNet :)
 
 ## Features
 * 40+ modules with general features including:
+  * Authentication with different userlevels
   * Auto op for trusted users
+  * Leave a message to an offline user
+  * Broadcast text or command output on to channels periodicly
+  * Channel logs, and log searching
+  * Higlight command to higlight everyone on a channel
+  * Channel mode enforcing
+  * Join and part commands
+  * Will answer simple questins
   * Nick changer
   * Calculator
-  * Leave a message to an offline user
   * Link title paster
-  * Channel mode enforcing
-  * Channel logs, and log searching
-  * Join and part commands
-  * Higlight command to higlight everyone on a channel
+  * 'wtf' for looking up acronyms
 * Integrated help available
 * Supports user accounts and access control
 * Simple to extend if you know Python
@@ -41,8 +46,8 @@ Modular Python IRC bot made from scratch.
   * Bot host status information
   * Command for taking photos and uploading them to a server
   * Ignore and unignore users
-  * Broadcast text or command output on intervals or events
   * Add github commit notifier
+  * Weather
 * PyS60-specific functionality
 
 ### Protocol
