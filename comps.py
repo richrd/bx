@@ -30,9 +30,11 @@ class Event:
     Stores events to facilitate passing events around easily
 
     """
-    def __init__(self, id, win=None, user=None, msg=None, modes=None, mode_oper=None, cmd=None, cmd_args=None, by=None):
+    # TODO: make this more manageable
+    def __init__(self, id, win=None, user=None, msg=None, modes=None, mode_oper=None, cmd=None, cmd_args=None, by=None, new_nick=None):
         self.time = time.time()
-        self.id = id
+        self.id = id #FIXME: rename to 'type'
+        self.type = id
         self.win = win
         self.user = user
         self.msg = msg
@@ -42,8 +44,8 @@ class Event:
 
         self.cmd = cmd
         self.cmd_args = cmd_args
-
         self.by = by
+        self.new_nick = new_nick
 
     def __str__(self):
         s = "Event("
@@ -145,6 +147,7 @@ class User:
         self.OnAction()
     
     def OnNickChanged(self, old, new):
+        self.bot.HandleEvent(Event(IRC_EVT_USER_NICK_CHANGE, user=self, new_nick=new))
         self.OnAction()
         self.DebugLog("OnNickChanged(", old, new, ")")
         self.nick = u"" + new

@@ -35,9 +35,9 @@ class IRCClient:
         self.port = port
 
         # User info defaults
-        self.def_nick = "ib2"
-        self.def_realname = "ib2"
-        self.def_ident = "ib2"
+        self.def_nick = "bx"
+        self.def_realname = "bx"
+        self.def_ident = "bx"
 
         # User info
         self.realname=None

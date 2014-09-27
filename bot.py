@@ -366,7 +366,7 @@ class IRCBot(irc.IRCClient):
         self.GetUser(nick).SetHostname(hostname)
         
     def OnUserNickChange(self, nick, new_nick):
-        self.GetUser(nick).OnNickChanged(nick,new_nick)
+        self.GetUser(nick).OnNickChanged(nick, new_nick)
         
     def OnUserQuit(self, nick, reason):
         self.BotLog("OnUserQuit(",nick,reason,")")
