@@ -92,14 +92,14 @@ def time_stamp_numeric(t=None):
     if t == None:t=time.time()
     return time.strftime("%d.%m.%y %H:%M", time.localtime(t))
     
-# # run a shell command
-# def run_shell_cmd(cmd):
-#     try:
-#         import commands
-#     except:
-#         return False
-#     output = commands.getoutput(cmd)
-#     return output
+# run a shell command
+def run_shell_cmd(cmd):
+    try:
+        import commands
+    except:
+        return False
+    output = commands.getoutput(cmd)
+    return output
         
 # check if string contains a word
 def has_word(s, w):

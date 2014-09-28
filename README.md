@@ -19,6 +19,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Calculator
   * Link title paster
   * 'wtf' for looking up acronyms
+  * Bot host status information
 * Integrated help available
 * Supports user accounts and access control
 * Simple to extend if you know Python
@@ -43,7 +44,6 @@ Come and talk to me at #bxbot @ QuakeNet :)
 * Modules
   * Change module level
   * Change user level
-  * Bot host status information
   * Command for taking photos and uploading them to a server
   * Ignore and unignore users
   * Add github commit notifier
