@@ -48,6 +48,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Ignore and unignore users
   * Add github commit notifier
   * Weather
+  * Auto rejoin (after kick etc)
 * PyS60-specific functionality
 
 ### Protocol
