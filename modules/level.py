@@ -2,7 +2,7 @@ from mod_base import*
 
 class Lvl(Command):
     """View your permission level (or someone elses)."""
-    def run(self,win,user,data,caller=None):
+    def run(self, win, user, data, caller=None):
         args = Args(data)
         if len(args)==0:
             perm = user.GetPermission()
