@@ -81,14 +81,22 @@ def LoadSingle(filename):
     if filename[0] == ".":
         return False
     parts = filename.split(".")
-    if len(parts) < 2: return False
+    if len(parts) < 2:
+        return False
     name = parts[0]
     ext = parts[-1]
 
     # only load .py modules that don't begin with an underscore
     if ext == "py" and name[0] != "_":
-        mod = imp.load_source(name, "modules/" + filename)
-        return name, mod.module
+        try:
+            mod = imp.load_source(name, "modules/" + filename)
+            return name, mod.module
+        except Exception, e:
+            print "Failed loading:", name
+            print traceback.format_exc()
+            print sys.exc_info()[0]
+            return False
+
     return False
 
 modules = LoadAll()
