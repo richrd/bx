@@ -8,7 +8,7 @@ class Status(Command):
         items = self.get_items()
         strs = []
         for item in items:
-            strs.append( item[0] + ":" + str(item[1]) )
+            strs.append( item[0]+":"+str(item[1]) )
         win.Send(", ".join(strs))      
 
     def get_items(self):
@@ -19,16 +19,19 @@ class Status(Command):
             if power[0]:
                 bat = "+"
             bat += str(power[1])
-            items.append(("bat", bat))
+            items.append( ("bat", bat) )
+
+        uptime = self.get_uptime()
+        if uptime: items.append( ("up", uptime) )
 
         temp = self.get_temp()
-        if temp: items.append(("temp", temp))
+        if temp: items.append( ("temp", temp) )
 
         load = self.get_sys_laod()
-        if load: items.append(("load", load))
+        if load: items.append( ("load", load) )
            
         link = self.get_wifi_quality()
-        if link: items.append(("link", link))
+        if link: items.append( ("link", link) )
 
         return items
 
@@ -37,19 +40,30 @@ class Status(Command):
         if output.find("not found") == -1:
             parts = output.split(",")
             state = False
-            raw_state = parts[0][parts[0].find(":") + 1:].strip()
+            raw_state = parts[0][parts[0].find(":")+1:].strip()
             if raw_state == "full":
-                state = True
+                state=True
             percent = int(parts[1].replace("%","").strip())
-            return [state,percent]
+            return [state, percent]
         else:
             return False
+
+    def get_uptime(self):
+        # try:
+        from datetime import timedelta
+        f = open('/proc/uptime', 'r')
+        uptime_seconds = float(f.readline().split()[0])
+        uptime_string = str(timedelta(seconds = uptime_seconds))
+        f.close()
+        return uptime_string
+        # except:
+        #     return False
 
     def get_wifi_quality(self):
         output = run_shell_cmd("iwconfig")
         start = "Link Quality="
         if output.find(start) != -1:
-            part = output[output.find(start) + len(start):]
+            part = output[output.find(start)+len(start):]
             part = part[:part.find(" ")]
             return part
         return False
@@ -57,7 +71,7 @@ class Status(Command):
     def get_sys_laod(self):
         uptime = run_shell_cmd("uptime")
         if uptime:
-            load = " ".join(uptime.split(" ")[-3:]).replace(", ", " ").replace(",", ".")
+            load = " ".join(uptime.split(" ")[-3:]).replace(", "," ").replace(",",".")
             return load
         return False
 
@@ -69,7 +83,7 @@ class Status(Command):
             start = "+"
             end = "°C"
             if line.find(start) != -1 and line.find(end) != -1:
-                line = line[line.find(start) + 1:]
+                line = line[line.find(start)+1:]
                 temp = float(line[:line.find(end)])
                 return temp
         except:
