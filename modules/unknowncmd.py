@@ -85,6 +85,7 @@ class UnknownCMD(Listener):
             "livin": "living",
             "thnx": "thanks",
             "thx": "thanks",
+            "plz": "please",
             "m/f": "male or female",
             "f/m": "male or female",
             "m / f": "male or female",
