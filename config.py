@@ -29,7 +29,8 @@ def md5hd(data):
 
 
 class BotConfig:
-    def __init__(self, filename = None):
+    def __init__(self, bot, filename = None):
+        self.bot = bot
         self.filename = filename
         self.config = {
                 "server": {
@@ -198,9 +199,33 @@ class BotConfig:
         mod = mod.lower()
         if "-" + mod in self.config["default_mods"]:
             self.config["default_mods"].pop(self.config["default_mods"].index("-" + mod))
-	    if mod not in self.config["default_mods"]:
-	       self.config["default_mods"].append(mod)
-	    self.Store()
+        if mod not in self.config["default_mods"]:
+           self.config["default_mods"].append(mod)
+        self.Store()
+
+    def GetModule(self, modname):
+        modname = modname.lower()
+        if modname in self.config["modules"].keys():
+            mod_conf = self.config["modules"][modname]
+            mod_conf["name"] = modname
+            return mod_conf
+        return False
+
+    def ModSet(self, modname, key, value):
+        modname = modname.lower()
+        if not modname in self.config["modules"].keys():
+            self.config["modules"][modname] = {}
+        self.config["modules"][modname][key] = value
+        mod = self.bot.GetModule(modname)
+        mod.SetProperties(self.config["modules"][modname])
+        return True
+
+    def UserSet(self, user, key, value):
+        user = user.lower()
+        if not user in self.config["accounts"].keys():
+            self.config["accounts"][user] = {}
+        self.config["accounts"][user]["level"] = value
+        return True
 
     def AliasToCommand(self,alias):
         if alias in self.aliases:

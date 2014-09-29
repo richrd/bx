@@ -49,9 +49,9 @@ class IRCBot(irc.IRCClient):
         if len(sys.argv) > 1:
             conf_file = sys.argv[1]
         if s60:
-            self.config = config.BotConfig("e:\\python\\config.txt")
+            self.config = config.BotConfig(self, "e:\\python\\config.txt")
         else:
-            self.config = config.BotConfig(conf_file)
+            self.config = config.BotConfig(self, conf_file)
         self.config.Load()
         
         self.me = Me(self)

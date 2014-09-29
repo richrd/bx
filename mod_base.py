@@ -126,7 +126,6 @@ class Module:
 
     def init(self):
         pass
-        
 
     def GetMan(self):
         docstr = "-no description-"
@@ -155,6 +154,16 @@ class Command(Module):
         self.initialized = 0
         self.users = {} # list of users of command
         
+    def SetProperties(self, properties):
+        print "PROPS:", properties
+        for key in properties.keys():
+            if key == "level":
+                self.level = properties["level"]
+                print "SET LVL TO",properties["level"]
+            if key == "zone":
+                self.zone = properties["zone"]
+        return True
+
     def DebugCmd(self, *args):
         args = map(arg_to_str,args)
         line = " ".join(args)
