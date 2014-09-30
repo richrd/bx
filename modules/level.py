@@ -1,6 +1,6 @@
 from mod_base import*
 
-class Lvl(Command):
+class Level(Command):
     """View your permission level (or someone elses)."""
     def run(self, win, user, data, caller=None):
         args = Args(data)
@@ -16,7 +16,7 @@ class Lvl(Command):
                 win.Send("user not found")
 
 module = {
-    "class": Lvl,
+    "class": Level,
     "type": MOD_COMMAND,
     "level": 0,
     "zone":IRC_ZONE_BOTH,

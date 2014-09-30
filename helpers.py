@@ -58,22 +58,24 @@ def get_current_script_path():
 # Convert times (add days, hours, min, sec)
 def str_to_seconds(txt):
     units = {
-        "d":24*60*60,
-        "h":60*60,
-        "m":60,
-        "s":1,
+        "d": 24*60*60,
+        "h": 60*60,
+        "m": 60,
+        "s": 1,
         }
     txt = txt.strip().lower()
     if len(txt) < 2:
         return False
     if txt[-1] in units.keys():
         unit = units[txt[-1]]
-    else: return False
+    else:
+        return False
     try:
-        part = txt[:-1].replace(",",".")
-        n=float(part)
+        part = txt[:-1].replace(",", ".")
+        n = float(part)
     except:
         return False
+        
     return n*unit
     
 

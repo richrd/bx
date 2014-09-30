@@ -155,11 +155,9 @@ class Command(Module):
         self.users = {} # list of users of command
         
     def SetProperties(self, properties):
-        print "PROPS:", properties
         for key in properties.keys():
             if key == "level":
                 self.level = properties["level"]
-                print "SET LVL TO",properties["level"]
             if key == "zone":
                 self.zone = properties["zone"]
         return True
