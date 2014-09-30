@@ -5,7 +5,7 @@ class CmdPrefix(Command):
     def run(self, win, user, data, caller=None):
         args = Args(data)
         if args.Empty():
-            win.Send("specify channel to add to autojoin list")
+            win.Send("specify prefix to use for detecting commands")
             return False
         self.bot.config["cmd_prefix"] = args[0]
         win.Send("done")
