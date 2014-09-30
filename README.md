@@ -80,11 +80,20 @@ Come and talk to me at #bxbot @ QuakeNet :)
 *   autoop
     > Automatically give OP to authed users.
 
+*   broadcast
+    > Broadcast messages or command out put to channels and/or users (targets).
+    > Usage: broadcast [+-]name target[,target,...] interval command [args]
+    > Usage: broadcast [+-]name target[,target,...] interval :message
+    > Usage: broadcast +hello #chan1,#chan2 1h :hello world!
+
 *   calc
     > Calculate math and python expressions. e.g. calc 3+4*6
 
 *   clearlogs
     > Clear n. number of messages from window logs (or all if no arguments given).
+
+*   cmdprefix
+    > Set the command prefix that the bot will respond to.
 
 *   cmds
     > Lists the commands you can use.
@@ -133,16 +142,20 @@ Come and talk to me at #bxbot @ QuakeNet :)
     > Kick a user off a channel.
     > Usage: kick [#channel] nick
 
+*   level
+    > View your permission level (or someone elses).
+
 *   logs
     > Print channel logs. Set time with e.g. 1h or 10m. Search logs with ?query (parameter starting with ?). Example: logs 2h ?hello
-
-*   lvl
-    > View your permission level (or someone elses).
 
 *   mod
     > Enable or disable modules (commands & listeners).
     > Usage: mod [-/+]module_name
     > e.g. prefix module name with - or + for disable or enable
+
+*   modlevel
+    > Change the permission level of a module.
+    > Usage: modlevel mod level
 
 *   msg
     > Send a message as the bot to a user or channel.
@@ -155,7 +168,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
     > Usage: newpass oldpassword newpassword newpassword
 
 *   nick
-    > Change the nick of the bot.
+    > Change the nick of the bot. If nick isn't available, the nick will be reclaimed when it becomes available.
 
 *   op
     > Give OPs to yourself (default), or a list of nicks, or everyone (with '*').
@@ -181,6 +194,9 @@ Come and talk to me at #bxbot @ QuakeNet :)
 *   runas
     > Run a command as another user.
 
+*   status
+    > Get status information of the host running the bot.
+
 *   storeconf
     > Store configuration.
 
@@ -202,6 +218,10 @@ Come and talk to me at #bxbot @ QuakeNet :)
 
 *   userinfo
     > View info about you or another nick.
+
+*   userlevel
+    > Change the permission level of a user.
+    > Usage: userlevel user level
 
 *   view
     > View various bot information.
