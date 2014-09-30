@@ -1,7 +1,7 @@
 from mod_base import*
 
 class Die(Command):
-    """Kill the bot."""
+    """Kill the bot. Warning: I won't rise from my ashes like a fenix!"""
     def run(self,win,user,data,caller=None):
         win.Send("dying...")
         self.bot.StopBot()
