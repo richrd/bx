@@ -42,11 +42,8 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Multi server support?
   * Data store for modules
 * Modules
-  * Change module level
-  * Change user level
   * Command for taking photos and uploading them to a server
   * Ignore and unignore users
-  * Add github commit notifier
   * Weather
   * Auto rejoin (after kick etc)
 * PyS60-specific functionality
