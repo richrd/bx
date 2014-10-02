@@ -45,7 +45,6 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Command for taking photos and uploading them to a server
   * Ignore and unignore users
   * Weather
-  * Auto rejoin (after kick etc)
 * PyS60-specific functionality
 
 ### Protocol
@@ -76,6 +75,9 @@ Come and talk to me at #bxbot @ QuakeNet :)
 
 *   autoop
     > Automatically give OP to authed users.
+
+*   autorejoin
+    > Automatically rejoin a channel after kick.
 
 *   broadcast
     > Broadcast messages or command out put to channels and/or users (targets).
