@@ -90,7 +90,7 @@ class User:
     Represents each user the bot is aware of.
 
     """
-    def __init__(self,bot,nick=""):
+    def __init__(self, bot, nick=""):
         self.bot = bot
         self.nick = u""+nick
         self.hostname = u""
@@ -112,6 +112,7 @@ class User:
 
     def __repr__(self):
         return "<" + self.nick + ">"
+        
     def __str__(self):
         return "<" + self.nick + ">"
         
@@ -481,7 +482,7 @@ class Channel(BotWindow):
         user.OnAction()
         self.bot.HandleEvent(Event(IRC_EVT_CHAN_PART, self, user))
 
-    def OnKick(self, by, user, reason):
+    def OnKick(self, user, by, reason):
         #OnKick(self.GetUser(who), self.GetUser(nick), reason)
         self.DebugLog("*KICK*", user, "by", by, "(", reason, ")")
         self.RemoveUser(user)

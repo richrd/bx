@@ -310,6 +310,9 @@ class IRCClient:
         chanlist = ",".join(chans)
         keylist = ",".join(keys)
         self.SendLine("JOIN %s %s" % (chanlist, keylist))
+
+    def Join(self, chans, keys=[]):
+         self.JoinChannels(chans, keys)
         
     def PartChannels(self, chans):
         if type(chans) in [type(u""), type("")]:

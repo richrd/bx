@@ -90,6 +90,8 @@ def LoadSingle(filename):
     if ext == "py" and name[0] != "_":
         try:
             mod = imp.load_source(name, "modules/" + filename)
+            if not "module" in dir(mod):
+                return False
             return name, mod.module
         except Exception, e:
             print "Failed loading:", name
