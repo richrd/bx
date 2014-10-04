@@ -308,7 +308,7 @@ class IRCBot(irc.IRCClient):
     # Actions
         
     def DoAutoJoin(self):
-        self.BotLog("DoAutoJoin()")
+        #self.BotLog("DoAutoJoin()")
         self.JoinChannels(self.config.GetAutoJoinChannels())
         
     def AuthenticateUser(self, user, name, pw):
@@ -340,13 +340,13 @@ class IRCBot(irc.IRCClient):
                     lstn.ExecuteEvent(Event(IRC_EVT_INTERVAL))
                     
     def OnClientLog(self, line): # Route irc client class logging to BotLog
-        pass
-        # self.BotLog(line)
+        self.BotLog(line)
+        return True
         # Returning True prevents the irc client class from printing the logging to the console
         # return True
         
     def OnConnected(self):
-        self.DebugLog("OnConnected()")
+        #self.DebugLog("OnConnected()")
         self.DoIntroduce(self.me.nick,self.config["ident"],self.config["realname"])
         
     def OnReady(self):
@@ -356,7 +356,7 @@ class IRCBot(irc.IRCClient):
         self.DoAutoJoin()
 
     def OnNickInUse(self, nick, reason):
-        self.BotLog("OnNickInUse(", nick, reason, ")")
+        #self.BotLog("OnNickInUse(", nick, reason, ")")
         self.me.TryNewNick()
         
     def OnUserHostname(self, nick, hostname):
@@ -369,7 +369,7 @@ class IRCBot(irc.IRCClient):
         self.GetUser(nick).OnNickChanged(nick, new_nick)
         
     def OnUserQuit(self, nick, reason):
-        self.BotLog("OnUserQuit(",nick,reason,")")
+        #self.BotLog("OnUserQuit(",nick,reason,")")
         user = self.GetUser(nick)
         user.OnQuit(reason)
         for win in self.windows:
@@ -396,7 +396,7 @@ class IRCBot(irc.IRCClient):
         win.OnNotice(user,msg)
         
     def OnIJoined(self, chan):
-        self.BotLog("JOINED", chan)
+        #self.BotLog("JOINED", chan)
         win = self.GetWindow(chan)
         win.OnIJoined()
         win.AddUser(self.me)
@@ -406,7 +406,7 @@ class IRCBot(irc.IRCClient):
         self.GetWindow(chan).OnHasUsers(users)
         
     def OnChannelModesChanged(self, chan, modes, nick):
-        self.DebugLog("OnChannelModesChanged(", chan, modes, ")")
+        #self.DebugLog("OnChannelModesChanged(", chan, modes, ")")
         user = self.GetUser(nick)
         win = self.GetWindow(chan)
         win.OnModesChanged(modes, user)
@@ -439,7 +439,7 @@ class IRCBot(irc.IRCClient):
         self.GetWindow(chan).OnTopicChanged(topic, user)
         
     def RunBot(self):
-        self.BotLog("Run()")
+        #self.BotLog("Run()")
         self.bot_running = 1
 
         self.BotLog("Run()","starting bot...")
@@ -458,7 +458,7 @@ class IRCBot(irc.IRCClient):
         return True
         
     def BotLoop(self):
-        self.BotLog("BotLoop()")
+        #self.BotLog("BotLoop()")
         self.StartClient()
         while self.bot_running:
             self.BotLog("BotLoop()","client disconnected")

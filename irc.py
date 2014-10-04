@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """irc.py: IRC Client Implementation
 
-Handles all neccessary parts of the irc protocol for client connections.
+Handles all neccessary parts of the IRC protocol for client connections.
 
 """
 
@@ -40,8 +40,8 @@ class IRCClient:
         self.def_ident = "bx"
 
         # User info
-        self.realname=None
-        self.ident=None
+        self.realname = None
+        self.ident = None
         
         self.irc_debugging = True # wether to show debug output 
 
@@ -58,7 +58,7 @@ class IRCClient:
         self.encoding = "utf-8"
 
         # encodings used to try to decode incomming data
-        self.decodings = ["utf-8","latin-1","cp1251","cp1252","win1251","iso-8859-1"] 
+        self.decodings = ["utf-8", "latin-1", "cp1251", "cp1252", "win1251", "iso-8859-1"] 
 
         # FIXME tweak code to allways send at most 512 characters
         self.max_line_len = 400     # Maximum amount of characters sent to the server at once
@@ -105,8 +105,9 @@ class IRCClient:
         line = " ".join(args)
         self.PrintToLog(line)
 
-    def PrintToLog(self,line):
-        if not self.irc_debugging:return False
+    def PrintToLog(self, line):
+        if not self.irc_debugging:
+            return False
         log = "[irc client] : "+line
         if not self.OnClientLog(log):
             print log
@@ -162,13 +163,12 @@ class IRCClient:
         pass
         
     def OnNickInUse(self,nick,reason):
-        self.DebugLog("OnNickInUse(",nick,reason,")")
-        self.nick=self.nick+"_"
-        self.current_nick=self.nick
+        self.DebugLog("OnNickInUse(", nick, reason, ")")
+        self.nick = self.nick + "_"
+        self.current_nick = self.nick
         self.ChangeNick(self.nick)
         
     def OnPing(self,data=False):
-            #self.DebugLog("OnPing(",data,")")
         if data == False:
             data == ""
         self.last_ping_pong = time.time()
@@ -187,15 +187,13 @@ class IRCClient:
         self.DebugLog("OnServerInfo(",info,")")
         
     def OnMotdLine(self,line):
-        #self.DebugLog("OnMotdLine(",line,")")
         pass
         
     def OnReady(self):
         self.DebugLog("OnReady()")
-        self.throttled = 0
+        self.irc_throttled = 0
         
     def OnUserHostname(self, nick, hostname):
-        #self.DebugLog("OnUserHostname(", nick, ", ", hostname, ")")
         pass
 
     def OnWhoisHostname(self, nick, hostname):
@@ -259,17 +257,18 @@ class IRCClient:
     # Actions
     #
 
-    def WrapLine(self,start,contents):
-        ml = self.max_line_len-2
-        if len(start+contents)<=ml:return [start+contents]
+    def WrapLine(self, start, contents):
+        ml = self.max_line_len - 2
+        if len(start+contents) <= ml:
+            return [start+contents]
         
         chunk = contents
         lines = []
         while 1:
-            line = start+chunk
+            line = start + chunk
             print line
-            if len(line)>ml:
-                chunk=line[ml:]
+            if len(line) > ml:
+                chunk = line[ml:]
                 line = line[:ml]
 
                 lines.append(line)
@@ -279,8 +278,7 @@ class IRCClient:
         return lines
     
     def PingServer(self):
-        #self.DebugLog("PingServer()","pinging server...")
-        self.SendLine("PING "+self.current_nick)
+        self.SendLine("PING " + self.current_nick)
         self.pinged_server = time.time()
 
     def ChangeNick(self, nick=None):
@@ -404,16 +402,18 @@ class IRCClient:
         return nick,hostname
       
     def LineIsCommand(self,line):
-        cmds = ["ping","pong","join","part","kick","topic","quit","privmsg","nick","mode","notice"]
-        parts=string.split(line)
-        if len(parts)<2:return False
+        cmds = ["ping", "pong", "join", "part", "kick", "topic", "quit", "privmsg", "nick", "mode", "notice"]
+        parts = string.split(line)
+        if len(parts) < 2:
+            return False
         if parts[1].lower() in cmds:
             return True
         return False
         
     def LineIsNumeric(self,line):
-        parts=string.split(line)
-        if len(parts)<2:return False
+        parts = string.split(line)
+        if len(parts) < 2:
+            return False
         try:
             numeric = int(parts[1])
             return True
@@ -431,7 +431,7 @@ class IRCClient:
         first_word = parts[0].lower()
         
         
-        if first_word in ["ping","error","notice"]:
+        if first_word in ["ping", "error", "notice"]:
             if first_word == "ping":
                 self.OnPing(" ".join(parts[1:]))
             elif first_word == "pong":
@@ -452,6 +452,10 @@ class IRCClient:
         elif self.LineIsCommand(line):
             command = parts[1].lower()
             nick, hostname = self.ParseNickHost(line)
+
+            if not command in ["pong", "ping"]:
+                self.DebugLog("RAW:", line)
+
             if command == "pong":
                 self.OnPing(txt_data)
             elif command == "join":
@@ -463,17 +467,19 @@ class IRCClient:
                 if nick == self.current_nick:
                     self.OnIJoined(target)
                 else:
-                    self.OnChannelJoin(target,nick)
+                    self.OnChannelJoin(target, nick)
             elif command == "part":
-                if txt_data != False:target=txt_data
-                else:target  = parts[2]
+                if txt_data != False:
+                    target = txt_data
+                else:
+                    target  = parts[2]
                 nick,hostname = self.ParseNickHost(line)
-                self.OnChannelPart(target,nick,txt_data)
+                self.OnChannelPart(target, nick, txt_data)
             elif command == "topic":
                 target  = parts[2]
                 nick,hostname = self.ParseNickHost(line)
                 topic = self.GetTextData(line)
-                self.OnChannelTopicChanged(target,nick,topic)
+                self.OnChannelTopicChanged(target, nick, topic)
 
             elif command == "privmsg":
                 target  = parts[2]
@@ -499,7 +505,7 @@ class IRCClient:
                 nick, host = self.ParseNickHost(line)
                 self.OnUserNickChange(nick, newnick)
             elif command == "mode":
-                self.DebugLog("\t\tParseLine(",line,")")
+                #self.DebugLog("\t\tParseLine(", line, ")")
                 target = parts[2]
                 if target == self.current_nick:
                     modes = parts[3]
@@ -529,7 +535,7 @@ class IRCClient:
                         modes = parts[3]
                         self.OnChannelModesChanged(target, modes, nick)
             else:
-                self.DebugLog("\t\tParseLine(", line, ")","unknown text cmd")
+                #self.DebugLog("\t\tParseLine(", line, ")","unknown text cmd")
                 return False
 
 
@@ -597,10 +603,11 @@ class IRCClient:
             elif numeric == 465:
                 self.OnConnectThrottled(txt_data)
             else:
-                self.DebugLog("\t\tParseLine(", line, ")", "unknown numeric")
+                #self.DebugLog("\t\tParseLine(", line, ")", "unknown numeric")
+                self.DebugLog("RAW:", line, "[unknown numeric]")
                 return False
         else:
-            self.DebugLog("\t\tParseLine(", line, ")", "failed to parse")
+            self.DebugLog("RAW:", line, "[parsefail]")
             return False
     # ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ====  
       
@@ -661,8 +668,8 @@ class IRCClient:
     #
             
     def Send(self, data):
-        #self.DebugLog("Send(",data[:-2],")")
         data = self.DataEncode(data)
+        self.DebugLog("SEND", data[:-2])
         self.send_buffer.append(data)
 
     def LoopingSend(self, data):
@@ -680,7 +687,6 @@ class IRCClient:
     def ProcessSend(self, data):
         """This is where data to be sent finally ends up."""
         if self.irc_running & self.irc_connected:
-            #self.DebugLog("ProcessSend(",data[:-2],")")
             try:
               returned = self.LoopingSend(data)
               return True
@@ -720,21 +726,9 @@ class IRCClient:
     # Start & Maintain Connection
     #
         
-    def RunCmd(self, cmd):
-        try:
-            exec(cmd)
-        except Exception,e:
-            print e
-        
-    def Interrupt(self): #TODO: Fix this up
-        print ""
-        print "[INTERRUPTED]"
-        print "e to exit"
-        s = raw_input("input:")
-        if s == "e":
-            return False
-        self.RunCmd(s)
-        return True
+    def Interrupt(self):
+        """Called when the mainloop is interrupted with a KeyboardInterrupt. Return True to continue execution."""
+        return False
 
     def Connect(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -769,7 +763,7 @@ class IRCClient:
         # Ping the server after inactivity and wait for reply.
         # If no timely response is received, cut the connection and reconnect.
         if elapsed > self.max_inactivity:
-            self.DebugLog("KeepAlive()","server not responding to ping, reconnecting.")
+            self.DebugLog("KeepAlive()", "server not responding to ping, reconnecting.")
             self.Disconnect()
         elif (not self.pinged_server) and elapsed > self.ping_after:
             self.PingServer()
@@ -778,14 +772,14 @@ class IRCClient:
         try:
            self.ProcessRecvBuffer()
            self.KeepAlive()
-        except Exception,e:
+        except Exception, e:
             try:
                 import traceback
                 print traceback.format_exc()
             except:
                 pass
             print sys.exc_info()[0]
-            self.DebugLog("Process()",e)
+            self.DebugLog("Process()", e)
 
     def IRCMaintain(self):
         try:
@@ -850,28 +844,3 @@ class IRCClient:
         self.irc_running = 0
         self.Disconnect()
         self.InitializeClient()
-
-
-
-def Interrupt():
-    print "INTERRUPTED"
-    s = raw_input("What do?")
-    return
-
-def TestClient():
-    client = IRCClient()
-    client.SetHost("irc.quakenet.org")
-    while 1:
-        try:
-            client.StartClient()
-        except KeyboardInterrupt:
-            txt = raw_input("cmd:")
-            client.RunCmd(txt)
-            continue
-        if client.irc_throttled:
-            client.DelayReconnect()
-        print "> Client dead, waiting 30sec."
-        time.sleep(30)
-    
-if __name__ == "__main__":
-    TestClient()
