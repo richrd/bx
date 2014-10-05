@@ -42,6 +42,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Multi server support?
   * Data store for modules
 * Modules
+  * Make URL module work with multiple adresses in a single message
   * Command for taking photos and uploading them to a server
   * Ignore and unignore users
   * Weather
