@@ -44,14 +44,14 @@ class IRCBot(irc.IRCClient):
         self.bot_debugging = 1
         self.current_path = get_current_script_path()
         
-        conf_file = "config.txt"
+        config_file = "config.txt"
 
         if len(sys.argv) > 1:
-            conf_file = sys.argv[1]
+            config_file = sys.argv[1]
         if s60:
             self.config = config.BotConfig(self, "e:\\python\\config.txt")
         else:
-            self.config = config.BotConfig(self, conf_file)
+            self.config = config.BotConfig(self, config_file)
         self.config.Load()
         
         self.me = Me(self)
@@ -105,7 +105,7 @@ class IRCBot(irc.IRCClient):
     def ReloadConfig(self):
         try:
             reload(config)
-            self.config = config.BotConfig("config.txt")
+            self.config = config.BotConfig(self.config_file)
             self.config.Load()
         except Exception,e:
             return e
@@ -232,6 +232,7 @@ class IRCBot(irc.IRCClient):
         inst = self.GetCommand(command)
         if inst != False:
             self.BotLog("RunCommand(", command, user, data, ")")
+            self.BotLog("")
             inst.Execute(win, user, data)
         else:
             if not self.HandleEvent(Event(IRC_EVT_UNKNOWN_CMD, win, user, cmd = command, cmd_args=data)):
@@ -308,12 +309,12 @@ class IRCBot(irc.IRCClient):
     # Actions
         
     def DoAutoJoin(self):
-        #self.BotLog("DoAutoJoin()")
         self.JoinChannels(self.config.GetAutoJoinChannels())
         
     def AuthenticateUser(self, user, name, pw):
-        account = self.config.AuthenticateUser(name,pw)
-        if account == False:return False
+        account = self.config.AuthenticateUser(name, pw)
+        if account == False:
+            return False
         user.OnAuthed(account)
         return True
             
@@ -336,7 +337,7 @@ class IRCBot(irc.IRCClient):
             if IRC_EVT_INTERVAL in lstn.events:
                 if not lstn.last_exec:
                     lstn.ExecuteEvent(Event(IRC_EVT_INTERVAL))
-                elif time.time()-lstn.last_exec > lstn.interval:
+                elif time.time() - lstn.last_exec > lstn.interval:
                     lstn.ExecuteEvent(Event(IRC_EVT_INTERVAL))
                     
     def OnClientLog(self, line): # Route irc client class logging to BotLog
@@ -346,17 +347,16 @@ class IRCBot(irc.IRCClient):
         # return True
         
     def OnConnected(self):
-        #self.DebugLog("OnConnected()")
-        self.DoIntroduce(self.me.nick,self.config["ident"],self.config["realname"])
+        self.DebugLog("Connected to IRC server.")
+        self.DoIntroduce(self.me.nick, self.config["ident"], self.config["realname"])
         
     def OnReady(self):
-        self.BotLog("OnReady()")
+        self.BotLog("IRC handshake done, now ready.")
         self.throttled = 0
         self.HandleEvent(Event(IRC_EVT_READY))
         self.DoAutoJoin()
 
     def OnNickInUse(self, nick, reason):
-        #self.BotLog("OnNickInUse(", nick, reason, ")")
         self.me.TryNewNick()
         
     def OnUserHostname(self, nick, hostname):
@@ -369,14 +369,12 @@ class IRCBot(irc.IRCClient):
         self.GetUser(nick).OnNickChanged(nick, new_nick)
         
     def OnUserQuit(self, nick, reason):
-        #self.BotLog("OnUserQuit(",nick,reason,")")
         user = self.GetUser(nick)
         user.OnQuit(reason)
         for win in self.windows:
             if win.zone == IRC_ZONE_CHANNEL:
                 if win.HasUser(user):
                     win.OnQuit(user,reason)
-
         
     def OnPrivmsg(self, by, to, msg):
         user = self.GetUser(by)
@@ -396,7 +394,6 @@ class IRCBot(irc.IRCClient):
         win.OnNotice(user,msg)
         
     def OnIJoined(self, chan):
-        #self.BotLog("JOINED", chan)
         win = self.GetWindow(chan)
         win.OnIJoined()
         win.AddUser(self.me)
@@ -406,7 +403,6 @@ class IRCBot(irc.IRCClient):
         self.GetWindow(chan).OnHasUsers(users)
         
     def OnChannelModesChanged(self, chan, modes, nick):
-        #self.DebugLog("OnChannelModesChanged(", chan, modes, ")")
         user = self.GetUser(nick)
         win = self.GetWindow(chan)
         win.OnModesChanged(modes, user)
@@ -439,7 +435,6 @@ class IRCBot(irc.IRCClient):
         self.GetWindow(chan).OnTopicChanged(topic, user)
         
     def RunBot(self):
-        #self.BotLog("Run()")
         self.bot_running = 1
 
         self.BotLog("Run()","starting bot...")
@@ -458,7 +453,6 @@ class IRCBot(irc.IRCClient):
         return True
         
     def BotLoop(self):
-        #self.BotLog("BotLoop()")
         self.StartClient()
         while self.bot_running:
             self.BotLog("BotLoop()","client disconnected")
@@ -468,7 +462,7 @@ class IRCBot(irc.IRCClient):
                 self.BotLog("BotLoop()","reconnecting in 10sec")
                 time.sleep(10)
             self.StartClient()
-            self.BotLog("BotLoop","client disconnected")
+            self.BotLog("BotLoop()","client disconnected")
 
 if __name__ == "__main__":
     b = IRCBot()
