@@ -48,7 +48,13 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Make URL module work with multiple adresses in a single message
   * Command for taking photos and uploading them to a server
   * Ignore and unignore users
-  * Weather
+  * Replace runas with command that allows:
+    * Running commands as another user
+    * Running commands at another channel
+    * or both simultaneously
+  * Add a mechanism for storing failed arguments
+    * wtf could store unknown acronyms
+    * unknowncmd could store unmatched messages (or fallback matches)
 * PyS60-specific functionality
 
 ### Protocol
