@@ -24,7 +24,7 @@ def get_mimetype(url):
 
 # Get <title> of web page
 def get_url_title_new(url):
-    ignore_ext = ["jpg", "png", "gif","tiff", "psd", "zip", "rar", "sh"]
+    ignore_ext = ["jpg", "png", "gif", "tiff", "psd", "zip", "rar", "sh"]
     if url[-3:] in ignore_ext:
         print "Invalid extension: " + url[-3:]
         return False
@@ -32,7 +32,7 @@ def get_url_title_new(url):
     # Check that the the resource content type is something relevant
     try:
         content_type = get_content_type(url)
-        if content_type and not ["text/html","text/xhtml","text/plain"] in content_type:
+        if content_type and not content_type in ["text/html", "text/xhtml", "text/plain"]:
             print "Invalid content type!", content_type
             return False
     except:
