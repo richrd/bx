@@ -31,7 +31,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
 ### Documentation
 * More comments
 * General docs
-* Module API reference
+* Module API referenceng
 
 ### Features
 * Core
@@ -41,6 +41,9 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Better config grouping
   * Multi server support?
   * Data store for modules
+  * Debug logging capability for commands
+  * Simle CLI for viewing logs etc
+  * Implement running multiple commands from a single message
 * Modules
   * Make URL module work with multiple adresses in a single message
   * Command for taking photos and uploading them to a server
