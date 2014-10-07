@@ -2,8 +2,6 @@
 from mod_base import *
 import time, json
 
-#http://api.openweathermap.org/data/2.5/weather?q=Helsinki,fi&units=metric&APPID=5d4f25ba8d50f6bd0a30e8f32560a669
-
 class Weather(Command):
     """Display the current weather conditions."""
     def init(self):

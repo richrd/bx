@@ -55,7 +55,8 @@ class UnknownCMD(Listener):
     def init(self):
         self.events = [IRC_EVT_UNKNOWN_CMD]
         self.happy_smileys = [":-)", ":)", ":D", ":>", "=)", "xD", ":P", "=P", "=]", ":]", "=}", ":}", "(:", ":3"]
-        self.sad_smileys = [":(", ";(", "=(", ":[", ";[", "=[", ":{", "={", ":/", ":\\", ";_;"]
+        self.sad_smileys = [
+            ("you listening", "yep, all the time [happy_smiley]"),":(", ";(", "=(", ":[", ";[", "=[", ":{", "={", ":/", ":\\", ";_;"]
         
         self.replacements = {
             # Questions
@@ -157,6 +158,12 @@ class UnknownCMD(Listener):
             ("use you", "say help and I'll tell you"),
             ("hate you", "[user_nick] makes me sad [sad_smiley]"),
             ("you stupid", "sry im not so smart [sad_smiley]"),
+            ("beer", [
+                        "yeah, I like beer",
+                        "drink it!",
+                        "if drinking beer, remember the Ballmer peak!",
+                        "beer every day [happy_smiley]",
+            ]),
             ("hello", "hi [user_nick], how are you?"),
             ("hi", "greetings [user_nick] [happy_smiley] can I help you?"),
             ("you", "me? dunno."),

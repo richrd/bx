@@ -3,7 +3,7 @@ from mod_base import *
 import time, json
 
 class BTC(Command):
-    """Display the current Bitcoin exchange rate."""
+    """Display the current Bitcoin exchange rate. Default exchange is bitstamp. Usage: btc [exchange]"""
     def init(self):
         self.exchanges = {
             "bitstamp": "https://www.bitstamp.net/api/ticker/",
