@@ -184,17 +184,20 @@ class IRCBot(irc.IRCClient):
             self.RunCommand(command, win, user, data)
             
     def FindCommand(self, message):
+        ignore = [" ", ".", "-", "!", "?", "_"]
         if message[:len(self.config["cmd_prefix"])] == self.config["cmd_prefix"]:
             command = message[len(self.config["cmd_prefix"]):]
             if len(command) == 0:
                 return False
-            if command[0] in [" ", ".", "-", "!", "?", "_"]:
+            if command[0] in ignore:
                 return False
             return command
         else:
             parts = message.split(" ")
             if parts[0].lower().startswith(self.me.nick.lower()):
-                return " ".join(parts[1:])
+                rest =  parts[0].lower()[len(self.me.nick):]
+                if rest and rest[0] in [" ", ",", ";",":"]:
+                    return " ".join(parts[1:])
         return False
 
     def GetCommand(self, name):
