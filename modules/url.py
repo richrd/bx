@@ -12,9 +12,7 @@ def get_mimetype(url):
     conn = httplib.HTTPConnection(domain, timeout=5)
     conn.request("HEAD", get)
     res = conn.getresponse()
-    # print res.status, res.reason
     headers = res.getheaders()
-    #[('content-length', '0'), ('expires', '-1'), ('server', 'gws'), ('cache-control', 'private, max-age=0'), ('date', 'Sat, 20 Sep 2008 06:43:36 GMT'), ('content-type', 'text/html; charset=ISO-8859-1')]
     content_type = False
     for item in headers:
         if item[0] == 'content-type':
@@ -23,17 +21,15 @@ def get_mimetype(url):
     return content_type
 
 # Get <title> of web page
-def get_url_title_new(url):
+def get_url_title(url):
     ignore_ext = ["jpg", "png", "gif", "tiff", "psd", "zip", "rar", "sh"]
     if url[-3:] in ignore_ext:
-        print "Invalid extension: " + url[-3:]
         return False
 
     # Check that the the resource content type is something relevant
     try:
         content_type = get_content_type(url)
         if content_type and not content_type in ["text/html", "text/xhtml", "text/plain"]:
-            print "Invalid content type!", content_type
             return False
     except:
         pass
@@ -48,8 +44,7 @@ def get_url_title_new(url):
     try:
         data = data.decode("utf-8")
     except:
-        print "unable to decode url title as utf-8"
-
+        pass
 
     # Find title ignoring tag case
     titleRE = re.compile("<title>(.+?)</title>", re.IGNORECASE)
@@ -63,7 +58,6 @@ def get_url_title_new(url):
         hp = HTMLParser.HTMLParser()
         title = hp.unescape(title)
     except Exception, e:
-        print "failed unescape entities with HTMLParser"
         title = title.replace("&auml;", u"ä")
         title = title.replace("&ouml;", u"ö")
         title = title.replace("&amp;", u"&")
@@ -76,16 +70,12 @@ class Url(Listener):
         self.events = [IRC_EVT_MSG, IRC_EVT_CHAN_MSG]
 
     def event(self, event):
-        print "url event"
-        # FIXME: find multiple urls at once
         urls = find_urls(event.msg)
-        print "got urls", urls
         titles = []
         for url in urls:
-            title = get_url_title_new(url)
+            title = get_url_title(url)
             if title != False:
                 titles.append('"'+title+'"')
-        print "titles:", titles
         if titles:
             event.win.Send(", ".join(titles))
 

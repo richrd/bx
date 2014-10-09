@@ -16,7 +16,6 @@ try:
 except:
     urllib2 = None  # Legacy support
 
-
 # Try to convert to string with a crude 'brute force' fall back
 def safe_escape(text):
     try:
@@ -75,23 +74,22 @@ def str_to_seconds(txt):
         n = float(part)
     except:
         return False
-        
+
     return n*unit
-    
 
 # return human readable timestamps
-def time_stamp(t=None,formatting=None):
-    if t == None:t=time.time()
+def time_stamp(t=None, formatting=None):
+    t = t or time.time()
     if not formatting:
         return time.asctime(time.localtime(float(t)))
-    return time.strftime(formatting,time.localtime(float(t)))
+    return time.strftime(formatting, time.localtime(float(t)))
 
 def time_stamp_short(t=None):
-    if t == None:t=time.time()
-    return time.strftime("%H:%M:%S",time.localtime(t))
+    t = t or time.time()
+    return time.strftime("%H:%M:%S", time.localtime(t))
     
 def time_stamp_numeric(t=None):
-    if t == None:t=time.time()
+    t = t or time.time()
     return time.strftime("%d.%m.%y %H:%M", time.localtime(t))
     
 # run a shell command
@@ -122,35 +120,3 @@ def find_urls(s):
         return []
     urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', s)
     return urls
-
-# Get <title> of web page
-def get_url_title(url):
-    if url[-3:] in ["jpg", "png", "gif",]:
-        return False
-    try:
-        if urllib2!=False:
-            u = urllib2.urlopen(url,timeout=5)
-        else:
-            u = urllib.urlopen(url)
-        data = u.read().decode("utf-8")
-    except Exception,e:
-        return False
-
-    titleRE = re.compile("<title>(.+?)</title>")
-    title = titleRE.search(data)
-    if title == None: return False
-    title = title.group(1)
-
-    try:
-        import HTMLParser
-        hp = HTMLParser.HTMLParser()
-        title = hp.unescape(title)
-    except Exception, e:
-        print "failed unescape entities with HTMLParser"
-
-    title = title.replace("&auml;", u"ä")
-    title = title.replace("&ouml;", u"ö")
-    title = title.replace("&amp;", u"&")
-    return title
-
-

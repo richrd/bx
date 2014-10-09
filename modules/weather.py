@@ -65,17 +65,6 @@ class Weather(Command):
             ])
         win.Send(output)
 
-"""
-"{"coord":{"lon":24.94,"lat":60.17},
-"sys":{"type":1,"id":5018,"message":0.0315,"country":"FI","sunrise":1412656885,"sunset":1412696071},
-"weather":[{"id":800,"main":"Clear","description":"Sky is Clear","icon":"01n"}],"base":"cmc 
-stations","main":{"temp":283.4,"pressure":1028,"humidity":62,"temp_min":282.95,"temp_max":284.15},
-"wind":{"speed":7.2,"deg":110,"var_beg":70,"var_end":140},
-"clouds":{"all":0},
-"dt":1412700618,"id":658225,"name":"Helsinki","cod":200}
-"""
-
-
 module = {
     "class": Weather,
     "type": MOD_COMMAND,
