@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
 Cross platform IRC Bot.
@@ -28,6 +27,7 @@ import irc
 from helpers import *
 from const import *
 
+import logger
 import mods
 import config
 
@@ -36,6 +36,7 @@ from comps import *
 
 class IRCBot(irc.IRCClient):
     def __init__(self):
+        self.log = logger.Logger(self)
         irc.IRCClient.__init__(self)
         self.commands = {}
         self.zones = [IRC_ZONE_QUERY, IRC_ZONE_CHANNEL, IRC_ZONE_BOTH]
@@ -78,8 +79,9 @@ class IRCBot(irc.IRCClient):
             return False
         args = map(arg_to_str, args)
         line = " ".join(args)
-        if self.bot_debugging:
-            print time_stamp_short()," ",(line)
+        # if self.bot_debugging:
+            # print time_stamp_short()," ",(line)
+        self.log.Log("bot", line)
 
 
 
@@ -239,8 +241,8 @@ class IRCBot(irc.IRCClient):
     def RunCommand(self, command, win, user, data):
         inst = self.GetCommand(command)
         if inst != False:
-            self.BotLog("RunCommand(", command, user, data, ")")
-            self.BotLog("")
+            line = str((user, command, data))
+            self.log.Log("cmd", line)
             inst.Execute(win, user, data)
         else:
             if not self.HandleEvent(Event(IRC_EVT_UNKNOWN_CMD, win, user, cmd = command, cmd_args=data)):
@@ -349,7 +351,7 @@ class IRCBot(irc.IRCClient):
                     lstn.ExecuteEvent(Event(IRC_EVT_INTERVAL))
                     
     def OnClientLog(self, line): # Route irc client class logging to BotLog
-        self.BotLog("irc", line)
+        self.log.Log("irc", line)
         # Returning True prevents the irc client class from printing the logging to the console
         return True
         

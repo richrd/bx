@@ -239,7 +239,7 @@ class BotConfig:
         return False
 
     def Log(self,txt):
-        print "BotConfig",">>>",txt
+        self.bot.log.Log("config", txt)
 
     def Serialize(self):
         data = self.config

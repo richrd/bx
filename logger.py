@@ -3,9 +3,12 @@
 Logging capabilities IRC Bot.
 """
 
+import time
+from helpers import *
+
 class colors:
     BLACK = '\033[30m'
-    WHITE = '\033[37m'
+    GRAY = '\033[37m'
     GREEN = '\033[32m'
     MAGENTA = '\033[95m'
     BLUE = '\033[94m'
@@ -21,14 +24,16 @@ class Logger:
         self.logs = []
         self.domain_colors = {
             "irc": colors.DARKBLUE,
-            "bot": colors.WHITE,
-            "cmd": colors.MAGENTA,
+            "bot": None,
+            "cmd": colors.WARNING,
+            "win": colors.OKGREEN,
+            "user": colors.MAGENTA,
         }
 
     def Log(self, domain, s, color=None):
         if not color and domain in self.domain_colors.keys():
             color = self.domain_colors[domain]
-        self.logs.append([domain, s, color])
+        self.logs.append([time.time(), domain, s, color])
         line = time_stamp_short()+" "+s
         if color:
             line = color + line + colors.ENDC

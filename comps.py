@@ -131,10 +131,9 @@ class User:
         
     def DebugLog(self, *args):
         args = map(arg_to_str, args)
-        line = " ".join(args)
+        line = self.__str__() + " " + " ".join(args)
         if self.debug:
-            # self.bot.BotLog("USR: ", self.__str__(), line)
-            self.bot.BotLog(self.__str__(), line)
+            self.bot.log.Log("user", line)
 
     #
     #   Events
@@ -151,12 +150,12 @@ class User:
     def OnNickChanged(self, old, new):
         self.bot.HandleEvent(Event(IRC_EVT_USER_NICK_CHANGE, user=self, new_nick=new))
         self.OnAction()
-        self.DebugLog("OnNickChanged(", old, new, ")")
+        self.DebugLog("changed nick from", old, "to", new)
         self.nick = u"" + new
         
     def OnHostnameChanged(self, old, new):
         self.OnAction()
-        self.DebugLog("OnHostnameChanged(", old, new, ")")
+        self.DebugLog("HOST ", new)
         self.hostname = new
         if self.AutoAuth():
             return True
@@ -312,9 +311,9 @@ class BotWindow:
         
     def DebugLog(self, *args):
         args = map(arg_to_str, args)
-        line = " ".join(args)
+        line = self.__str__() + " " + " ".join(args)
         if self.debug:
-            self.bot.BotLog(self.__str__(), line)
+            self.bot.log.Log("win", line)
         
     def GetName(self):
         return self.name
@@ -512,7 +511,9 @@ class Channel(BotWindow):
         user.OnAction()
 
     def OnHasUsers(self, users):
-        self.DebugLog("*USERS*", users)
+        modes = {None:"","o":"@","v":"+"}
+        nicks = ", ".join([modes[item[1]]+item[0] for item in users])
+        self.DebugLog("*USERS*", nicks)
         for u in users:
             nick = u[0]
             mode = u[1]
