@@ -67,7 +67,7 @@ class IRCClient:
 
     def InitializeClient(self):
         """Reset variables before connecting."""
-        self.DebugLog("InitializeClient()")
+        self.DebugLog("Initializing...")
         self.nick = None
 
         self.irc_connected = False
@@ -108,7 +108,7 @@ class IRCClient:
     def PrintToLog(self, line):
         if not self.irc_debugging:
             return False
-        log = "[irc client] : "+line
+        log = line
         if not self.OnClientLog(log):
             print log
 
@@ -168,8 +168,7 @@ class IRCClient:
         self.ChangeNick(self.nick)
         
     def OnPing(self, data=False):
-        if data == False:
-            data == ""
+        data = data or ""
         self.last_ping_pong = time.time()
         self.SendLine("PONG %s" % data)
         
@@ -186,6 +185,12 @@ class IRCClient:
 
     def OnServerInfo(self, info):
         #self.DebugLog("OnServerInfo(", info, ")")
+        pass
+
+    def OnProcessConn(self, message):
+        self.DebugLog("Waiting: ", message)
+
+    def OnYourId(self, id, message = ""):
         pass
 
     def OnMotdLine(self, line):
@@ -285,14 +290,14 @@ class IRCClient:
         self.pinged_server = time.time()
 
     def ChangeNick(self, nick=None):
-        self.DebugLog("ChangeNick(", nick, ")")
+        self.DebugLog("Changing nick to:", nick)
         if nick == None:
             nick = self.def_nick
         self.SetNick(nick)
         self.SendLine("NICK %s" % nick)
       
     def DoIntroduce(self, nick=None, ident=None, realname=None):   # Send NICK and USER messages
-        self.DebugLog("DoIntroduce(", nick, ident, realname, ")")
+        self.DebugLog("Introducing as:", "nick:", nick, ", ident:", ident, ", realname:", realname)
         if nick == None:
             nick = self.def_nick
         if ident == None:
@@ -548,9 +553,16 @@ class IRCClient:
                 self.OnWelcomeInfo(" ".join(parts[3:]))
             elif numeric == 5:
                 self.OnSupportInfo(" ".join(parts[3:]))
+            elif numeric == 20:
+                self.OnProcessConn(txt_data)
+            elif numeric == 42:
+                self.OnYourId(parts[3], txt_data)
             elif numeric in [251, 252, 253, 254, 255]:
                 self.OnServerInfo(" ".join(parts[3:]))
-                
+            elif numeric in [265, 266]:    # Local and global users
+                #:no.address 265 bx 4 11 :Current local users 4, max 11
+                #:no.address 266 bx 4 11 :Current global users 4, max 11
+                pass # Implement if needed
             elif numeric in [311]:         # Parse whois responses
                 nick = parts[3]
                 if numeric == 311:
@@ -670,7 +682,6 @@ class IRCClient:
             
     def Send(self, data):
         data = self.DataEncode(data)
-        self.DebugLog("SEND", data[:-2])
         self.send_buffer.append(data)
 
     def LoopingSend(self, data):
@@ -734,11 +745,11 @@ class IRCClient:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if "settimeout" in dir(self.sock):
             self.sock.settimeout(self.sock_timeout) # This needs to be stoppable
-        self.DebugLog("Connect()","connecting to " + self.host + ":" + str(self.port) + "...")
+        self.DebugLog("Connecting to " + self.host + ":" + str(self.port) + "...")
         try:
             self.sock.connect((self.host, self.port))
         except socket.error, err:
-            self.DebugLog("Connect()", "error connecting:", str(socket.error), str(err))
+            self.DebugLog("Error connecting:", str(socket.error), str(err))
             return False
         self.irc_connected = 1
         return True
@@ -823,7 +834,7 @@ class IRCClient:
 
     # Connect and run irc client
     def StartClient(self, block=True):
-        self.DebugLog("StartClient()") 
+        self.DebugLog("Starting client...") 
         connected = self.Connect()
         if connected:
             self.OnConnected()
