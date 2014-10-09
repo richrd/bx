@@ -34,7 +34,6 @@ import config
 import comps
 from comps import *
 
-
 class IRCBot(irc.IRCClient):
     def __init__(self):
         irc.IRCClient.__init__(self)
@@ -43,8 +42,8 @@ class IRCBot(irc.IRCClient):
         self.bot_running = 0
         self.bot_debugging = 1
         self.current_path = get_current_script_path()
-        
         config_file = "config.txt"
+
 
         if len(sys.argv) > 1:
             config_file = sys.argv[1]
@@ -67,6 +66,7 @@ class IRCBot(irc.IRCClient):
         
         self.LoadModules()
 
+
     #
     # Logging
     #
@@ -79,7 +79,7 @@ class IRCBot(irc.IRCClient):
         args = map(arg_to_str, args)
         line = " ".join(args)
         if self.bot_debugging:
-            print time_stamp_short(),"BOT :: ",(line)
+            print time_stamp_short()," ",(line)
 
 
 
@@ -184,7 +184,10 @@ class IRCBot(irc.IRCClient):
             self.RunCommand(command, win, user, data)
             
     def FindCommand(self, message):
+        # Characters after cmd_prefix to ignore
         ignore = [" ", ".", "-", "!", "?", "_"]
+
+        # Check if message begins with cmd_prefix
         if message[:len(self.config["cmd_prefix"])] == self.config["cmd_prefix"]:
             command = message[len(self.config["cmd_prefix"]):]
             if len(command) == 0:
@@ -192,11 +195,13 @@ class IRCBot(irc.IRCClient):
             if command[0] in ignore:
                 return False
             return command
-        else:
+        else: # If not, check if it begins with the bots nick
             parts = message.split(" ")
             if parts[0].lower().startswith(self.me.nick.lower()):
                 rest =  parts[0].lower()[len(self.me.nick):]
-                if rest and rest[0] in [" ", ",", ";",":"]:
+                if not rest:
+                    return "" # Return empty string to trigger unknown command event
+                if rest[0] in [" ", ",", ";",":"]:
                     return " ".join(parts[1:])
         return False
 
@@ -344,10 +349,9 @@ class IRCBot(irc.IRCClient):
                     lstn.ExecuteEvent(Event(IRC_EVT_INTERVAL))
                     
     def OnClientLog(self, line): # Route irc client class logging to BotLog
-        self.BotLog(line)
-        return True
+        self.BotLog("irc", line)
         # Returning True prevents the irc client class from printing the logging to the console
-        # return True
+        return True
         
     def OnConnected(self):
         self.DebugLog("Connected to IRC server.")
@@ -440,7 +444,7 @@ class IRCBot(irc.IRCClient):
     def RunBot(self):
         self.bot_running = 1
 
-        self.BotLog("Run()","starting bot...")
+        self.BotLog("Starting bot...")
         self.SetHost(self.config["server"]["host"])
         self.SetPort(self.config["server"]["port"])
         self.SetSendThrottling(self.config["send_throttle"])

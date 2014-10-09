@@ -133,7 +133,8 @@ class User:
         args = map(arg_to_str, args)
         line = " ".join(args)
         if self.debug:
-            self.bot.BotLog("USR: ", self.__str__(), line)
+            # self.bot.BotLog("USR: ", self.__str__(), line)
+            self.bot.BotLog(self.__str__(), line)
 
     #
     #   Events
@@ -313,7 +314,7 @@ class BotWindow:
         args = map(arg_to_str, args)
         line = " ".join(args)
         if self.debug:
-            self.bot.BotLog("WIN: ", self.__str__(), line)
+            self.bot.BotLog(self.__str__(), line)
         
     def GetName(self):
         return self.name
