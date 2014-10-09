@@ -27,7 +27,7 @@ class Context:
             else:
                 new.append(word)
             i += 1
-        self.words = new
+        self.words = new or [""]
 
     def GetWords(self, data):
         words = re.findall('[\#\w\-]*', data)
@@ -40,7 +40,6 @@ class Context:
 
     def ChooseReply(self, replys):
         self.reply = random.choice(replys)
-        print self.reply
 
     def ReplaceReply(self):
         for key in self.context_values.keys():
@@ -175,6 +174,11 @@ class UnknownCMD(Listener):
             ("what", "no idea"),
             ("party", "party so hard!"),
             ("dafuq", "dafuq you back"),
+            ("", [
+                "What [user_nick]?",
+                "Yeah?",
+                "Hi [user_nick]",
+                ]),
         ]
 
         # Substitutions for replys
@@ -210,18 +214,17 @@ class UnknownCMD(Listener):
         data = event.cmd
         if event.cmd_args:
             data += " " + event.cmd_args
-        sentences = re.findall('[\w\d][\w\d\s]*[^\.\!\?]*[\.\!\?]*', data)
+        sentences = re.findall('[\w\d][\w\d\s]*[^\.\!\?]*[\.\!\?]*', data) or [""]
         matched = False
-        if sentences:
-            for sentence in sentences:
-                context = Context(sentence)
-                match = self.Match(context)
-                if match:
-                    matched = True
-                    context.ReplaceReply()
-                    reply = context.GetReply()
-                    reply = self.SubstituteReply(reply, event)
-                    event.win.Send(reply)
+        for sentence in sentences:
+            context = Context(sentence)
+            match = self.Match(context)
+            if match:
+                matched = True
+                context.ReplaceReply()
+                reply = context.GetReply()
+                reply = self.SubstituteReply(reply, event)
+                event.win.Send(reply)
         return matched
 
     def Match(self, context):
