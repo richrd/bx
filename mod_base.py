@@ -121,12 +121,16 @@ class Module:
     def __init__(self, bot):
         """Base class for modules."""
         self.bot = bot
+        self.name = ""
         self.debug = 1
         self.last_exec = None
 
     def init(self):
         pass
-
+    
+    def Log(self, s, color=None):
+        self.bot.log.Log("cmd", "{"+self.name+"} "+s, color)
+    
     def GetMan(self):
         docstr = "-no description-"
         if "__doc__" in dir(self):

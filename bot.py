@@ -92,7 +92,6 @@ class IRCBot(irc.IRCClient):
     def ReloadBot(self):
         try:
             reload( comps )
-            from comps import *
             return True
         except Exception,e:
             print traceback.format_exc()
@@ -241,8 +240,8 @@ class IRCBot(irc.IRCClient):
     def RunCommand(self, command, win, user, data):
         inst = self.GetCommand(command)
         if inst != False:
-            line = str((user, command, data))
-            self.log.Log("cmd", line)
+            line = str(user)+" "+command+" "+str(data)
+            self.log.Log("bot", line, color=logger.colors.RED)
             inst.Execute(win, user, data)
         else:
             if not self.HandleEvent(Event(IRC_EVT_UNKNOWN_CMD, win, user, cmd = command, cmd_args=data)):

@@ -3,7 +3,7 @@ from mod_base import *
 import time, json
 
 class Weather(Command):
-    """Display the current weather conditions."""
+    """Display the current weather conditions. Usage: weather [location]"""
     def init(self):
         self.api_key = "5d4f25ba8d50f6bd0a30e8f32560a669"
         self.api_url = "http://api.openweathermap.org/data/2.5/weather?q=[[QUERY]]&units=metric&APPID="+self.api_key

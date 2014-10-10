@@ -3,7 +3,7 @@ from mod_base import *
 class Alias(Command):
     """Defines a new command alias.
 
-    Usage: alias new_name command
+    Usage: alias new_name command [args]
     """
 
     def run(self, win, user, data, caller=None):
