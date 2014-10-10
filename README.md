@@ -5,7 +5,7 @@ Modular Python IRC bot made from scratch.
 Come and talk to me at #bxbot @ QuakeNet :)
 
 ## Features
-* 40+ modules with general features including:
+* 50+ modules with general features including:
   * Authentication with different userlevels
   * Auto op for trusted users
   * Leave a message to an offline user
@@ -74,7 +74,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
 
 *   alias
     > Defines a new command alias.
-    > Usage: alias new_name command
+    > Usage: alias new_name command [args]
 
 *   auth
     > Identify yourself with the bot (login). Only works via private messages.
@@ -94,6 +94,9 @@ Come and talk to me at #bxbot @ QuakeNet :)
     > Usage: broadcast [+-]name target[,target,...] interval command [args]
     > Usage: broadcast [+-]name target[,target,...] interval :message
     > Usage: broadcast +hello #chan1,#chan2 1h :hello world!
+
+*   btc
+    > Display the current Bitcoin exchange rate. Default exchange is bitstamp. Usage: btc [exchange]
 
 *   calc
     > Calculate math and python expressions. e.g. calc 3+4*6
@@ -120,7 +123,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
     > Take OPs from a nick.
 
 *   die
-    > Kill the bot.
+    > Kill the bot. Warning: I won't rise from my ashes like a fenix!
 
 *   dropsend
     > Clear the outgoing message buffer. Warning: removes all data queued for sending to the IRC server.
@@ -235,7 +238,9 @@ Come and talk to me at #bxbot @ QuakeNet :)
 *   view
     > View various bot information.
 
+*   weather
+    > Display the current weather conditions. Usage: weather [location]
+
 *   wtf
     > Show definitions for common acronyms.
     > Usage: wtf acronym
-
