@@ -20,38 +20,69 @@ def get_mimetype(url):
             break
     return content_type
 
+def find_title(data):
+    try:
+        from HTMLParser import HTMLParser
+        class TitleParser(HTMLParser):
+            def __init__(self):
+                HTMLParser.__init__(self)
+                self.title = ""
+                self.in_title = False
+
+            def handle_starttag(self, tag, attrs):
+                if tag == "title":
+                    self.in_title = True
+
+            def handle_endtag(self, tag):
+                if self.in_title:
+                    self.in_title = False
+                    self.title = self.title.replace("\n", "")
+                    self.title = self.title.replace("\r", "")
+
+            def handle_data(self, data):
+                if self.in_title:
+                    self.title += data
+
+        # instantiate the parser and fed it some HTML
+        parser = TitleParser()
+        parser.feed(data)
+        return parser.title
+    except:
+        titleRE = re.compile("<title>(\\s.*?)</title>", re.IGNORECASE)
+        title = titleRE.findall(data)
+        if title:
+            return title[0]
+    return False
+
 # Get <title> of web page
-def get_url_title(url):
+def get_url_title(url, logf):
     ignore_ext = ["jpg", "png", "gif", "tiff", "psd", "zip", "rar", "sh"]
     if url[-3:] in ignore_ext:
+        logf("Invalid extension.")
         return False
 
     # Check that the the resource content type is something relevant
     try:
         content_type = get_content_type(url)
         if content_type and not content_type in ["text/html", "text/xhtml", "text/plain"]:
+            logf("Invalid content-type.")
             return False
     except:
         pass
-
 
     if urllib2 != False:
         u = urllib2.urlopen(url, timeout=5)
     else:
         u = urllib.urlopen(url)
-    data = u.read()
+    data = u.read(10000)    # Read max 10 000 bytes to avoid Out of Memory
     
     try:
         data = data.decode("utf-8")
     except:
         pass
 
-    # Find title ignoring tag case
-    titleRE = re.compile("<title>(.+?)</title>", re.IGNORECASE)
-    title = titleRE.findall(data)
-    if not title:
-        return False
-    title = title[0]
+    logf("Got url data.")
+    title = find_title(data)
 
     try:
         import HTMLParser
@@ -73,7 +104,7 @@ class Url(Listener):
         urls = find_urls(event.msg)
         titles = []
         for url in urls:
-            title = get_url_title(url)
+            title = get_url_title(url, self.Log)
             if title != False:
                 titles.append('"'+title+'"')
         if titles:
