@@ -20,6 +20,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Link title paster
   * 'wtf' for looking up acronyms
   * Bot host status information
+  * Command line interface for managing bot
 * Integrated help available
 * Supports user accounts and access control
 * Simple to extend if you know Python
@@ -35,12 +36,10 @@ Come and talk to me at #bxbot @ QuakeNet :)
 
 ### Features
 * Core
-  * Make console output sane and readable
   * Implement ignoring users that haven't authed
   * Better config grouping
   * Multi server support?
   * Data store for modules
-  * Simle CLI for viewing logs etc
   * Implement running multiple commands from a single message
 * Modules
   * Command for taking photos and uploading them to a server
@@ -93,6 +92,9 @@ Come and talk to me at #bxbot @ QuakeNet :)
 
 *   clearlogs
     > Clear n. number of messages from window logs (or all if no arguments given).
+
+*   cli
+    > A command line interface for the bot. Activate with CTRL+C in console.
 
 *   cmdprefix
     > Set the command prefix that the bot will respond to.

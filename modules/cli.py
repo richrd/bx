@@ -2,7 +2,7 @@
 from mod_base import * 
 
 class CLI(Listener):
-    """ A command line interface for the bot."""
+    """A command line interface for the bot. Activate with CTRL+C in console."""
     def init(self):
         self.events = [IRC_EVT_INTERRUPT, IRC_EVT_MSG]
 
