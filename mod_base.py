@@ -234,8 +234,8 @@ class Command(Module):
                             self.run(win,user,data)
                         except Exception,e:
                             win.Privmsg("failed to run:"+str(e))
-                            print traceback.format_exc()
-                            print sys.exc_info()[0]
+                            msg = get_error_info()
+                            self.bot.log.Error("bot", msg)
                     else:
                         self.run(win,user,data)
                     return True
@@ -272,14 +272,14 @@ class Listener(Module):
         if self.bot.config["avoid_cmd_crash"]:
             try:
                 self.last_exec = time.time()
-                self.event(event)
-            except Exception,e:
-                # win.Privmsg("failed to run:"+str(e))
-                print traceback.format_exc()
-                print sys.exc_info()[0]
+                return self.event(event)
+            except Exception, e:
+                msg = get_error_info()
+                self.bot.log.Error("bot", msg)
+                return False
         else:
             self.last_exec = time.time()
-            self.event(event)
+            return self.event(event)
 
 # Hybrid class
 class Hybrid(Command, Listener):

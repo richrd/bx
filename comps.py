@@ -10,7 +10,7 @@ import os
 import sys
 import time
 import string
-import traceback
+# import traceback
 
 # Symbian S60 specific compatibility
 s60 = False
@@ -288,13 +288,22 @@ class Me(User):
         else:
             self.Nick(self.nick + self.bot.config["nick_suffix"])
 
+class Admin(User):
+    """Admin user
+
+    Represents the command line user.
+
+    """
+    def __init__(self, bot):
+        User.__init__(self, bot, "*admin*")
+        self.account = {"level": 100}
 
 #
 # Virtual windows
 #
 
 class BotWindow:
-    """Window representing an irc channel or query"""
+    """Window representing an IRC channel or query"""
 
     def __init__(self, bot, name=None):
         self.bot = bot
@@ -304,10 +313,10 @@ class BotWindow:
         self.debug = 1
 
     def __repr__(self):
-        return "[[" + self.GetName() + "]]"
+        return "[" + self.GetName() + "]"
 
     def __str__(self):
-        return "[[" + self.GetName() + "]]"
+        return "[" + self.GetName() + "]"
         
     def DebugLog(self, *args):
         args = map(arg_to_str, args)
@@ -345,14 +354,11 @@ class BotWindow:
             self.bot.Privmsg(self.GetName(), msg)
             
     def OnPrivmsg(self, user, msg):
-         #self.DebugLog(user, msg)
          message = Message(user.GetNick(), msg, self.GetName())
          self.AppendLog(message)
 
     def OnNotice(self, user, msg):
          self.DebugLog("*NOTICE*", user, msg)
-         #message = Message(user.GetNick(), msg, self.GetName())
-         #self.AppendLog(message)
 
         
 class Query(BotWindow):
@@ -366,7 +372,27 @@ class Query(BotWindow):
 
     def GetNicks(self):
         return [self.user.nick]
+
+class Console(BotWindow):
+    def __init__(self, bot, user):
+        BotWindow.__init__(self, bot)
+        self.zone = IRC_ZONE_QUERY
+        self.user = user
+
+    def GetName(self):
+        return self.user.nick
+
+    def GetNicks(self):
+        return [self.user.nick]
         
+    def Privmsg(self, msg):
+        self.Send(msg)
+
+    def Notice(self, msg):
+        self.Send(msg)
+
+    def Send(self, msg):
+        self.bot.log.Info("bot", msg)
         
 class Channel(BotWindow):
     def __init__(self, bot, name):

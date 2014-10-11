@@ -45,7 +45,6 @@ class IRCBot(irc.IRCClient):
         self.current_path = get_current_script_path()
         config_file = "config.txt"
 
-
         if len(sys.argv) > 1:
             config_file = sys.argv[1]
         if s60:
@@ -54,11 +53,14 @@ class IRCBot(irc.IRCClient):
             self.config = config.BotConfig(self, config_file)
         self.config.Load()
         
+        # Setup the bot identity and command line user
         self.me = Me(self)
+        self.admin = Admin(self)
         
+        # Prepopulate users and windows
         self.users = [self.me]
-        self.windows = []
-                
+        self.windows = [Console(self, self.me)]
+
         self.commands = {}
         self.listeners = {}
         
@@ -66,7 +68,7 @@ class IRCBot(irc.IRCClient):
         self.listeners_cache = {}
         
         self.LoadModules()
-
+        self.log.Loaded()
 
     #
     # Logging
@@ -79,8 +81,6 @@ class IRCBot(irc.IRCClient):
             return False
         args = map(arg_to_str, args)
         line = " ".join(args)
-        # if self.bot_debugging:
-            # print time_stamp_short()," ",(line)
         self.log.Log("bot", line)
 
 
@@ -94,8 +94,10 @@ class IRCBot(irc.IRCClient):
             reload( comps )
             return True
         except Exception,e:
-            print traceback.format_exc()
-            print sys.exc_info()[0]
+            msg = get_error_info()
+            self.log.Error("bot", msg)
+            # print traceback.format_exc()
+            # print sys.exc_info()[0]
             return e
             
         self.me = None
@@ -108,7 +110,7 @@ class IRCBot(irc.IRCClient):
             reload(config)
             self.config = config.BotConfig(self.config_file)
             self.config.Load()
-        except Exception,e:
+        except Exception, e:
             return e
         return True
         
@@ -146,8 +148,8 @@ class IRCBot(irc.IRCClient):
             reload(__import__("mod_base"))
             reload(mods)
         except Exception,e:
-            print traceback.format_exc()
-            print sys.exc_info()[0]
+            msg = get_error_info()
+            self.log.Error("bot", msg)
             return e
         self.ResetModules()
         self.LoadModules()
@@ -260,9 +262,9 @@ class IRCBot(irc.IRCClient):
         for listener in self.listeners_cache.keys():
             lstn = self.listeners_cache[listener]
             if IRC_EVT_ANY in lstn.events:
-                lstn.event(event)
+                lstn.ExecuteEvent(event)
             if event.id in lstn.events:
-                value = lstn.event(event)
+                value = lstn.ExecuteEvent(event)
                 if not handled:
                     handled = value or False
         return handled
@@ -348,18 +350,29 @@ class IRCBot(irc.IRCClient):
                     lstn.ExecuteEvent(Event(IRC_EVT_INTERVAL))
                 elif time.time() - lstn.last_exec > lstn.interval:
                     lstn.ExecuteEvent(Event(IRC_EVT_INTERVAL))
-                    
+             
+    def OnInterrupt(self):
+        print ""
+        handled = False
+        for listener in self.listeners_cache.keys():
+            lstn = self.listeners_cache[listener]
+            if IRC_EVT_INTERRUPT in lstn.events:
+                value = lstn.ExecuteEvent(Event(IRC_EVT_INTERRUPT))
+                if not handled:
+                    handled = value or False
+        return handled
+
     def OnClientLog(self, line): # Route irc client class logging to BotLog
         self.log.Log("irc", line)
         # Returning True prevents the irc client class from printing the logging to the console
         return True
         
     def OnConnected(self):
-        self.DebugLog("Connected to IRC server.")
+        self.log.Log("bot", "Connected to IRC server.")
         self.DoIntroduce(self.me.nick, self.config["ident"], self.config["realname"])
         
     def OnReady(self):
-        self.BotLog("IRC handshake done, now ready.")
+        self.log.Log("bot", "IRC handshake done, now ready.")
         self.throttled = 0
         self.HandleEvent(Event(IRC_EVT_READY))
         self.DoAutoJoin()
@@ -445,14 +458,14 @@ class IRCBot(irc.IRCClient):
     def RunBot(self):
         self.bot_running = 1
 
-        self.BotLog("Starting bot...")
+        self.log.Log("bot", "Starting bot...")
         self.SetHost(self.config["server"]["host"])
         self.SetPort(self.config["server"]["port"])
         self.SetSendThrottling(self.config["send_throttle"])
         
         status = self.BotLoop()
-        self.BotLog("Run()","bot loop returned status", status)
-        self.BotLog("Run()","terminated!")
+        self.log.Log("bot", "Run()","bot loop returned status", status)
+        self.log.Log("bot", "Run()","terminated!")
         return status
 
     def StopBot(self):
@@ -463,14 +476,14 @@ class IRCBot(irc.IRCClient):
     def BotLoop(self):
         self.StartClient()
         while self.bot_running:
-            self.BotLog("BotLoop()","client disconnected")
+            self.log.Log("bot", "BotLoop()","client disconnected")
             if self.irc_throttled:
                 time.sleep(self.config["throttle_wait"])
             else:
-                self.BotLog("BotLoop()","reconnecting in 10sec")
+                self.log.Log("bot", "BotLoop()","reconnecting in 10sec")
                 time.sleep(10)
             self.StartClient()
-            self.BotLog("BotLoop()","client disconnected")
+            self.log.Log("bot", "BotLoop()","client disconnected")
 
 if __name__ == "__main__":
     b = IRCBot()

@@ -260,6 +260,10 @@ class IRCClient:
 
     def IsConnected(self):
         return self.irc_connected
+
+    def OnInterrupt(self):
+        """Called when the mainloop is interrupted with a KeyboardInterrupt. Return True to continue execution."""
+        return False
         
     #
     # Actions
@@ -736,10 +740,6 @@ class IRCClient:
     #
     # Start & Maintain Connection
     #
-        
-    def Interrupt(self):
-        """Called when the mainloop is interrupted with a KeyboardInterrupt. Return True to continue execution."""
-        return False
 
     def Connect(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -823,8 +823,10 @@ class IRCClient:
             self.Process()
             return True
         except KeyboardInterrupt:
-            if self.Interrupt() == False:
-                return False
+            return self.OnInterrupt()
+            # if self.OnInterrupt() == False:
+                # return False
+            # return True
 
     def IRCMainloop(self):
         while self.irc_running:

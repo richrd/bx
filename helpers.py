@@ -10,6 +10,7 @@ import sys
 import time
 import re
 import urllib
+import traceback
 
 try:
     import urllib2
@@ -111,6 +112,11 @@ def has_word(s, w):
 # split string into words
 def split_words(s):
     return re.split('\W+',s)
+
+# return info about last error
+def get_error_info():
+    msg = str(traceback.format_exc()) + "\n" + str(sys.exc_info())
+    return msg
 
 # find any urls in a string
 def find_urls(s):
