@@ -35,17 +35,14 @@ Come and talk to me at #bxbot @ QuakeNet :)
 
 ### Features
 * Core
-  * Make module reloader skip modules with errors
   * Make console output sane and readable
   * Implement ignoring users that haven't authed
   * Better config grouping
   * Multi server support?
   * Data store for modules
-  * Debug logging capability for commands
   * Simle CLI for viewing logs etc
   * Implement running multiple commands from a single message
 * Modules
-  * Make URL module work with multiple adresses in a single message
   * Command for taking photos and uploading them to a server
   * Ignore and unignore users
   * Replace runas with command that allows:
@@ -56,13 +53,6 @@ Come and talk to me at #bxbot @ QuakeNet :)
     * wtf could store unknown acronyms
     * unknowncmd could store unmatched messages (or fallback matches)
 * PyS60-specific functionality
-
-### Protocol
-* Implement hooks for
-  * 042 RPL_YOURID
-  * 265 RPL_LOCALUSERS
-  * 266 RPL_GLOBALUSERS
-
 
 ## Module List
 *   addaccount

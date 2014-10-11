@@ -57,10 +57,10 @@ class Weather(Command):
 
         condition = weather["description"] + ", "
         output = condition + ", ".join([
-                temp + u"\u00B0C ",
-                "wind speed " + windspeed + "m/s ",
-                "cloudiness " + clouds + "% ",
-                "humidity " + humidity + "%, ",
+                temp + u"\u00B0C",
+                "wind speed " + windspeed + "m/s",
+                "cloudiness " + clouds + "%",
+                "humidity " + humidity + "%",
                 "@ " + place
             ])
         win.Send(output)
