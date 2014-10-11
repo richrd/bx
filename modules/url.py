@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from mod_base import * 
 
 
@@ -21,7 +20,7 @@ def get_mimetype(url):
     return content_type
 
 def find_title(data):
-    try:
+    try: # Try to use HTMLParser
         from HTMLParser import HTMLParser
         class TitleParser(HTMLParser):
             def __init__(self):
@@ -47,7 +46,7 @@ def find_title(data):
         parser = TitleParser()
         parser.feed(data)
         return parser.title
-    except:
+    except: # Fall back on regex
         titleRE = re.compile("<title>(\\s.*?)</title>", re.IGNORECASE)
         title = titleRE.findall(data)
         if title:
@@ -74,6 +73,8 @@ def get_url_title(url, logf):
         u = urllib2.urlopen(url, timeout=5)
     else:
         u = urllib.urlopen(url)
+    if u.getcode() != "200": # Only proceed if request is ok
+        return False
     data = u.read(10000)    # Read max 10 000 bytes to avoid Out of Memory
     
     try:
