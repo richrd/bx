@@ -53,6 +53,8 @@ Come and talk to me at #bxbot @ QuakeNet :)
     * unknowncmd could store unmatched messages (or fallback matches)
 * PyS60-specific functionality
 
+![Command line view of the bot.](https://raw.githubusercontent.com/richrd/bx/master/screenshots/console1.png)
+
 ## Module List
 *   addaccount
     > Create a new account.
