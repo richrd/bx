@@ -58,7 +58,7 @@ class IRCBot(irc.IRCClient):
         self.admin = Admin(self)
         
         # Prepopulate users and windows
-        self.users = [self.me]
+        self.users = [self.me, self.admin]
         self.windows = [Console(self, self.me)]
 
         self.commands = {}
@@ -96,13 +96,11 @@ class IRCBot(irc.IRCClient):
         except Exception,e:
             msg = get_error_info()
             self.log.Error("bot", msg)
-            # print traceback.format_exc()
-            # print sys.exc_info()[0]
             return e
             
         self.me = None
         self.channels = []
-        self.users = []
+        self.users = [self.me, self.admin]
         self.ReloadModules()
    
     def ReloadConfig(self):

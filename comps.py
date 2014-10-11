@@ -298,6 +298,15 @@ class Admin(User):
         User.__init__(self, bot, "*admin*")
         self.account = {"level": 100}
 
+    def Privmsg(self, msg):
+        self.Send(msg)
+
+    def Notice(self, msg):
+        self.Send(msg)
+
+    def Send(self, msg):
+        self.bot.log.Info("bot", msg)
+
 #
 # Virtual windows
 #
