@@ -35,7 +35,7 @@ class CLI(Listener):
     def run_cmd(self, data):
         args = Args(data)
         cmd = args[0]
-        data = args.Range(1)
+        data = args.Range(1) or None
         if not self.override_cmd(cmd, data):
             self.bot.RunCommand(cmd, self.bot.GetWindow(self.bot.me.GetNick()), self.bot.admin, data)
 

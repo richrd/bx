@@ -40,8 +40,7 @@ class Logs(Command):
         try:
             self.run_wrapped(win,user,data,caller)
         except Exception, err:
-            print traceback.format_exc()
-            print sys.exc_info()[0]
+            self.bot.log.Error("cmd", get_error_info())
 
     def run_wrapped(self, win, user, data, caller=None):
         max_age = 15*60
