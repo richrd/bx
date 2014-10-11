@@ -27,6 +27,8 @@ Come and talk to me at #bxbot @ QuakeNet :)
 * Aims to be compatible with Symbian S60 for hosting a bot on a phone :)
   * Comming later: module for shooting and uploading pictures from a phone
 
+![Command line view of the bot.](https://raw.githubusercontent.com/richrd/bx/master/screenshots/console1.png)
+
 ## To-do
 
 ### Documentation
@@ -52,8 +54,6 @@ Come and talk to me at #bxbot @ QuakeNet :)
     * wtf could store unknown acronyms
     * unknowncmd could store unmatched messages (or fallback matches)
 * PyS60-specific functionality
-
-![Command line view of the bot.](https://raw.githubusercontent.com/richrd/bx/master/screenshots/console1.png)
 
 ## Module List
 *   addaccount
