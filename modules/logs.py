@@ -38,7 +38,7 @@ class Logs(Command):
 
     def run(self, win, user, data, caller=None):
         try:
-            self.run_wrapped(win,user,data,caller)
+            self.run_wrapped(win, user, data, caller)
         except Exception, err:
             self.bot.log.Error("cmd", get_error_info())
 

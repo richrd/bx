@@ -240,7 +240,10 @@ class IRCBot(irc.IRCClient):
     def RunCommand(self, command, win, user, data):
         inst = self.GetCommand(command)
         if inst != False:
-            line = str(user)+" "+command+" "+str(data)
+            args = ""
+            if data:
+                args = unicode(data)
+            line = str(user)+" "+command+" "+args
             self.log.Log("bot", line, color=logger.colors.RED)
             inst.Execute(win, user, data)
         else:

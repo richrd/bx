@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Logging capabilities IRC Bot.
+Logging capabilities for the IRC Bot.
 """
 
 import time

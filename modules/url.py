@@ -75,7 +75,8 @@ def get_url_title(url, logf):
         u = urllib.urlopen(url)
     if u.getcode() != "200": # Only proceed if request is ok
         return False
-    data = u.read(10000)    # Read max 10 000 bytes to avoid Out of Memory
+    # Read max 10 000 bytes to avoid Out of Memory
+    data = u.read(10000)
     
     try:
         data = data.decode("utf-8")

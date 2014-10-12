@@ -105,6 +105,7 @@ class IRCClient:
         line = " ".join(args)
         self.PrintToLog(line)
 
+    # Move this to DebugLog
     def PrintToLog(self, line):
         if not self.irc_debugging:
             return False

@@ -231,9 +231,9 @@ class Command(Module):
                     if self.bot.config["avoid_cmd_crash"]:
                         try:
                             self.args = Args(data,self.bot)
-                            self.run(win,user,data)
-                        except Exception,e:
-                            win.Privmsg("failed to run:"+str(e))
+                            self.run(win, user, data)
+                        except Exception, e:
+                            win.Privmsg("failed to run:" + str(e))
                             msg = get_error_info()
                             self.bot.log.Error("bot", msg)
                     else:
