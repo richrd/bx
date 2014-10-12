@@ -45,7 +45,8 @@ def find_title(data):
         # instantiate the parser and fed it some HTML
         parser = TitleParser()
         parser.feed(data)
-        return parser.title
+        return parser.title or False
+        
     except: # Fall back on regex
         titleRE = re.compile("<title>(\\s.*?)</title>", re.IGNORECASE)
         title = titleRE.findall(data)
