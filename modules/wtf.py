@@ -393,7 +393,10 @@ class Wtf(Command):
             'bcc': 'Blind Carbon Copy',
             'agp': 'Accelerated Graphics Port',
             'cpu': 'Central Processing Unit',
-            'dvr': 'Digital Video Recorder'
+            'dvr': 'Digital Video Recorder',
+
+            'sloc': 'Source Lines of Code',
+            'wtf': 'What the Fuck',
         }
 
     def run(self, win, user, data, caller=None):

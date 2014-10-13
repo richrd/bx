@@ -36,7 +36,7 @@ class Logger:
         self.domain_colors = {
             "irc": colors.DARKBLUE,
             "bot": None,
-            "cmd": colors.YELLOW,
+            "mod": colors.YELLOW,
             "exc": colors.RED,
             "win": colors.OKGREEN,
             "user": colors.MAGENTA,

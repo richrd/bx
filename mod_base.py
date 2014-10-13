@@ -128,8 +128,11 @@ class Module:
     def init(self):
         pass
     
+    # def Log(self, s, color=None):
+    #     self.bot.log.Log("cmd", "{"+self.name+"} "+s, color)
+    
     def Log(self, s, color=None):
-        self.bot.log.Log("cmd", "{"+self.name+"} "+s, color)
+        self.bot.log.Log("mod", "{"+self.name+"} "+s, color)
     
     def GetMan(self):
         docstr = "-no description-"
@@ -153,7 +156,8 @@ class Command(Module):
         
         self.args = Args()
         self.throttle_time = properties["throttle"]
-        if self.throttle_time == None: self.throttle_time = self.bot.config["cmd_throttle"]
+        if self.throttle_time == None:
+            self.throttle_time = self.bot.config["cmd_throttle"]
 
         self.initialized = 0
         self.users = {} # list of users of command
@@ -167,10 +171,12 @@ class Command(Module):
         return True
 
     def DebugCmd(self, *args):
+        # Deprecate this
         args = map(arg_to_str,args)
         line = " ".join(args)
-        if self.debug:
-            self.bot.BotLog("CMD: ["+self.name+"]",line )
+        self.Log(line)
+        # if self.debug:
+        #     self.bot.BotLog("CMD: ["+self.name+"]",line )
         
     def ArgList(self, data):
         if data == None: return []

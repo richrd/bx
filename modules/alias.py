@@ -12,7 +12,7 @@ class Alias(Command):
             win.Send("please provide new alias and command")
             return False
 
-        alias = args[0].lower()
+        alias = u"" + args[0].lower()
         cmd = args[1].lower()
 
         if not cmd in self.bot.commands.keys():
