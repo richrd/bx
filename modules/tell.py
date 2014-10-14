@@ -23,7 +23,7 @@ class Tell(Command, Listener):
         self.OnOnline(event.user)
 
     def AddTell(self, user, search, message):
-        arr = [search, time_stamp_short() + " <" + user.GetNick() + "> " + message]
+        arr = [search.lower(), time_stamp_short() + " <" + user.GetNick() + "> " + message]
         self.queue[time.time()] = arr
 
     def DoTell(self, user, key):
@@ -37,7 +37,8 @@ class Tell(Command, Listener):
         keys.sort()
         for key in keys:
             entry = self.queue[key]
-            if entry[0].find(search) != -1:
+            target = entry[0].lower()
+            if target.find(search) != -1:
                 self.DoTell(user, key)
 
 module = {
