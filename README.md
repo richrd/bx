@@ -45,6 +45,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Data store for modules
   * Implement running multiple commands from a single message
   * Removing accounts
+  * DCC Chat?
 * Modules
   * Command for taking photos and uploading them to a server
   * Ignore and unignore users
