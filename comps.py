@@ -272,21 +272,20 @@ class Me(User):
     def __init__(self, bot):
         User.__init__(self, bot, bot.config["nicks"][0])
         self.nick_index = 0
+        self.attempted_nick = self.nick
         self.bot.SetNick(self.nick)
         
     def Nick(self, nick=None):
         if nick == None:
             nick = self.nick
-        self.nick = nick # Keep track of my nick
+        # self.nick = nick # Keep track of my nick
+        self.attempted_nick = nick
         self.bot.ChangeNick(nick)
         
     def TryNewNick(self):
         self.DebugLog("TryNewNick()")
-        self.nick_index += 1
-        if self.nick_index < len(self.bot.config["nicks"]):
-            self.Nick(self.bot.config["nicks"][self.nick_index])
-        else:
-            self.Nick(self.nick + self.bot.config["nick_suffix"])
+        self.attempted_nick = self.attempted_nick + self.bot.config["nick_suffix"]
+        self.bot.ChangeNick(self.attempted_nick)
 
 class Admin(User):
     """Admin user
@@ -552,7 +551,7 @@ class Channel(BotWindow):
         for u in users:
             nick = u[0]
             mode = u[1]
-            user = self.bot.GetUser(nick)
+            user = self.bot.GetUser(nick, True)
             self.AddUser(user, mode)
 
     #

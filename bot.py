@@ -261,7 +261,11 @@ class IRCBot(irc.IRCClient):
     def HandleEvent(self, event):
         handled = False
         for listener in self.listeners_cache.keys():
-            lstn = self.listeners_cache[listener]
+            # incase module removed during looping
+            try:
+                lstn = self.listeners_cache[listener]
+            except:
+                continue
             if IRC_EVT_ANY in lstn.events:
                 lstn.ExecuteEvent(event)
             if event.id in lstn.events:
@@ -281,11 +285,11 @@ class IRCBot(irc.IRCClient):
             win = Channel(self, name)
             self.windows.append(win)
         else:
-            win = Query(self, self.GetUser(name))
+            win = Query(self, self.GetUser(name, True))
             self.windows.append(win)
         return win
         
-    def GetWindow(self, name, create=True): # FIXME: default create to False
+    def GetWindow(self, name, create=True):
         for win in self.windows:
             if win.GetName() == name:
                 return win
@@ -300,13 +304,21 @@ class IRCBot(irc.IRCClient):
         self.users.append(user)
         return user
         
-    def GetUser(self, nick, create = True):
+    def GetUser(self, nick, create = False): # FIXME: default create to false
         for user in self.users:
             if user.nick == nick:
                 return user
         if create:
+            self.log.Info("bot", "Creating user "+nick)
             user = self.MakeUser(nick)
             return user
+        return False
+
+    def RemoveUser(self, nick):
+        for user in self.users:
+            if user.nick.lower() == nick.lower():
+                self.users.pop(self.users.index(user))
+                return True
         return False
         
     def FindUser(self, nick):
@@ -354,14 +366,7 @@ class IRCBot(irc.IRCClient):
              
     def OnInterrupt(self):
         print ""
-        handled = False
-        for listener in self.listeners_cache.keys():
-            lstn = self.listeners_cache[listener]
-            if IRC_EVT_INTERRUPT in lstn.events:
-                value = lstn.ExecuteEvent(Event(IRC_EVT_INTERRUPT))
-                if not handled:
-                    handled = value or False
-        return handled
+        return self.HandleEvent(Event(IRC_EVT_INTERRUPT))
 
     def OnClientLog(self, line): # Route irc client class logging to BotLog
         self.log.Log("irc", line)
@@ -382,12 +387,18 @@ class IRCBot(irc.IRCClient):
         self.me.TryNewNick()
         
     def OnUserHostname(self, nick, hostname):
-        self.GetUser(nick).SetHostname(hostname)
+        self.GetUser(nick, True).SetHostname(hostname)
 
     def OnWhoisHostname(self, nick, hostname):
-        self.GetUser(nick).SetHostname(hostname)
+        self.GetUser(nick, True).SetHostname(hostname)
         
     def OnUserNickChange(self, nick, new_nick):
+        # Make sure nick doesn't exist, just in case.
+        test_user = self.GetUser(new_nick)
+        if test_user != False:
+            # If it does exist, we remove the old user and show a warning.
+            self.log.Warning("bot", nick+" changed to existing user: "+new_nick+". Something wrong!")
+            self.RemoveUser(new_nick)
         self.GetUser(nick).OnNickChanged(nick, new_nick)
         
     def OnUserQuit(self, nick, reason):
@@ -396,10 +407,10 @@ class IRCBot(irc.IRCClient):
         for win in self.windows:
             if win.zone == IRC_ZONE_CHANNEL:
                 if win.HasUser(user):
-                    win.OnQuit(user,reason)
+                    win.OnQuit(user, reason)
         
     def OnPrivmsg(self, by, to, msg):
-        user = self.GetUser(by)
+        user = self.GetUser(by, True)
         if self.IsChannelName(to):
             win = self.GetWindow(to)
         else:
@@ -408,7 +419,7 @@ class IRCBot(irc.IRCClient):
         self.HandleMessage(win, user, msg)
 
     def OnNotice(self, by, to, msg):
-        user = self.GetUser(by)
+        user = self.GetUser(by, True)
         if self.IsChannelName(to):
             win = self.GetWindow(to)
         else:
@@ -437,7 +448,7 @@ class IRCBot(irc.IRCClient):
         
     def OnChannelJoin(self, chan, nick):
         win = self.GetWindow(chan)
-        win.OnJoin(self.GetUser(nick))
+        win.OnJoin(self.GetUser(nick, True))
 
     def OnChannelPart(self, chan, nick, reason):
         self.DebugLog("OnChannelPart(", chan, nick, reason, ")")
