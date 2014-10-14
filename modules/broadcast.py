@@ -1,7 +1,7 @@
 from mod_base import *
 
 class Broadcast(Hybrid):
-    """Broadcast messages or command out put to channels and/or users (targets).
+    """Broadcast messages or command output to channels and/or users (targets).
 
     Usage: broadcast [+-]name target[,target,...] interval command [args]
     Usage: broadcast [+-]name target[,target,...] interval :message

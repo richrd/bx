@@ -35,7 +35,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
 ### Documentation
 * More comments
 * General docs
-* Module API reference
+* Module developement docs and API reference
 
 ### Features
 * Core
@@ -44,6 +44,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Multi server support?
   * Data store for modules
   * Implement running multiple commands from a single message
+  * Removing accounts
 * Modules
   * Command for taking photos and uploading them to a server
   * Ignore and unignore users
@@ -82,7 +83,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
     > Automatically rejoin a channel after kick.
 
 *   broadcast
-    > Broadcast messages or command out put to channels and/or users (targets).
+    > Broadcast messages or command output to channels and/or users (targets).
     > Usage: broadcast [+-]name target[,target,...] interval command [args]
     > Usage: broadcast [+-]name target[,target,...] interval :message
     > Usage: broadcast +hello #chan1,#chan2 1h :hello world!
@@ -91,7 +92,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
     > Display the current Bitcoin exchange rate. Default exchange is bitstamp. Usage: btc [exchange]
 
 *   calc
-    > Calculate math and python expressions. e.g. calc 3+4*6
+    > Calculate math expressions. e.g. calc 3+4*6
 
 *   clearlogs
     > Clear n. number of messages from window logs (or all if no arguments given).
@@ -109,7 +110,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
     > Logout of the bot.
 
 *   define
-    > Define terms and words related to the bot.
+    > Defines terms and words related to the bot.
 
 *   delchan
     > Remove a channel from the autojoin list.

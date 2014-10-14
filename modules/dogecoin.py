@@ -49,4 +49,5 @@ module = {
     "type": MOD_COMMAND,
     "level": 0,
     "zone": IRC_ZONE_BOTH,
+    "aliases": ["dg"],
 }
