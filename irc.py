@@ -437,7 +437,8 @@ class IRCClient:
     # ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ====
     # Tries to parse a line received from the server
     def ParseLine(self, line):
-        
+        self.DebugLog("RAWRCV:", line)
+
         parts = string.split(line)
         txt_data = self.GetTextData(line)
         first_word = parts[0].lower()
@@ -546,7 +547,6 @@ class IRCClient:
                         modes = parts[3]
                         self.OnChannelModesChanged(target, modes, nick)
             else:
-                #self.DebugLog("\t\tParseLine(", line, ")","unknown text cmd")
                 return False
 
 
@@ -621,11 +621,8 @@ class IRCClient:
             elif numeric == 465:
                 self.OnConnectThrottled(txt_data)
             else:
-                #self.DebugLog("\t\tParseLine(", line, ")", "unknown numeric")
-                self.DebugLog("RAW:", line, "[unknown numeric]")
                 return False
         else:
-            self.DebugLog("RAW:", line, "[parsefail]")
             return False
     # ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ==== ====  
       
