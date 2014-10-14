@@ -21,6 +21,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * 'wtf' for looking up acronyms
   * Bot host status information
   * Command line interface for managing bot
+  * Bitcoin and Dogecoin exchange rates
 * Integrated help available
 * Supports user accounts and access control
 * Simple to extend if you know Python
@@ -34,7 +35,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
 ### Documentation
 * More comments
 * General docs
-* Module API referenceng
+* Module API reference
 
 ### Features
 * Core
@@ -46,7 +47,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
 * Modules
   * Command for taking photos and uploading them to a server
   * Ignore and unignore users
-  * Replace runas with command that allows:
+  * Replace 'runas' with command 'run' that allows:
     * Running commands as another user
     * Running commands at another channel
     * or both simultaneously
@@ -118,6 +119,9 @@ Come and talk to me at #bxbot @ QuakeNet :)
 
 *   die
     > Kill the bot. Warning: I won't rise from my ashes like a fenix!
+
+*   dogecoin
+    > Display the current DogeCoin exchange rate, from bter. Usage: dogecoin
 
 *   dropsend
     > Clear the outgoing message buffer. Warning: removes all data queued for sending to the IRC server.
