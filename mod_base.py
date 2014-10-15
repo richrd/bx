@@ -233,17 +233,17 @@ class Command(Module):
                         win.Privmsg("can't do that so often, wait %i sec" %self.GetThrottleWaitTime(user))
                     return False
                 else:
-                    self.users[user] = [time.time(),False]
+                    self.users[user] = [time.time(), False]
                     if self.bot.config["avoid_cmd_crash"]:
                         try:
-                            self.args = Args(data,self.bot)
+                            self.args = Args(data, self.bot)
                             self.run(win, user, data)
                         except Exception, e:
                             win.Privmsg("failed to run:" + str(e))
                             msg = get_error_info()
                             self.bot.log.Error("bot", msg)
                     else:
-                        self.run(win,user,data)
+                        self.run(win, user, data)
                     return True
             else:
                 if user.IsAuthed():

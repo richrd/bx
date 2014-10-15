@@ -48,6 +48,14 @@ class Weather(Command):
             win.Send("Sorry, weather data can't be retrieved.")
             return False
 
+        code = wdata["cod"]
+        if code != 200:
+            message = ""
+            if "message" in wdata.keys():
+                message = " (" + wdata["message"] + ")"
+            win.Send("Sorry, weather unavailable." + message)
+            return False
+
         weather = wdata["weather"][0]
         temp = str(wdata["main"]["temp"]) # Convert from Kelvin to Celcius
         humidity = str(wdata["main"]["humidity"])

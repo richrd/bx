@@ -51,7 +51,7 @@ class BotConfig:
                 "cmd_prefix":".",
                 "cmd_throttle":1.5,
                 
-                "log_domains": ["irc", "bot", "cmd", "exc", "win", "user"],
+                "log_domains": ["irc", "bot", "mod", "exc", "win", "user"],
 
                 "send_throttle":1.8,
                 "default_log_limit":1000,

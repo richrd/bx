@@ -107,7 +107,6 @@ class Url(Listener):
 
     def event(self, event):
         urls = find_urls(event.msg)
-        self.Log("cmd", "got urls:"+str(urls))
         titles = []
         for url in urls:
             title = get_url_title(url, self.Log)

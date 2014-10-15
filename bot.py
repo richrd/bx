@@ -243,6 +243,7 @@ class IRCBot(irc.IRCClient):
             args = ""
             if data:
                 args = unicode(data)
+            data = data or None
             line = str(user)+" "+command+" "+args
             self.log.Log("bot", line, color=logger.colors.RED)
             inst.Execute(win, user, data)

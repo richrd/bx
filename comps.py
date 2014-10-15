@@ -140,6 +140,7 @@ class User:
     #
             
     def OnAction(self):
+        self.online = 1
         self.last_active = time.time()
         pass
         

@@ -72,7 +72,8 @@ class Broadcast(Hybrid):
             cmd = self.bot.GetCommand(broadcast["cmd"])
             for target in broadcast["targets"]:
                 win = self.bot.GetWindow(target)
-                cmd.run(win, self.bot.me, broadcast["cmd_args"])
+                data = broadcast["cmd_args"]
+                self.bot.RunCommand(broadcast["cmd"], win, self.bot.me, data)
         else:
             for target in broadcast["targets"]:
                 win = self.bot.GetWindow(target)
