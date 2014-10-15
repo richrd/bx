@@ -35,6 +35,8 @@ Come and talk to me at #bxbot @ QuakeNet :)
 ### Documentation
 * More comments
 * General docs
+* Add command line usage to README.md
+* Add config description to README.md
 * Module developement docs and API reference
 
 ### Features
