@@ -41,6 +41,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
 
 ### Features
 * Core
+  * Use throttle detection to delay reconnecting (if G-lined etc)
   * Implement ignoring users that haven't authed
   * Better config grouping
   * Multi server support?
