@@ -4,6 +4,7 @@ import time, json
 
 class Weather(Command):
     """Display the current weather conditions. Usage: weather [location]"""
+
     def init(self):
         self.api_key = "5d4f25ba8d50f6bd0a30e8f32560a669"
         self.api_url = "http://api.openweathermap.org/data/2.5/weather?q=[[QUERY]]&units=metric&APPID="+self.api_key
@@ -24,7 +25,8 @@ class Weather(Command):
             return False
 
     def get_weather_data(self, query):
-        query = query.lower()
+        # Must use this encoding workaround (fixed in Python 3)
+        query = urllib.quote(query.lower().encode("utf8"))
         url = self.api_url.replace("[[QUERY]]", query)
         if query in self.cache.keys() and time.time()-self.cache[query][0] > self.cache_max_age:
             return self.cache[query][1]
@@ -41,7 +43,7 @@ class Weather(Command):
         args = Args(data)
         query = self.default_query
         if not args.Empty():
-            query = args[0]
+            query = args.Range(0)
 
         wdata = self.get_weather_data(query)
         if not wdata:
@@ -61,7 +63,7 @@ class Weather(Command):
         humidity = str(wdata["main"]["humidity"])
         windspeed = str(wdata["wind"]["speed"])
         clouds = str(wdata["clouds"]["all"])
-        place = str(wdata["name"])
+        place = wdata["name"]
 
         condition = weather["description"] + ", "
         output = condition + ", ".join([

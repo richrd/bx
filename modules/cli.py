@@ -45,6 +45,7 @@ class CLI(Listener):
     def interrupt(self, event):
         try:
             inp = raw_input("CTRL+C to exit, ENTER to continue:")
+            inp = inp.decode("utf8")
             self.handle_input(inp)
             return True
         except KeyboardInterrupt:
