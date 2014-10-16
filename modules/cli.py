@@ -17,14 +17,14 @@ class CLI(Listener):
             domains = self.bot.config["log_domains"]
             if opt == "-" and domain in domains:
                 domains.pop(domains.index(domain))
-                self.bot.log.Info("cmd", "domain removed")
+                self.bot.log.Info("mod", "domain removed")
             elif opt == "-":
-                self.bot.log.Info("cmd", "domain not currently enabled")
+                self.bot.log.Info("mod", "domain not currently enabled")
             elif opt == "+" and domain in domains:
-                self.bot.log.Info("cmd", "domain already exists")
+                self.bot.log.Info("mod", "domain already exists")
             elif opt == "+" and not domain in domains:
                 domains.append(domain)
-                self.bot.log.Info("cmd", "domain added")
+                self.bot.log.Info("mod", "domain added")
             return True
         elif cmd == "reprint":
             self.bot.log.RenderAll()

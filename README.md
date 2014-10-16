@@ -43,7 +43,6 @@ Come and talk to me at #bxbot @ QuakeNet :)
 * Core
   * Use throttle detection to delay reconnecting (if G-lined etc)
   * Implement ignoring users that haven't authed
-  * Better config grouping
   * Multi server support?
   * Data store for modules
   * Implement running multiple commands from a single message
@@ -53,11 +52,8 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * raspicam module for taking photos with the raspberry pi
     * Send link to uploaded or hosted photo
   * Command for taking photos and uploading them to a server
+  * Reittiopas.fi route search
   * Ignore and unignore users
-  * Replace 'runas' with command 'run' that allows:
-    * Running commands as another user
-    * Running commands at another channel
-    * or both simultaneously
   * Add a mechanism for storing failed arguments
     * wtf could store unknown acronyms
     * unknowncmd could store unmatched messages (or fallback matches)

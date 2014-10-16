@@ -38,44 +38,53 @@ class BotConfig:
                     "port": 6667,
                 },
                 
-                "throttle_wait":400,     # how long to/ wait before reconnecting after throttle (too many clones)
-                "throttle_add":120,     # How many seconds to add after each consecutive throttle
+                "identity": {
+                    "nicks": [u"bx",],
+                    "nick_suffix": "_",
+                    "realname": "bx",
+                    "ident": "bx",
+                },
+                "ignore_nicks": [],
 
-                "nicks":[u"bx",],
-                "nick_suffix":"_",
-                "realname":"bx",
-                "ident":"bx",
-                "ignore_nicks":[],
+                # how long to wait before reconnecting after throttle (too many clones)
+                "throttle_wait": 400,
+                # How many seconds to add after each consecutive throttle
+                "throttle_add": 120,
                 
-                "default_send":"privmsg",
-                "cmd_prefix":".",
-                "cmd_throttle":1.5,
+                "default_send": "privmsg",
+
+                "cmd_prefix": ".",
+                "cmd_seperator": "§",
+                "cmd_throttle": 1.5,
                 
+
+                "send_throttle": 1.8,
+                "default_log_limit": 1000,
+                "avoid_cmd_crash": True,
+
                 "log_domains": ["irc", "bot", "mod", "exc", "win", "user"],
-
-                "send_throttle":1.8,
-                "default_log_limit":1000,
-                "avoid_cmd_crash":True,
                 
-                "default_mods":"*",        # all mods enabled by default
+                # all mods enabled by default
+                "default_mods": "*",
 
-                "channels":{    # names must be lower case!
-                    "#bx-test":{
-                        "modes":"stnCN",
+                # names must be lower case!
+                "channels": {
+                    "#bx-test": {
+                        "modes": "",
                         },
                     },
-                "accounts":{
+                "accounts": {
                     "admin":
                         {
-                        "name":"admin",
-                        "level":5,
-                        "pw":"some-md5-hash",
-                        "hostnames":[               # Trusted hostnames
+                        "name": "admin",
+                        "level": 5,
+                        "pw": "some-md5-hash",
+                        "hostnames": [          # Trusted hostnames
                             "~name@user.example.com",
                             ],
                         },
                     },
-                "modules":{},
+                "modules": {},
                 }
         self.cmd2alias = {}
         self.aliases = {}
@@ -285,11 +294,12 @@ class BotConfig:
         return load
 
     def Load(self):
+        self.Log("Loading config...")
         if self.TryLoad():
             self.LoadAliases()
             return True
         else:
-            self.Log("Failed to read config. exiting.")
+            self.Log("Failed to read config. Exiting.")
             exit
 
     def TryLoad(self):

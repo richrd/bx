@@ -32,13 +32,14 @@ class Args:
         self.args = list(arg_list)
 
     def __getitem__(self, item):
-        return self.original[item]
+        # return self.original[item]
+        return self.args[item]
 
     def __setitem__(self, item, value):
         self.original[item] = value
 
     def __len__(self):
-        return len(self.original)
+        return len(self.args)
 
     def FirstArg(self):
         if len(self.original) != 0:

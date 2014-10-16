@@ -27,12 +27,11 @@ class colors:
     DARKRED = '\033[31m'
     ENDC = '\033[0m'
 
-
 class Logger:
     def __init__(self, bot):
         self.bot = bot
         self.logs = []
-        self.show_domains = ["irc", "bot", "cmd", "exc", "win", "user"]
+        self.show_domains = ["irc", "bot", "mod", "exc", "win", "user", "config"]
         self.domain_colors = {
             "irc": colors.DARKBLUE,
             "bot": None,
