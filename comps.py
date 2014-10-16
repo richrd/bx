@@ -271,7 +271,7 @@ class Me(User):
 
     """
     def __init__(self, bot):
-        User.__init__(self, bot, bot.config["nicks"][0])
+        User.__init__(self, bot, bot.config["identity"]["nicks"][0])
         self.nick_index = 0
         self.attempted_nick = self.nick
         self.bot.SetNick(self.nick)

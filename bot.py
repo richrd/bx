@@ -379,7 +379,7 @@ class IRCBot(irc.IRCClient):
         
     def OnConnected(self):
         self.log.Log("bot", "Connected to IRC server.")
-        self.DoIntroduce(self.me.nick, self.config["ident"], self.config["realname"])
+        self.DoIntroduce(self.me.nick, self.config["identity"]["ident"], self.config["identity"]["realname"])
         
     def OnReady(self):
         self.log.Log("bot", "IRC handshake done, now ready.")

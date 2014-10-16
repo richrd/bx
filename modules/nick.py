@@ -6,7 +6,7 @@ class Nick(Hybrid):
         self.events = [IRC_EVT_INTERVAL, IRC_EVT_USER_NICK_CHANGE, IRC_EVT_USER_QUIT]
 
     def event(self, event):
-        desired = self.bot.config["nicks"][0]
+        desired = self.bot.config["identity"]["nicks"][0]
         if event.type == IRC_EVT_INTERVAL:
             if self.bot.me.nick != desired:
                 self.ReclaimNick()
@@ -21,13 +21,13 @@ class Nick(Hybrid):
         args = Args(data)
         if len(args) == 1:
             self.bot.me.Nick(args[0])
-            self.bot.config["nicks"] = [args[0]]
+            self.bot.config["identity"]["nicks"] = [args[0]]
         else:
             win.Privmsg("nick can't contain spaces")
             return False
 
     def ReclaimNick(self):
-        self.bot.me.Nick(self.bot.config["nicks"][0])
+        self.bot.me.Nick(self.bot.config["identity"]["nicks"][0])
 
 module = {
     "class": Nick,

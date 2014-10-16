@@ -53,6 +53,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * raspicam module for taking photos with the raspberry pi
     * Send link to uploaded or hosted photo
   * Command for taking photos and uploading them to a server
+  * Reittiopas.fi route search
   * Ignore and unignore users
   * Replace 'runas' with command 'run' that allows:
     * Running commands as another user
