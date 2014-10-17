@@ -30,13 +30,22 @@ Come and talk to me at #bxbot @ QuakeNet :)
 
 ![Command line view of the bot.](https://raw.githubusercontent.com/richrd/bx/master/screenshots/console1.png)
 
+## Usage:
+To run bx:
+    python bot.py
+To run with alternative config file:
+    python bot.py [config_file]
+
+To run interact on the command line use CTRL+C and type a command.
+
+
 ## To-do
 
 ### Documentation
 * More comments
 * General docs
-* Add command line usage to README.md
 * Add config description to README.md
+  * Or directly into config.txt
 * Module developement docs and API reference
 
 ### Features
@@ -44,7 +53,6 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Use throttle detection to delay reconnecting (if G-lined etc)
   * Implement ignoring users that haven't authed
   * Multi server support?
-  * Data store for modules
   * Implement running multiple commands from a single message
   * Removing accounts
   * DCC Chat?
@@ -54,9 +62,6 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Command for taking photos and uploading them to a server
   * Reittiopas.fi route search
   * Ignore and unignore users
-  * Add a mechanism for storing failed arguments
-    * wtf could store unknown acronyms
-    * unknowncmd could store unmatched messages (or fallback matches)
 * PyS60-specific functionality
 
 ## Module List
@@ -103,7 +108,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
     > A command line interface for the bot. Activate with CTRL+C in console.
 
 *   cmdprefix
-    > Set the command prefix that the bot will respond to.
+    > Check or set the command prefix that the bot will respond to.
 
 *   cmds
     > Lists the commands you can use.
@@ -204,8 +209,8 @@ Come and talk to me at #bxbot @ QuakeNet :)
 *   remod
     > Reload bot modules.
 
-*   runas
-    > Run a command as another user.
+*   run
+    > Run a command as another user (and/or on another channel). Usage: [channel] user command
 
 *   status
     > Get status information of the host running the bot.
@@ -243,5 +248,6 @@ Come and talk to me at #bxbot @ QuakeNet :)
     > Display the current weather conditions. Usage: weather [location]
 
 *   wtf
-    > Show definitions for common acronyms.
+    > Show definitions for common acronyms or define new ones.
     > Usage: wtf acronym
+    > Usage: wtf +acronym description

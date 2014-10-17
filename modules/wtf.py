@@ -1,13 +1,14 @@
 from mod_base import*
 
 class Wtf(Command):
-    """Show definitions for common acronyms.
+    """Show definitions for common acronyms or define new ones.
 
     Usage: wtf acronym
+    Usage: wtf +acronym description
     """
 
     def init(self):
-        self.acronyms = {
+        self.default_acronyms = {
             'rom': 'Read-Only Memory',
             'edi': 'Electronic Data Interchange',
             'osi': 'Open Systems Interconnection',
@@ -398,18 +399,40 @@ class Wtf(Command):
             'sloc': 'Source Lines of Code',
             'wtf': 'What the Fuck',
         }
+        self.acronyms = {}
+        if self.storage.Load() and "acronyms" in self.storage.keys():
+            self.acronyms = self.storage["acronyms"]
+        self.storage["acronyms"] = self.acronyms
+
+    def GetAcronym(self, acronym):
+        acronym = acronym.lower()
+        if acronym in self.default_acronyms.keys():
+            return self.default_acronyms[acronym]
+        if acronym in self.acronyms.keys():
+            return self.acronyms[acronym]
+        return False
 
     def run(self, win, user, data, caller=None):
         args = Args(data)
-        print args
-        if not args.Empty():
-            key = args[0].lower()
-            if key in self.acronyms.keys():
-                win.Send(self.acronyms[key])
-            else:
-                win.Send("sorry, I don't know that one. try this: http://en.wikipedia.org/wiki/" + args[0])
-        else:
+        if args.Empty():
             win.Send("please provide an acronym. i know " + str(len(self.acronyms)) + " of them.")
+            return False
+        acr = args[0].lower()
+        if acr[0] == "+":
+            if len(args) < 2:
+                win.Send("Please specify acronym definition.")
+                return False
+            definition = args.Range(1)
+            self.acronyms[acr] = definition
+            self.storage.Store()
+            win.Send("Definition added.")
+            return True
+
+        definition = self.GetAcronym(acr)
+        if definition:
+            win.Send(definition)
+            return True
+        win.Send("sorry, I don't know that one. Try this: http://en.wikipedia.org/wiki/" + args[0])
 
 module = {
     "class": Wtf,
