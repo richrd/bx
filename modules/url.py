@@ -88,7 +88,8 @@ def get_url_title(url, logf):
 
     logf("Got url data.")
     title = find_title(data)
-
+    if not title:
+        return False
     try:
         import HTMLParser
         hp = HTMLParser.HTMLParser()

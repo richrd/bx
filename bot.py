@@ -313,7 +313,7 @@ class IRCBot(irc.IRCClient):
             if user.nick == nick:
                 return user
         if create:
-            self.log.Info("bot", "Creating user "+nick)
+            #self.log.Info("bot", "Creating user "+nick)
             user = self.MakeUser(nick)
             return user
         return False

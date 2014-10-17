@@ -31,7 +31,6 @@ class CLI(Listener):
             return True
         return False
 
-
     def run_cmd(self, data):
         args = Args(data)
         cmd = args[0]
