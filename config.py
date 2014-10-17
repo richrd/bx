@@ -88,6 +88,12 @@ class BotConfig:
                 }
         self.cmd2alias = {}
         self.aliases = {}
+
+    def __getitem__(self, attr):
+        return self.config[attr]
+    
+    def __setitem__(self, attr, val):
+        self.config[attr] = val
         
     def keys(self):
         return self.config.keys()
@@ -187,7 +193,7 @@ class BotConfig:
             if part[0] == "+": part = part[1:]
             enabled.append(part)
         return enabled
-	
+    
     def ApplyModConfig(self, module):
         """Apply configuration options to a module dict and return it."""
         keys = ["throttle", "level", "zone", "aliases", "interval"]
@@ -203,7 +209,7 @@ class BotConfig:
         if mod in self.config["default_mods"]:
             self.config["default_mods"].pop(self.config["default_mods"].index(mod))
         if not "-" + mod in self.config["default_mods"]:
-	        self.config["default_mods"].append("-" + mod)
+            self.config["default_mods"].append("-" + mod)
         self.Store()
       
     def EnableMod(self, mod):
@@ -333,9 +339,3 @@ class BotConfig:
         for name in self.config["accounts"].keys():
             if not "hostnames" in self.config["accounts"][name].keys():
                 self.config["accounts"][name]["hostnames"] = []
-
-    def __getitem__(self,attr):
-        return self.config[attr]
-    
-    def __setitem__(self,attr,val):
-        self.config[attr] = val
