@@ -21,7 +21,9 @@ if sys.platform == "symbian_s60":
 from helpers import *
 from const import *
 
+
 class Args:
+    """Argument handler for commands."""
     def __init__(self, args=[], bot=None):
         self.bot = bot
         arg_list = []
@@ -32,7 +34,6 @@ class Args:
         self.args = list(arg_list)
 
     def __getitem__(self, item):
-        # return self.original[item]
         return self.args[item]
 
     def __setitem__(self, item, value):
@@ -72,7 +73,7 @@ class Args:
     def IsNick(self, s):
         return s[0] == "~"
 
-    def IsNAccount(self, name):
+    def IsAccount(self, name):
         return name in self.bot.config["accounts"].keys()
 
     def HasType(self, what):             # checks if a type is found in args
@@ -89,52 +90,81 @@ class Args:
                     if commit:
                         self.Drop(arg)
                         return val
-                    else:return True
+                    else:
+                        return True
             elif what == "channel":
                 if self.IsChannel(arg):
                     if commit:
                         self.Drop(arg)
                         return arg
-                    else:return True
+                    else:
+                        return True
             elif what == "search":
                 if self.IsStrSearch(arg):
                     if commit:
                         self.Drop(arg)
                         return arg[1:]
-                    else:return True
+                    else:
+                        return True
             elif what == "nick":
                 if self.IsNick(arg):
                     if commit:
                         self.Drop(arg)
                         return arg[1:]
-                    else:return True
+                    else:
+                        return True
             elif what == "account":
-                if self.IsNAccount(arg):
+                if self.IsAccount(arg):
                     if commit:
                         self.Drop(arg)
                         return arg
-                    else:return True
+                    else:
+                        return True
         return False
 
 
-# Baseclas for all modules
+class Storage:
+    """Key/value data storage for modules."""
+    def __init__(self, bot, mod_name):
+        self.bot = bot
+        self.storage = {}
+        self.mod_name = mod_name
+
+    def __getitem__(self, attr):
+        return self.storage[attr]
+    
+    def __setitem__(self, attr, val):
+        self.storage[attr] = val
+
+    def Store(self):
+        if not self.mod_name in self.bot.config["modules"]:
+            self.bot.config["modules"][self.mod_name] = {}
+        self.bot.config["modules"][self.mod_name] = self.storage
+        return self.bot.config.Store()
+
+    def Load(self):
+        if self.mod_name in self.bot.config["modules"].keys():
+            if "storage" in self.bot.config["modules"][self.mod_name].keys():
+                self.storage = self.bot.config["modules"][self.mod_name]["storage"]
+                return True
+        return False
+
+
 class Module:
+    """Base class for all modules."""
     def __init__(self, bot):
-        """Base class for modules."""
         self.bot = bot
         self.name = ""
         self.debug = 1
         self.last_exec = None
+        self.storage = Storage(self.bot, self.name)
 
     def init(self):
         pass
-    
-    # def Log(self, s, color=None):
-    #     self.bot.log.Log("cmd", "{"+self.name+"} "+s, color)
-    
+
     def Log(self, s, color=None):
         self.bot.log.Log("mod", "{"+self.name+"} "+s, color)
-    
+
     def GetMan(self):
         docstr = "-no description-"
         if "__doc__" in dir(self):
@@ -146,14 +176,15 @@ class Module:
         man = self.name + alias_str + " [" + str(self.level) + "]: " + docstr
         return man
 
-# Baseclass for commands
-class Command(Module):
-    def __init__(self, bot, properties):
-        Module.__init__(self, bot)
 
+class Command(Module):
+    """Base class for commands."""
+    def __init__(self, bot, properties):
         self.name = properties["name"]
         self.level = properties["level"]
         self.zone = properties["zone"]
+        Module.__init__(self, bot)
+
         
         self.args = Args()
         self.throttle_time = properties["throttle"]
@@ -211,11 +242,11 @@ class Command(Module):
                 else:
                     return False
             else:
-                self.users[user] = [time.time(),False]
+                self.users[user] = [time.time(), False]
                 return False
 
     def GetThrottleWaitTime(self,user):
-        t = self.throttle_time - int(time.time()-self.users[user][0])
+        t = self.throttle_time - int(time.time() - self.users[user][0])
         if t < 1: t=1
         return t
 
@@ -260,8 +291,8 @@ class Command(Module):
         pass
 
 
-# Base class for listeners
 class Listener(Module):
+    """Base class for listeners."""
     def __init__(self, bot, properties):
         Module.__init__(self, bot)
         self.name = properties["name"]
@@ -288,8 +319,9 @@ class Listener(Module):
             self.last_exec = time.time()
             return self.event(event)
 
-# Hybrid class
+
 class Hybrid(Command, Listener):
+    """Base class for hybrid modules, that are both commands and listeners."""
     def __init__(self, bot, properties):
         Command.__init__(self, bot, properties)
         Listener.__init__(self, bot, properties)
