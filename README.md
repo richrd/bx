@@ -22,6 +22,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Bot host status information
   * Command line interface for managing bot
   * Bitcoin and Dogecoin exchange rates
+  * Reittiopas.fi public transport route search
 * Integrated help available
 * Supports user accounts and access control
 * Simple to extend if you know Python
@@ -31,10 +32,10 @@ Come and talk to me at #bxbot @ QuakeNet :)
 ![Command line view of the bot.](https://raw.githubusercontent.com/richrd/bx/master/screenshots/console1.png)
 
 ## Usage:
-To run bx:
-    python bot.py
-To run with alternative config file:
-    python bot.py [config_file]
+* To run bx:
+    > python bot.py
+* To run with alternative config file:
+    > Python bot.py [config_file]
 
 To run interact on the command line use CTRL+C and type a command.
 
@@ -60,7 +61,6 @@ To run interact on the command line use CTRL+C and type a command.
   * raspicam module for taking photos with the raspberry pi
     * Send link to uploaded or hosted photo
   * Command for taking photos and uploading them to a server
-  * Reittiopas.fi route search
   * Ignore and unignore users
 * PyS60-specific functionality
 
@@ -205,6 +205,9 @@ To run interact on the command line use CTRL+C and type a command.
 
 *   recon
     > Reload bot config.
+
+*   reittiopas
+    > Get public transport routes via www.reittiopas.fi. Usage: reittiopas start_address - end_address
 
 *   remod
     > Reload bot modules.

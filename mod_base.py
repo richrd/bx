@@ -180,12 +180,11 @@ class Module:
 class Command(Module):
     """Base class for commands."""
     def __init__(self, bot, properties):
-        self.name = properties["name"]
         self.level = properties["level"]
         self.zone = properties["zone"]
         Module.__init__(self, bot)
+        self.name = properties["name"]
 
-        
         self.args = Args()
         self.throttle_time = properties["throttle"]
         if self.throttle_time == None:
@@ -203,12 +202,10 @@ class Command(Module):
         return True
 
     def DebugCmd(self, *args):
-        # Deprecate this
+        # FIXME: Deprecate this
         args = map(arg_to_str,args)
         line = " ".join(args)
         self.Log(line)
-        # if self.debug:
-        #     self.bot.BotLog("CMD: ["+self.name+"]",line )
         
     def ArgList(self, data):
         if data == None: return []
