@@ -32,10 +32,11 @@ Come and talk to me at #bxbot @ QuakeNet :)
 ![Command line view of the bot.](https://raw.githubusercontent.com/richrd/bx/master/screenshots/console1.png)
 
 ## Usage:
-* To run bx:
+*   To run bx:
     > python bot.py
-* To run with alternative config file:
-    > Python bot.py [config_file]
+
+*   To run with alternative config file:
+    > python bot.py [config_file]
 
 To run interact on the command line use CTRL+C and type a command.
 
