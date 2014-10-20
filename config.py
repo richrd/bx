@@ -54,7 +54,7 @@ class BotConfig:
                 "default_send": "privmsg",
 
                 "cmd_prefix": ".",
-                "cmd_seperator": "§",
+                "cmd_separator": u"§",
                 "cmd_throttle": 1.5,
                 
 
@@ -196,7 +196,7 @@ class BotConfig:
     
     def ApplyModConfig(self, module):
         """Apply configuration options to a module dict and return it."""
-        keys = ["throttle", "level", "zone", "aliases", "interval"]
+        keys = ["throttle", "level", "zone", "aliases", "interval", "storage"]
         if module["name"] in self.config["modules"].keys():
             mod = self.config["modules"][module["name"]]
             for key in keys:
