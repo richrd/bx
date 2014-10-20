@@ -54,7 +54,6 @@ To run interact on the command line use CTRL+C and type a command.
   * Use throttle detection to delay reconnecting (if G-lined etc)
   * Implement ignoring users that haven't authed
   * Multi server support?
-  * Implement running multiple commands from a single message
   * Removing accounts
   * DCC Chat?
 * Modules
