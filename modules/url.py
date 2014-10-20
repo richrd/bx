@@ -70,10 +70,13 @@ def get_url_title(url, logf):
     except:
         pass
 
-    if urllib2 != False:
-        u = urllib2.urlopen(url, timeout=5)
-    else:
-        u = urllib.urlopen(url)
+    try:
+        if urllib2 != False:
+            u = urllib2.urlopen(url, timeout=5)
+        else:
+            u = urllib.urlopen(url)
+    except:
+        return False
     if u.getcode() != 200: # Only proceed if request is ok
         logf("Invalid response code.")
         return False
