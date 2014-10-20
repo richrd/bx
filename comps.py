@@ -279,13 +279,12 @@ class Me(User):
     def Nick(self, nick=None):
         if nick == None:
             nick = self.nick
-        # self.nick = nick # Keep track of my nick
         self.attempted_nick = nick
         self.bot.ChangeNick(nick)
         
     def TryNewNick(self):
         self.DebugLog("TryNewNick()")
-        self.attempted_nick = self.attempted_nick + self.bot.config["nick_suffix"]
+        self.attempted_nick = self.attempted_nick + self.bot.config["identity"]["nick_suffix"]
         self.bot.ChangeNick(self.attempted_nick)
 
 class Admin(User):
@@ -459,7 +458,6 @@ class Channel(BotWindow):
             del self.users[user]
 
     def OnModesChanged(self, modes, user):
-        print modes
         self.bot.HandleEvent(Event(IRC_EVT_CHAN_MODE_CHANGE, self, user, modes=modes))
 
     def OnUserHasMode(self, user, mode):
@@ -518,7 +516,6 @@ class Channel(BotWindow):
         self.bot.HandleEvent(Event(IRC_EVT_CHAN_PART, self, user))
 
     def OnKick(self, user, by, reason):
-        #OnKick(self.GetUser(who), self.GetUser(nick), reason)
         self.DebugLog("*KICK*", user, "by", by, "(", reason, ")")
         self.RemoveUser(user)
         user.OnAction()
