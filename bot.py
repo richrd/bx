@@ -130,6 +130,7 @@ class IRCBot(irc.IRCClient):
                 continue
             mod = modules[name]
             mod = self.config.ApplyModConfig(mod)
+
             if mod["type"] == MOD_COMMAND:
                 self.commands[name] = mod
             if mod["type"] == MOD_LISTENER:
@@ -173,8 +174,13 @@ class IRCBot(irc.IRCClient):
         
     def HandleMessage(self, win, user, msg):
         self.HandleEvent(Event(IRC_EVT_MSG, win, user, msg))
-        command = self.FindCommand(msg)
-        if command != False:
+        commands = self.FindCommands(msg)
+        if commands:
+            for command in commands:
+                self.HandleCommand(win, user, msg, command)
+
+    def HandleCommand(self, win, user, msg, command):
+        if command:
             data = None
             if command.find(" ") != -1:
                 data = command[command.find(" ") + 1:]
@@ -183,19 +189,21 @@ class IRCBot(irc.IRCClient):
                 command = command.lower()
             if data == "": data = None
             self.RunCommand(command, win, user, data)
-            
-    def FindCommand(self, message):
+
+    def FindCommands(self, message):
         # Characters after cmd_prefix to ignore
         ignore = [" ", ".", "-", "!", "?", "_"]
 
         # Check if message begins with cmd_prefix
         if message[:len(self.config["cmd_prefix"])] == self.config["cmd_prefix"]:
-            command = message[len(self.config["cmd_prefix"]):]
-            if len(command) == 0:
+            commands = message[len(self.config["cmd_prefix"]):]
+            if len(commands) == 0:
                 return False
-            if command[0] in ignore:
+            if commands[0] in ignore:
                 return False
-            return command
+            cmds = commands.split(self.config["cmd_separator"])
+            cmds = [cmd.strip() for cmd in cmds]
+            return cmds
         else: # If not, check if it begins with the bots nick
             parts = message.split(" ")
             if parts[0].lower().startswith(self.me.nick.lower()):
@@ -203,7 +211,9 @@ class IRCBot(irc.IRCClient):
                 if not rest:
                     return "" # Return empty string to trigger unknown command event
                 if rest[0] in [" ", ",", ";",":"]:
-                    return " ".join(parts[1:])
+                    cmds = " ".join(parts[1:]).split(self.config["cmd_separator"])
+                    cmds = [cmd.strip() for cmd in cmds]
+                    return cmds
         return False
 
     def GetCommand(self, name):
@@ -215,6 +225,10 @@ class IRCBot(irc.IRCClient):
         if name in self.commands.keys():
             command = self.commands[name]
             instance = command["class"](self, command)
+            instance.SetProperties(command)
+            props = self.config.GetModule(name)
+            if props:
+                instance.SetProperties(props)
             self.commands_cache[name] = instance
             instance.init()
             return instance
@@ -257,6 +271,10 @@ class IRCBot(irc.IRCClient):
     def RunListener(self, name):
         listener = self.listeners[name]
         instance = listener["class"](self, listener)
+        instance.SetProperties(listener)
+        props = self.config.GetModule(name)
+        if props:
+            instance.SetProperties(props)
         if listener["type"] == MOD_BOTH:
             self.commands_cache[name] = instance
         self.listeners_cache[name] = instance

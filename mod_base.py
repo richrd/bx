@@ -125,29 +125,40 @@ class Args:
 
 class Storage:
     """Key/value data storage for modules."""
-    def __init__(self, bot, mod_name):
+    def __init__(self, bot, mod):
         self.bot = bot
+        self.default = {}
         self.storage = {}
-        self.mod_name = mod_name
+        self.loaded = False
+        self.mod = mod
 
     def __getitem__(self, attr):
-        return self.storage[attr]
+        if attr in self.storage.keys():
+            return self.storage[attr]
+        return self.default[attr]
     
     def __setitem__(self, attr, val):
         self.storage[attr] = val
 
+    def SetDefault(self, default):
+        self.default = default
+        if not self.loaded:
+            self.storage = default
+        return True
+
     def Store(self):
-        if not self.mod_name in self.bot.config["modules"]:
-            self.bot.config["modules"][self.mod_name] = {}
-        self.bot.config["modules"][self.mod_name] = self.storage
+        if not self.mod.name in self.bot.config["modules"]:
+            self.bot.config["modules"][self.mod.name] = {}
+        self.bot.config["modules"][self.mod.name]["storage"] = self.storage
+        res = self.bot.config.Store()
         return self.bot.config.Store()
 
     def Load(self):
-        if self.mod_name in self.bot.config["modules"].keys():
-            if "storage" in self.bot.config["modules"][self.mod_name].keys():
-                self.storage = self.bot.config["modules"][self.mod_name]["storage"]
-                return True
-        return False
+        if self.mod.name in self.bot.config["modules"].keys():
+            if "storage" in self.bot.config["modules"][self.mod.name].keys():
+                self.storage = self.bot.config["modules"][self.mod.name]["storage"]
+                self.loaded = True
+        return self.loaded
 
 
 class Module:
@@ -157,13 +168,24 @@ class Module:
         self.name = ""
         self.debug = 1
         self.last_exec = None
-        self.storage = Storage(self.bot, self.name)
+        self.storage = Storage(self.bot, self)
 
     def init(self):
         pass
 
     def Log(self, s, color=None):
         self.bot.log.Log("mod", "{"+self.name+"} "+s, color)
+
+    def SetProperties(self, properties):
+        for key in properties.keys():
+            if key == "level":
+                self.level = properties[key]
+            if key == "zone":
+                self.zone = properties[key]
+            if key == "storage":
+                self.storage.SetDefault(properties[key])
+                self.storage.storage = properties[key]
+        return True
 
     def GetMan(self):
         docstr = "-no description-"
@@ -180,9 +202,8 @@ class Module:
 class Command(Module):
     """Base class for commands."""
     def __init__(self, bot, properties):
-        self.level = properties["level"]
-        self.zone = properties["zone"]
         Module.__init__(self, bot)
+        self.SetProperties(properties)
         self.name = properties["name"]
 
         self.args = Args()
@@ -193,14 +214,6 @@ class Command(Module):
         self.initialized = 0
         self.users = {} # list of users of command
         
-    def SetProperties(self, properties):
-        for key in properties.keys():
-            if key == "level":
-                self.level = properties["level"]
-            if key == "zone":
-                self.zone = properties["zone"]
-        return True
-
     def DebugCmd(self, *args):
         # FIXME: Deprecate this
         args = map(arg_to_str,args)
