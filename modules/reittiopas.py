@@ -9,19 +9,14 @@ class Reittiopas(Command):
     """Get public transport routes via www.reittiopas.fi. Usage: reittiopas start_address - end_address"""
     def init(self):
         self.base_url = "http://api.reittiopas.fi/hsl/prod"
-        self.user = "Richrd"
-        self.pwd = "hh8c9rny"
         self.debug = 1
+        self.storage.Load()
 
     def parse_line_code(self, code):
         code = code[1:5]
         while code[0] == "0":
             code = code[1:]
         return "(" + code.strip() + ")"
-
-    def parse_name(self, name):
-        if name == None: return "[empty]"
-        else: return name
 
     def parse_start_time(self, obj):
         t = obj[0]["depTime"][-4:]
@@ -45,15 +40,7 @@ class Reittiopas(Command):
 
     def get_url(self, url):
         try:
-            try:
-                response = urllib.request.urlopen(url,
-                    headers={
-                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                        "User-Agent": "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.57 Safari/537.36"
-                        }
-                    )
-            except:
-                response = urllib.urlopen(url)
+            response = urllib.urlopen(url)
         except:
             return False
         data = response.read()    # a `bytes` object in python 3
@@ -61,7 +48,7 @@ class Reittiopas(Command):
         return text
 
     def get_data(self, options):
-        opts = {"user": self.user, "pass": self.pwd}
+        opts = {"user": self.storage["user"], "pass": self.storage["pass"]}
         opts.update(options)
         query = urllib.urlencode(opts)
         url = self.base_url+"?"+query
@@ -69,9 +56,12 @@ class Reittiopas(Command):
         if not text:
             print "Failed to get valid data."
             return False
-        obj = json.loads(text)
-        return obj
-
+        try:
+            obj = json.loads(text)
+            return obj
+        except:
+            self.bot.log.Error("mod", "Loading JSON failed:" + get_error_info())
+        return False
 
     def addr_to_coords(self, address):
         options = {
@@ -109,6 +99,8 @@ class Reittiopas(Command):
     def get_routes(self, start, end):
         obj1 = self.addr_to_coords(start)
         obj2 = self.addr_to_coords(end)
+        if not obj1 or not obj2:
+            return False
         addr1 = obj1[0]["coords"]
         addr2 = obj2[0]["coords"]
 
@@ -125,6 +117,9 @@ class Reittiopas(Command):
             return False
         start, end = data.split("-")
         obj = self.get_routes(start, end)
+        if not obj:
+            win.Send("Couldn't find locations or route, sorry.")
+            return False
         d = datetime.datetime.now()
         for route in obj:
             route_str = self.route_to_str(route, start, end)
@@ -134,5 +129,6 @@ module = {
     "class": Reittiopas,
     "type": MOD_COMMAND,
     "level": 0,
-    "zone": IRC_ZONE_BOTH
+    "zone": IRC_ZONE_BOTH,
+    "storage": {"user": "", "pass": ""},
 }
