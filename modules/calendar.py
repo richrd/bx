@@ -46,8 +46,7 @@ class Calendar(Hybrid):
         return False
 
     def event(self, event):
-        for name in self.cal_events.keys():
-            entry = self.cal_events[name]
+        pass
 
     def run(self, win, user, data, caller = None):
         args = Args(data)
@@ -86,18 +85,21 @@ class Calendar(Hybrid):
             if name in self.cal_events.keys():
                 win.Send('Event with that name already exists.')
                 return False
-            entry = {'utime': timestamp,
-             'description': description}
+            entry = {
+                'utime': timestamp,
+                'description': description
+            }
             self.AddEvent(name, entry)
             win.Send('Event added.')
             return True
 
 
-module = {'class': Calendar,
- 'type': MOD_BOTH,
- 'level': 0,
- 'zone': IRC_ZONE_BOTH,
- 'interval': 60,
- 'aliases': ['cal'],
- 'storage': {'entrys': {}}
+module = {
+    'class': Calendar,
+    'type': MOD_BOTH,
+    'level': 0,
+    'zone': IRC_ZONE_BOTH,
+    'interval': 60,
+    'aliases': ['cal'],
+    'storage': {'entrys': {}}
 }
