@@ -43,6 +43,8 @@ To run interact on the command line use CTRL+C and type a command.
 
 ## To-do
 
+* Release first majour version
+
 ### Documentation
 * More comments
 * General docs
