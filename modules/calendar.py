@@ -13,13 +13,14 @@ class Calendar(Hybrid):
         self.cal_events = self.storage['entrys']
 
     def time_to_str(self, t):
-        pass
+        timestamp = time.strftime('%d.%m.%Y %H:%M', time.gmtime(t))
+        return timestamp
 
     def entry_to_str(self, name, entry):
-        timestamp = time.strftime('%d.%m.%Y %H:%M', time.gmtime(entry['utime']))
+        timestamp = self.time_to_str(entry['utime'])
         return '[' + name + '] ' + timestamp + ' ' + entry['description']
 
-    def CurrentEvents(self, win):
+    def current_events(self, win):
         if not self.cal_events:
             win.Send('No events.')
             return False
@@ -27,19 +28,19 @@ class Calendar(Hybrid):
             entry = self.cal_events[key]
             win.Send(self.entry_to_str(key, entry))
 
-    def AddEvent(self, name, entry):
+    def add_event(self, name, entry):
         self.cal_events[name] = entry
         self.storage.Store()
         return True
 
-    def RemoveEvent(self, name):
+    def remove_event(self, name):
         if name in self.cal_events.keys():
             del self.cal_events[name]
             self.storage.Store()
             return True
         return False
 
-    def GetEvent(self, name):
+    def get_event(self, name):
         if name in self.cal_events.keys():
             event = self.cal_events[name]
             return event
@@ -51,18 +52,18 @@ class Calendar(Hybrid):
     def run(self, win, user, data, caller = None):
         args = Args(data)
         if args.Empty():
-            self.CurrentEvents(win)
+            self.current_events(win)
             return False
         elif len(args) == 1:
             name = args[0].lower()
             if name[0] == '-':
                 name = name[1:]
-                if self.RemoveEvent(name):
+                if self.remove_event(name):
                     win.Send('Event removed.')
                     return True
                 win.Send('No event with that name.')
                 return False
-            e = self.GetEvent(name)
+            e = self.get_event(name)
             if e:
                 win.Send(self.entry_to_str(name, e))
                 return True
@@ -89,7 +90,7 @@ class Calendar(Hybrid):
                 'utime': timestamp,
                 'description': description
             }
-            self.AddEvent(name, entry)
+            self.add_event(name, entry)
             win.Send('Event added.')
             return True
 
