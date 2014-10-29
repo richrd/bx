@@ -54,6 +54,8 @@ To manage the bot on the command line use CTRL+C and type a command.
 
 ### Features
 * Core
+  * Don't start bot if config file is broken
+    * Instead just print an error on the command line
   * Use throttle detection to delay reconnecting (if G-lined etc)
   * Implement ignoring users that haven't authed
   * Multi server support?
