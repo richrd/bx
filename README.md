@@ -9,9 +9,9 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Authentication with different userlevels
   * Auto op for trusted users
   * Leave a message to an offline user
-  * Broadcast text or command output on to channels periodicly
-  * Channel logs, and log searching
-  * Higlight command to higlight everyone on a channel
+  * Broadcast text or command output to channels periodicly
+  * Channel logs and log searching
+  * Highlight command to highlight everyone on a channel
   * Channel mode enforcing
   * Join and part commands
   * Will answer simple questins
@@ -38,7 +38,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
 *   To run with alternative config file:
     > python bot.py [config_file]
 
-To run interact on the command line use CTRL+C and type a command.
+To manage the bot on the command line use CTRL+C and type a command.
 
 
 ## To-do
@@ -54,15 +54,17 @@ To run interact on the command line use CTRL+C and type a command.
 
 ### Features
 * Core
+  * Don't start bot if config file is broken
+    * Instead just print an error on the command line
   * Use throttle detection to delay reconnecting (if G-lined etc)
   * Implement ignoring users that haven't authed
   * Multi server support?
-  * Removing accounts
   * DCC Chat?
 * Modules
-  * raspicam module for taking photos with the raspberry pi
-    * Send link to uploaded or hosted photo
-  * Command for taking photos and uploading them to a server
+  * Camera module for taking photos and uploading them via ftp. Aiming to support*
+    * Raspberry Pi
+    * Symbian S60
+    * Linux in general
   * Ignore and unignore users
 * PyS60-specific functionality
 
