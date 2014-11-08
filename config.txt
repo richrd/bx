@@ -11,7 +11,7 @@
     "channels": {
         "#bx-test": {
             "modes": "stnCN"
-        },
+        }
     },
     "cmd_prefix": ".",
     "cmd_throttle": 1.5,
@@ -20,7 +20,7 @@
     "default_send": "privmsg",
     "server": {
         "host": "localhost",
-        "port": 6667,
+        "port": 6667
     },
     "ident": "bx",
     "ignore_nicks": [],
