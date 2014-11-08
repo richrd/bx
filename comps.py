@@ -279,6 +279,8 @@ class Me(User):
     def Nick(self, nick=None):
         if nick == None:
             nick = self.nick
+        else:
+            self.nick = nick
         self.attempted_nick = nick
         self.bot.ChangeNick(nick)
         
