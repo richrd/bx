@@ -61,6 +61,9 @@ To manage the bot on the command line use CTRL+C and type a command.
   * Implement ignoring users that haven't authed
   * Multi server support?
   * DCC Chat?
+* Config
+  * Rename `avoid_cmd_crash` to `cmd_crash_proof`
+  * Group cmd config
 * Modules
   * Camera module for taking photos and uploading them via ftp. Aiming to support*
     * Raspberry Pi
