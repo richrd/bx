@@ -81,9 +81,9 @@ def get_url_title(url, logf):
         logf("Invalid response code.")
         return False
 
-    # Read max 10 000 bytes to avoid Out of Memory
-    data = u.read(10000)
-    logf(data)
+    # Read max 50 000 bytes to avoid Out of Memory
+    data = u.read(50000)
+    #logf(data)
     try:
         data = data.decode("utf-8")
     except:
