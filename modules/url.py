@@ -20,6 +20,7 @@ def get_mimetype(url):
     return content_type
 
 def find_title(data):
+    title = False
     try: # Try to use HTMLParser
         from HTMLParser import HTMLParser
         class TitleParser(HTMLParser):
@@ -45,13 +46,15 @@ def find_title(data):
         # instantiate the parser and fed it some HTML
         parser = TitleParser()
         parser.feed(data)
-        return parser.title or False
+        title = parser.title or false
 
     except: # Fall back on regex
         titleRE = re.compile("<title>(\\s.*?)</title>", re.IGNORECASE)
-        title = titleRE.findall(data)
-        if title:
-            return title[0]
+        the_title = titleRE.findall(data)
+        if the_title:
+            title = the_title[0]
+    if title:
+        return title.strip()
     return False
 
 # Get <title> of web page
