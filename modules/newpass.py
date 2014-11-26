@@ -18,7 +18,7 @@ class NewPass(Command):
         oldpass, pass1, pass2 = args[0:3]
 
         if pass1 == pass2:
-            if self.config.ChangeAccountPass(user.account["name"], oldpass, pass1):
+            if self.bot.config.ChangeAccountPass(user.account["name"], oldpass, pass1):
                 win.Send("password changed!")
             else:
                 win.Send("failed to change password! make sure your old password is correct.")
