@@ -54,7 +54,7 @@ class BotConfig:
                 "default_send": "privmsg",
 
                 "cmd_prefix": ".",
-                "cmd_separator": u"§",
+                "cmd_separator": u"\xa7",
                 "cmd_throttle": 1.5,
                 
 
@@ -99,7 +99,7 @@ class BotConfig:
         return self.config.keys()
         
     def AccountExists(self, name):
-        return name.lower() in self.config["accounts"].keys()
+        return name in self.config["accounts"].keys()
 
     def AddAccount(self, name, password):
         self.config["accounts"][name] = {
