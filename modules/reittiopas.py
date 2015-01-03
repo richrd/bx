@@ -5,6 +5,9 @@ import urllib, json
 import sys
 import datetime
 
+# TODO:
+# - Warn if no credentials in storage
+
 class Reittiopas(Command):
     """Get public transport routes via www.reittiopas.fi. Usage: reittiopas start_address - end_address"""
     def init(self):
