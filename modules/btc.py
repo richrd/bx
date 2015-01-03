@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
 
 from mod_base import *
-import json
+import time, json
 
 class BTC(Command):
-    """Display the current Bitcoin exchange rate."""
+    """Display the current Bitcoin exchange rate. Default exchange is bitstamp. Usage: btc [exchange]"""
     def init(self):
         self.exchanges = {
             "bitstamp": "https://www.bitstamp.net/api/ticker/",
+            "coinbase": "https://api.coinbase.com/v1/prices/spot_rate",
+            "okcoin": "https://www.okcoin.com/api/ticker.do?ok=1",
+            "lakebtc": "https://www.lakebtc.com/api_v1/ticker",
         }
-        self.cache_age = 60*10
+        self.cache_max_age = 60*10   # cache results for 2 minutes
+        self.cache = {}
 
     def get_url_data(self, url):
         try:
-            u = urllib.urlopen(url, timeout = 5)
+            u = urllib.urlopen(url, timeout=5)
             data = u.read()
             u.close()
             return data
@@ -21,34 +25,43 @@ class BTC(Command):
             return False
 
     def get_rate(self, exchange):
-        data = self.get_url_data()
-
+        """Gets the exchange rate as USD from given exchange, and caches results."""
+        if exchange in self.cache.keys():
+            if time.time() + self.cache[exchange][0] > self.cache_max_age:
+                return self.cache[exchange][1]
+        data = self.get_url_data(self.exchanges[exchange])
         try:
             obj = json.loads(data)
         except:
             return False
-
+        rate = False
         if exchange == "bitstamp":
-            return obj["vwap"]
+            rate = obj["vwap"]
+        elif exchange == "coinbase":
+            rate = obj["amount"]
+        elif exchange == "okcoin":
+            rate = obj["ticker"]["buy"]
+        elif exchange == "lakebtc":
+            rate = obj["USD"]["ask"]
 
-
-        return False
+        self.cache[exchange] = (time.time(), rate)
+        return rate
 
     def run(self, win, user, data, caller=None):
+        args = Args(data)
         exchange = "bitstamp"
+        if len(args) > 0:
+            if args[0].lower() in self.exchanges.keys():
+                exchange = args[0].lower()
+            else:
+                win.Send("Couldn't find that exchange.")
+                return False
+
         rate = self.get_rate(exchange)
         if not rate:
             win.Send("oh noes, exchange rate unavailable")
             return False
-
-        win.Send(rate + "USD/BTC (@" + exchange + ")")
-        # line = rate+" EUR/BTC"
-        # if mins>0:
-        #     line=line+" ("+str(mins)+" mins ago @ "+self.exchange_name+")"
-        # else:
-        #     line=line+" (now @ "+self.exchange_name+")"
-        # win.Send(line)
-
+        win.Send(str(rate) + " USD/BTC @ " + exchange)
 
 module = {
     "class": BTC,

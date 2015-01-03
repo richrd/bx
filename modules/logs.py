@@ -1,7 +1,7 @@
 from mod_base import*
 
 class Logs(Command):
-    """Print channel logs. Set time with e.g. 1h or 10m. Search logs with ?query (parameter starting with ?). Example: logs 2h ?hello"""
+    """Print channel logs. End sending with 'logs x'. Set time with e.g. 1h or 10m. Search logs with ?query (parameter starting with ?). Example: logs 2h ?hello"""
     def init(self):
         self.send_thread = None
         self.stop_thread = 0
@@ -38,10 +38,9 @@ class Logs(Command):
 
     def run(self, win, user, data, caller=None):
         try:
-            self.run_wrapped(win,user,data,caller)
+            self.run_wrapped(win, user, data, caller)
         except Exception, err:
-            print traceback.format_exc()
-            print sys.exc_info()[0]
+            self.bot.log.Error("cmd", get_error_info())
 
     def run_wrapped(self, win, user, data, caller=None):
         max_age = 15*60
@@ -77,7 +76,7 @@ class Logs(Command):
             return False
 
         if self.is_sending():
-            win.Send("sry, already pasting logs to somebody. end sending with parameter 'x'")
+            win.Send("sry, already pasting logs to somebody. end sending with 'logs x'")
             return False
 
         header = "["+log_win.GetName()+"] "

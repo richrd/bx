@@ -16,6 +16,7 @@ IRC_ZONE_BOTH = 3
 
 # Events
 IRC_EVT_ANY = "any"
+IRC_EVT_INTERRUPT = "interrupt"
 IRC_EVT_CONNECTED = "connected"
 IRC_EVT_READY = "ready"
 IRC_EVT_I_JOINED = "ijoined"

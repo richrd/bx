@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 """
 Cross platform IRC Bot.
@@ -28,22 +27,22 @@ import irc
 from helpers import *
 from const import *
 
+import logger
 import mods
 import config
 
 import comps
 from comps import *
 
-
 class IRCBot(irc.IRCClient):
     def __init__(self):
+        self.log = logger.Logger(self)
         irc.IRCClient.__init__(self)
         self.commands = {}
         self.zones = [IRC_ZONE_QUERY, IRC_ZONE_CHANNEL, IRC_ZONE_BOTH]
         self.bot_running = 0
         self.bot_debugging = 1
         self.current_path = get_current_script_path()
-        
         config_file = "config.txt"
 
         if len(sys.argv) > 1:
@@ -54,11 +53,14 @@ class IRCBot(irc.IRCClient):
             self.config = config.BotConfig(self, config_file)
         self.config.Load()
         
+        # Setup the bot identity and command line user
         self.me = Me(self)
+        self.admin = Admin(self)
         
-        self.users = [self.me]
-        self.windows = []
-                
+        # Prepopulate users and windows
+        self.users = [self.me, self.admin]
+        self.windows = [Console(self, self.me)]
+
         self.commands = {}
         self.listeners = {}
         
@@ -66,6 +68,7 @@ class IRCBot(irc.IRCClient):
         self.listeners_cache = {}
         
         self.LoadModules()
+        self.log.Loaded()
 
     #
     # Logging
@@ -78,8 +81,7 @@ class IRCBot(irc.IRCClient):
             return False
         args = map(arg_to_str, args)
         line = " ".join(args)
-        if self.bot_debugging:
-            print time_stamp_short(),"BOT :: ",(line)
+        self.log.Log("bot", line)
 
 
 
@@ -90,16 +92,15 @@ class IRCBot(irc.IRCClient):
     def ReloadBot(self):
         try:
             reload( comps )
-            from comps import *
             return True
         except Exception,e:
-            print traceback.format_exc()
-            print sys.exc_info()[0]
+            msg = get_error_info()
+            self.log.Error("bot", msg)
             return e
             
         self.me = None
         self.channels = []
-        self.users = []
+        self.users = [self.me, self.admin]
         self.ReloadModules()
    
     def ReloadConfig(self):
@@ -107,7 +108,7 @@ class IRCBot(irc.IRCClient):
             reload(config)
             self.config = config.BotConfig(self.config_file)
             self.config.Load()
-        except Exception,e:
+        except Exception, e:
             return e
         return True
         
@@ -129,6 +130,7 @@ class IRCBot(irc.IRCClient):
                 continue
             mod = modules[name]
             mod = self.config.ApplyModConfig(mod)
+
             if mod["type"] == MOD_COMMAND:
                 self.commands[name] = mod
             if mod["type"] == MOD_LISTENER:
@@ -145,8 +147,8 @@ class IRCBot(irc.IRCClient):
             reload(__import__("mod_base"))
             reload(mods)
         except Exception,e:
-            print traceback.format_exc()
-            print sys.exc_info()[0]
+            msg = get_error_info()
+            self.log.Error("bot", msg)
             return e
         self.ResetModules()
         self.LoadModules()
@@ -172,8 +174,13 @@ class IRCBot(irc.IRCClient):
         
     def HandleMessage(self, win, user, msg):
         self.HandleEvent(Event(IRC_EVT_MSG, win, user, msg))
-        command = self.FindCommand(msg)
-        if command != False:
+        commands = self.FindCommands(msg)
+        if commands:
+            for command in commands:
+                self.HandleCommand(win, user, msg, command)
+
+    def HandleCommand(self, win, user, msg, command):
+        if command:
             data = None
             if command.find(" ") != -1:
                 data = command[command.find(" ") + 1:]
@@ -182,19 +189,31 @@ class IRCBot(irc.IRCClient):
                 command = command.lower()
             if data == "": data = None
             self.RunCommand(command, win, user, data)
-            
-    def FindCommand(self, message):
+
+    def FindCommands(self, message):
+        # Characters after cmd_prefix to ignore
+        ignore = [" ", ".", "-", "!", "?", "_"]
+
+        # Check if message begins with cmd_prefix
         if message[:len(self.config["cmd_prefix"])] == self.config["cmd_prefix"]:
-            command = message[len(self.config["cmd_prefix"]):]
-            if len(command) == 0:
+            commands = message[len(self.config["cmd_prefix"]):]
+            if len(commands) == 0:
                 return False
-            if command[0] in [" ", ".", "-", "!", "?", "_"]:
+            if commands[0] in ignore:
                 return False
-            return command
-        else:
+            cmds = commands.split(self.config["cmd_separator"])
+            cmds = [cmd.strip() for cmd in cmds]
+            return cmds
+        else: # If not, check if it begins with the bots nick
             parts = message.split(" ")
             if parts[0].lower().startswith(self.me.nick.lower()):
-                return " ".join(parts[1:])
+                rest =  parts[0].lower()[len(self.me.nick):]
+                if not rest:
+                    return "" # Return empty string to trigger unknown command event
+                if rest[0] in [" ", ",", ";",":"]:
+                    cmds = " ".join(parts[1:]).split(self.config["cmd_separator"])
+                    cmds = [cmd.strip() for cmd in cmds]
+                    return cmds
         return False
 
     def GetCommand(self, name):
@@ -206,6 +225,10 @@ class IRCBot(irc.IRCClient):
         if name in self.commands.keys():
             command = self.commands[name]
             instance = command["class"](self, command)
+            instance.SetProperties(command)
+            props = self.config.GetModule(name)
+            if props:
+                instance.SetProperties(props)
             self.commands_cache[name] = instance
             instance.init()
             return instance
@@ -231,8 +254,15 @@ class IRCBot(irc.IRCClient):
     def RunCommand(self, command, win, user, data):
         inst = self.GetCommand(command)
         if inst != False:
-            self.BotLog("RunCommand(", command, user, data, ")")
-            self.BotLog("")
+            args = ""
+            if data:
+                try:
+                    args = unicode(data)
+                except:
+                    args = data
+            data = data or None
+            line = str(user)+" "+command+" "+args
+            self.log.Log("bot", line, color=logger.colors.RED)
             inst.Execute(win, user, data)
         else:
             if not self.HandleEvent(Event(IRC_EVT_UNKNOWN_CMD, win, user, cmd = command, cmd_args=data)):
@@ -241,6 +271,10 @@ class IRCBot(irc.IRCClient):
     def RunListener(self, name):
         listener = self.listeners[name]
         instance = listener["class"](self, listener)
+        instance.SetProperties(listener)
+        props = self.config.GetModule(name)
+        if props:
+            instance.SetProperties(props)
         if listener["type"] == MOD_BOTH:
             self.commands_cache[name] = instance
         self.listeners_cache[name] = instance
@@ -249,11 +283,15 @@ class IRCBot(irc.IRCClient):
     def HandleEvent(self, event):
         handled = False
         for listener in self.listeners_cache.keys():
-            lstn = self.listeners_cache[listener]
+            # incase module removed during looping
+            try:
+                lstn = self.listeners_cache[listener]
+            except:
+                continue
             if IRC_EVT_ANY in lstn.events:
-                lstn.event(event)
+                lstn.ExecuteEvent(event)
             if event.id in lstn.events:
-                value = lstn.event(event)
+                value = lstn.ExecuteEvent(event)
                 if not handled:
                     handled = value or False
         return handled
@@ -269,11 +307,11 @@ class IRCBot(irc.IRCClient):
             win = Channel(self, name)
             self.windows.append(win)
         else:
-            win = Query(self, self.GetUser(name))
+            win = Query(self, self.GetUser(name, True))
             self.windows.append(win)
         return win
         
-    def GetWindow(self, name, create=True): # FIXME: default create to False
+    def GetWindow(self, name, create=True): #FIXME: Might want to default create to False
         for win in self.windows:
             if win.GetName() == name:
                 return win
@@ -288,13 +326,21 @@ class IRCBot(irc.IRCClient):
         self.users.append(user)
         return user
         
-    def GetUser(self, nick, create = True):
+    def GetUser(self, nick, create = False): # FIXME: default create to false
         for user in self.users:
             if user.nick == nick:
                 return user
         if create:
+            #self.log.Info("bot", "Creating user "+nick)
             user = self.MakeUser(nick)
             return user
+        return False
+
+    def RemoveUser(self, nick):
+        for user in self.users:
+            if user.nick.lower() == nick.lower():
+                self.users.pop(self.users.index(user))
+                return True
         return False
         
     def FindUser(self, nick):
@@ -339,19 +385,22 @@ class IRCBot(irc.IRCClient):
                     lstn.ExecuteEvent(Event(IRC_EVT_INTERVAL))
                 elif time.time() - lstn.last_exec > lstn.interval:
                     lstn.ExecuteEvent(Event(IRC_EVT_INTERVAL))
-                    
+             
+    def OnInterrupt(self):
+        print ""
+        return self.HandleEvent(Event(IRC_EVT_INTERRUPT))
+
     def OnClientLog(self, line): # Route irc client class logging to BotLog
-        self.BotLog(line)
-        return True
+        self.log.Log("irc", line)
         # Returning True prevents the irc client class from printing the logging to the console
-        # return True
+        return True
         
     def OnConnected(self):
-        self.DebugLog("Connected to IRC server.")
-        self.DoIntroduce(self.me.nick, self.config["ident"], self.config["realname"])
+        self.log.Log("bot", "Connected to IRC server.")
+        self.DoIntroduce(self.me.nick, self.config["identity"]["ident"], self.config["identity"]["realname"])
         
     def OnReady(self):
-        self.BotLog("IRC handshake done, now ready.")
+        self.log.Log("bot", "IRC handshake done, now ready.")
         self.throttled = 0
         self.HandleEvent(Event(IRC_EVT_READY))
         self.DoAutoJoin()
@@ -360,12 +409,18 @@ class IRCBot(irc.IRCClient):
         self.me.TryNewNick()
         
     def OnUserHostname(self, nick, hostname):
-        self.GetUser(nick).SetHostname(hostname)
+        self.GetUser(nick, True).SetHostname(hostname)
 
     def OnWhoisHostname(self, nick, hostname):
-        self.GetUser(nick).SetHostname(hostname)
+        self.GetUser(nick, True).SetHostname(hostname)
         
     def OnUserNickChange(self, nick, new_nick):
+        # Make sure nick doesn't exist, just in case.
+        test_user = self.GetUser(new_nick)
+        if test_user != False:
+            # If it does exist, we remove the old user and show a warning.
+            self.log.Warning("bot", nick+" changed to existing user: "+new_nick+". Something wrong!")
+            self.RemoveUser(new_nick)
         self.GetUser(nick).OnNickChanged(nick, new_nick)
         
     def OnUserQuit(self, nick, reason):
@@ -374,10 +429,10 @@ class IRCBot(irc.IRCClient):
         for win in self.windows:
             if win.zone == IRC_ZONE_CHANNEL:
                 if win.HasUser(user):
-                    win.OnQuit(user,reason)
+                    win.OnQuit(user, reason)
         
     def OnPrivmsg(self, by, to, msg):
-        user = self.GetUser(by)
+        user = self.GetUser(by, True)
         if self.IsChannelName(to):
             win = self.GetWindow(to)
         else:
@@ -386,7 +441,7 @@ class IRCBot(irc.IRCClient):
         self.HandleMessage(win, user, msg)
 
     def OnNotice(self, by, to, msg):
-        user = self.GetUser(by)
+        user = self.GetUser(by, True)
         if self.IsChannelName(to):
             win = self.GetWindow(to)
         else:
@@ -415,7 +470,7 @@ class IRCBot(irc.IRCClient):
         
     def OnChannelJoin(self, chan, nick):
         win = self.GetWindow(chan)
-        win.OnJoin(self.GetUser(nick))
+        win.OnJoin(self.GetUser(nick, True))
 
     def OnChannelPart(self, chan, nick, reason):
         self.DebugLog("OnChannelPart(", chan, nick, reason, ")")
@@ -437,14 +492,14 @@ class IRCBot(irc.IRCClient):
     def RunBot(self):
         self.bot_running = 1
 
-        self.BotLog("Run()","starting bot...")
+        self.log.Log("bot", "Starting bot...")
         self.SetHost(self.config["server"]["host"])
         self.SetPort(self.config["server"]["port"])
         self.SetSendThrottling(self.config["send_throttle"])
         
         status = self.BotLoop()
-        self.BotLog("Run()","bot loop returned status", status)
-        self.BotLog("Run()","terminated!")
+        self.log.Log("bot", "Run()","bot loop returned status", status)
+        self.log.Log("bot", "Run()","terminated!")
         return status
 
     def StopBot(self):
@@ -455,14 +510,14 @@ class IRCBot(irc.IRCClient):
     def BotLoop(self):
         self.StartClient()
         while self.bot_running:
-            self.BotLog("BotLoop()","client disconnected")
+            self.log.Log("bot", "BotLoop()","client disconnected")
             if self.irc_throttled:
                 time.sleep(self.config["throttle_wait"])
             else:
-                self.BotLog("BotLoop()","reconnecting in 10sec")
+                self.log.Log("bot", "BotLoop()","reconnecting in 10sec")
                 time.sleep(10)
             self.StartClient()
-            self.BotLog("BotLoop()","client disconnected")
+            self.log.Log("bot", "BotLoop()","client disconnected")
 
 if __name__ == "__main__":
     b = IRCBot()

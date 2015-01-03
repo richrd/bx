@@ -27,7 +27,7 @@ class Context:
             else:
                 new.append(word)
             i += 1
-        self.words = new
+        self.words = new or [""]
 
     def GetWords(self, data):
         words = re.findall('[\#\w\-]*', data)
@@ -40,7 +40,6 @@ class Context:
 
     def ChooseReply(self, replys):
         self.reply = random.choice(replys)
-        print self.reply
 
     def ReplaceReply(self):
         for key in self.context_values.keys():
@@ -55,7 +54,8 @@ class UnknownCMD(Listener):
     def init(self):
         self.events = [IRC_EVT_UNKNOWN_CMD]
         self.happy_smileys = [":-)", ":)", ":D", ":>", "=)", "xD", ":P", "=P", "=]", ":]", "=}", ":}", "(:", ":3"]
-        self.sad_smileys = [":(", ";(", "=(", ":[", ";[", "=[", ":{", "={", ":/", ":\\", ";_;"]
+        self.sad_smileys = [
+            ("you listening", "yep, all the time [happy_smiley]"),":(", ";(", "=(", ":[", ";[", "=[", ":{", "={", ":/", ":\\", ";_;"]
         
         self.replacements = {
             # Questions
@@ -157,6 +157,12 @@ class UnknownCMD(Listener):
             ("use you", "say help and I'll tell you"),
             ("hate you", "[user_nick] makes me sad [sad_smiley]"),
             ("you stupid", "sry im not so smart [sad_smiley]"),
+            ("beer", [
+                        "yeah, I like beer",
+                        "drink it!",
+                        "if drinking beer, remember the Ballmer peak!",
+                        "beer every day [happy_smiley]",
+            ]),
             ("hello", "hi [user_nick], how are you?"),
             ("hi", "greetings [user_nick] [happy_smiley] can I help you?"),
             ("you", "me? dunno."),
@@ -168,6 +174,11 @@ class UnknownCMD(Listener):
             ("what", "no idea"),
             ("party", "party so hard!"),
             ("dafuq", "dafuq you back"),
+            ("", [
+                "What [user_nick]?",
+                "Yeah?",
+                "Hi [user_nick]",
+                ]),
         ]
 
         # Substitutions for replys
@@ -203,18 +214,17 @@ class UnknownCMD(Listener):
         data = event.cmd
         if event.cmd_args:
             data += " " + event.cmd_args
-        sentences = re.findall('[\w\d][\w\d\s]*[^\.\!\?]*[\.\!\?]*', data)
+        sentences = re.findall('[\w\d][\w\d\s]*[^\.\!\?]*[\.\!\?]*', data) or [""]
         matched = False
-        if sentences:
-            for sentence in sentences:
-                context = Context(sentence)
-                match = self.Match(context)
-                if match:
-                    matched = True
-                    context.ReplaceReply()
-                    reply = context.GetReply()
-                    reply = self.SubstituteReply(reply, event)
-                    event.win.Send(reply)
+        for sentence in sentences:
+            context = Context(sentence)
+            match = self.Match(context)
+            if match:
+                matched = True
+                context.ReplaceReply()
+                reply = context.GetReply()
+                reply = self.SubstituteReply(reply, event)
+                event.win.Send(reply)
         return matched
 
     def Match(self, context):

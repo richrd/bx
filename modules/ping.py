@@ -5,8 +5,6 @@ class Ping(Command):
     def run(self, win, user, data, caller=None):
         win.Send("pong, " + user.nick)
 
-
-
 module = {
     "class": Ping,
     "type": MOD_COMMAND,

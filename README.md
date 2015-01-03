@@ -12,13 +12,13 @@ Modular Python IRC bot made from scratch.
 Come and talk to me at #bxbot @ QuakeNet :)
 
 ## Features
-* 40+ modules with general features including:
+* 50+ modules with general features including:
   * Authentication with different userlevels
   * Auto op for trusted users
   * Leave a message to an offline user
-  * Broadcast text or command output on to channels periodicly
-  * Channel logs, and log searching
-  * Higlight command to higlight everyone on a channel
+  * Broadcast text or command output to channels periodicly
+  * Channel logs and log searching
+  * Highlight command to highlight everyone on a channel
   * Channel mode enforcing
   * Join and part commands
   * Will answer simple questins
@@ -27,40 +27,57 @@ Come and talk to me at #bxbot @ QuakeNet :)
   * Link title paster
   * 'wtf' for looking up acronyms
   * Bot host status information
+  * Command line interface for managing bot
+  * Bitcoin and Dogecoin exchange rates
+  * Reittiopas.fi public transport route search
 * Integrated help available
 * Supports user accounts and access control
 * Simple to extend if you know Python
 * Aims to be compatible with Symbian S60 for hosting a bot on a phone :)
   * Comming later: module for shooting and uploading pictures from a phone
 
+![Command line view of the bot.](https://raw.githubusercontent.com/richrd/bx/master/screenshots/console1.png)
+
+## Usage:
+*   To run bx:
+    > python bot.py
+
+*   To run with alternative config file:
+    > python bot.py [config_file]
+
+To manage the bot on the command line use CTRL+C and type a command.
+
+
 ## To-do
+
+* Release first majour version
 
 ### Documentation
 * More comments
 * General docs
-* Module API reference
+* Add config description to README.md
+  * Or directly into config.txt
+* Module developement docs and API reference
 
 ### Features
 * Core
-  * Make module reloader skip modules with errors
-  * Make console output sane and readable
+  * Don't start bot if config file is broken
+    * Instead just print an error on the command line
+  * Store config data in same order as it was loaded (not alphabetically)
+  * Use throttle detection to delay reconnecting (if G-lined etc)
   * Implement ignoring users that haven't authed
-  * Better config grouping
   * Multi server support?
-  * Data store for modules
+  * DCC Chat?
+* Config
+  * Rename `avoid_cmd_crash` to `cmd_crash_proof`
+  * Group cmd config
 * Modules
-  * Make URL module work with multiple adresses in a single message
-  * Command for taking photos and uploading them to a server
+  * Camera module for taking photos and uploading them via ftp. Aiming to support*
+    * Raspberry Pi
+    * Symbian S60
+    * Linux in general
   * Ignore and unignore users
-  * Weather
 * PyS60-specific functionality
-
-### Protocol
-* Implement hooks for
-  * 042 RPL_YOURID
-  * 265 RPL_LOCALUSERS
-  * 266 RPL_GLOBALUSERS
-
 
 ## Module List
 *   addaccount
@@ -72,7 +89,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
 
 *   alias
     > Defines a new command alias.
-    > Usage: alias new_name command
+    > Usage: alias new_name command [args]
 
 *   auth
     > Identify yourself with the bot (login). Only works via private messages.
@@ -88,19 +105,25 @@ Come and talk to me at #bxbot @ QuakeNet :)
     > Automatically rejoin a channel after kick.
 
 *   broadcast
-    > Broadcast messages or command out put to channels and/or users (targets).
+    > Broadcast messages or command output to channels and/or users (targets).
     > Usage: broadcast [+-]name target[,target,...] interval command [args]
     > Usage: broadcast [+-]name target[,target,...] interval :message
     > Usage: broadcast +hello #chan1,#chan2 1h :hello world!
 
+*   btc
+    > Display the current Bitcoin exchange rate. Default exchange is bitstamp. Usage: btc [exchange]
+
 *   calc
-    > Calculate math and python expressions. e.g. calc 3+4*6
+    > Calculate math expressions. e.g. calc 3+4*6
 
 *   clearlogs
     > Clear n. number of messages from window logs (or all if no arguments given).
 
+*   cli
+    > A command line interface for the bot. Activate with CTRL+C in console.
+
 *   cmdprefix
-    > Set the command prefix that the bot will respond to.
+    > Check or set the command prefix that the bot will respond to.
 
 *   cmds
     > Lists the commands you can use.
@@ -109,7 +132,7 @@ Come and talk to me at #bxbot @ QuakeNet :)
     > Logout of the bot.
 
 *   define
-    > Define terms and words related to the bot.
+    > Defines terms and words related to the bot.
 
 *   delchan
     > Remove a channel from the autojoin list.
@@ -118,7 +141,10 @@ Come and talk to me at #bxbot @ QuakeNet :)
     > Take OPs from a nick.
 
 *   die
-    > Kill the bot.
+    > Kill the bot. Warning: I won't rise from my ashes like a fenix!
+
+*   dogecoin
+    > Display the current DogeCoin exchange rate, from bter. Usage: dogecoin
 
 *   dropsend
     > Clear the outgoing message buffer. Warning: removes all data queued for sending to the IRC server.
@@ -195,11 +221,14 @@ Come and talk to me at #bxbot @ QuakeNet :)
 *   recon
     > Reload bot config.
 
+*   reittiopas
+    > Get public transport routes via www.reittiopas.fi. Usage: reittiopas start_address - end_address
+
 *   remod
     > Reload bot modules.
 
-*   runas
-    > Run a command as another user.
+*   run
+    > Run a command as another user (and/or on another channel). Usage: [channel] user command
 
 *   status
     > Get status information of the host running the bot.
@@ -233,7 +262,10 @@ Come and talk to me at #bxbot @ QuakeNet :)
 *   view
     > View various bot information.
 
-*   wtf
-    > Show definitions for common acronyms.
-    > Usage: wtf acronym
+*   weather
+    > Display the current weather conditions. Usage: weather [location]
 
+*   wtf
+    > Show definitions for common acronyms or define new ones.
+    > Usage: wtf acronym
+    > Usage: wtf +acronym description

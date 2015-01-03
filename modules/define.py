@@ -1,7 +1,7 @@
 from mod_base import *
 
 class Define(Command):
-    """Define terms and words related to the bot."""
+    """Defines terms and words related to the bot."""
     def init(self):
         self.glossary = {
             "auth": "Authenticate or login to the bot. You need a username and password.",

@@ -1,7 +1,7 @@
 from mod_base import *
 
 class Broadcast(Hybrid):
-    """Broadcast messages or command out put to channels and/or users (targets).
+    """Broadcast messages or command output to channels and/or users (targets).
 
     Usage: broadcast [+-]name target[,target,...] interval command [args]
     Usage: broadcast [+-]name target[,target,...] interval :message
@@ -72,7 +72,8 @@ class Broadcast(Hybrid):
             cmd = self.bot.GetCommand(broadcast["cmd"])
             for target in broadcast["targets"]:
                 win = self.bot.GetWindow(target)
-                cmd.run(win, self.bot.me, broadcast["cmd_args"])
+                data = broadcast["cmd_args"]
+                self.bot.RunCommand(broadcast["cmd"], win, self.bot.me, data)
         else:
             for target in broadcast["targets"]:
                 win = self.bot.GetWindow(target)

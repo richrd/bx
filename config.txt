@@ -11,7 +11,7 @@
     "channels": {
         "#bx-test": {
             "modes": "stnCN"
-        },
+        }
     },
     "cmd_prefix": ".",
     "cmd_throttle": 1.5,
@@ -20,17 +20,19 @@
     "default_send": "privmsg",
     "server": {
         "host": "localhost",
-        "port": 6667,
+        "port": 6667
     },
-    "ident": "bx",
     "ignore_nicks": [],
     "log_send_interval": 3,
     "modules": {},
-    "nick_suffix": "_",
-    "nicks": [
-        "bx"
-    ],
-    "realname": "bx",
+    "identity": {
+        "ident": "bx",
+        "nick_suffix": "_",
+        "nicks": [
+            "bx"
+        ],
+        "realname": "bx"
+    },
     "send_throttle": 1.8,
     "throttle_add": 120,
     "throttle_wait": 400

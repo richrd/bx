@@ -1,38 +1,105 @@
 # -*- coding: utf-8 -*-
-
 from mod_base import * 
 
+def get_mimetype(url):
+    import httplib
+    from urlparse import urlparse
+    urlobj = urplarse(url)
+    domain = urlobj.netloc
+    get = urlobj.path + urlobj.query
+    conn = httplib.HTTPConnection(domain, timeout=5)
+    conn.request("HEAD", get)
+    res = conn.getresponse()
+    headers = res.getheaders()
+    content_type = False
+    for item in headers:
+        if item[0] == 'content-type':
+            content_type = item[1].split(";")[0].strip()
+            break
+    return content_type
+
+def find_title(data):
+    title = False
+    try: # Try to use HTMLParser
+        from HTMLParser import HTMLParser
+        class TitleParser(HTMLParser):
+            def __init__(self):
+                HTMLParser.__init__(self)
+                self.title = ""
+                self.in_title = False
+
+            def handle_starttag(self, tag, attrs):
+                if tag == "title":
+                    self.in_title = True
+
+            def handle_endtag(self, tag):
+                if self.in_title:
+                    self.in_title = False
+                    self.title = self.title.replace("\n", "")
+                    self.title = self.title.replace("\r", "")
+
+            def handle_data(self, data):
+                if self.in_title:
+                    self.title += data
+
+        # instantiate the parser and fed it some HTML
+        parser = TitleParser()
+        parser.feed(data)
+        title = parser.title or false
+
+    except: # Fall back on regex
+        titleRE = re.compile("<title>(\\s.*?)</title>", re.IGNORECASE)
+        the_title = titleRE.findall(data)
+        if the_title:
+            title = the_title[0]
+    if title:
+        return title.strip()
+    return False
+
 # Get <title> of web page
-def get_url_title_new(url):
-        print "Invalid extension: " + url[-3:]
-    if url[-3:] in ["jpg", "png", "gif",]:
+def get_url_title(url, logf):
+    ignore_ext = ["jpg", "png", "gif", "tiff", "psd", "zip", "rar", "sh"]
+    if url[-3:] in ignore_ext:
+        logf("Invalid extension.")
         return False
-    # try:
-    if urllib2 != False:
-        u = urllib2.urlopen(url, timeout=5)
-    else:
-        u = urllib.urlopen(url)
-    data = u.read()
+
+    # Check that the the resource content type is something relevant
+    try:
+        content_type = get_content_type(url)
+        if content_type and not content_type in ["text/html", "text/xhtml", "text/plain"]:
+            logf("Invalid content-type.")
+            return False
+    except:
+        pass
+
+    try:
+        if urllib2 != False:
+            u = urllib2.urlopen(url, timeout=5)
+        else:
+            u = urllib.urlopen(url)
+    except:
+        return False
+    if u.getcode() != 200: # Only proceed if request is ok
+        logf("Invalid response code.")
+        return False
+
+    # Read max 50 000 bytes to avoid Out of Memory
+    data = u.read(50000)
+    #logf(data)
     try:
         data = data.decode("utf-8")
     except:
-        print "unable to decode url title as utf-8"
-# except Exception,e:
-    # return False
+        pass
 
-    # Find title ignoring tag case
-    titleRE = re.compile("<title>(.+?)</title>", re.IGNORECASE)
-    title = titleRE.search(data)
-    if title == None:
+    logf("Got url data.")
+    title = find_title(data)
+    if not title:
         return False
-    title = title.group(1)
-
     try:
         import HTMLParser
         hp = HTMLParser.HTMLParser()
         title = hp.unescape(title)
     except Exception, e:
-        print "failed unescape entities with HTMLParser"
         title = title.replace("&auml;", u"ä")
         title = title.replace("&ouml;", u"ö")
         title = title.replace("&amp;", u"&")
@@ -45,12 +112,19 @@ class Url(Listener):
         self.events = [IRC_EVT_MSG, IRC_EVT_CHAN_MSG]
 
     def event(self, event):
-        # FIXME: find multiple urls at once
         urls = find_urls(event.msg)
-        if urls != []:
-            title = get_url_title_new(urls[0])
-            if title != False:
-                event.win.Send('"' + title + '"')
+#<<<<<<< HEAD
+#        if urls != []:
+#            title = get_url_title_new(urls[0])
+#=======
+        titles = []
+        for url in urls:
+            title = get_url_title(url, self.Log)
+#>>>>>>> 71c025ceeee47d288c62f986b24b8df6ec022f0a
+            if title:
+                titles.append('"'+title+'"')
+        if titles:
+            event.win.Send(", ".join(titles))
 
 module = {
     "class": Url,

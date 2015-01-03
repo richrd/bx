@@ -10,7 +10,7 @@ import os
 import sys
 import time
 import string
-import traceback
+# import traceback
 
 # Symbian S60 specific compatibility
 s60 = False
@@ -131,15 +131,16 @@ class User:
         
     def DebugLog(self, *args):
         args = map(arg_to_str, args)
-        line = " ".join(args)
+        line = self.__str__() + " " + " ".join(args)
         if self.debug:
-            self.bot.BotLog("USR: ", self.__str__(), line)
+            self.bot.log.Log("user", line)
 
     #
     #   Events
     #
             
     def OnAction(self):
+        self.online = 1
         self.last_active = time.time()
         pass
         
@@ -150,12 +151,12 @@ class User:
     def OnNickChanged(self, old, new):
         self.bot.HandleEvent(Event(IRC_EVT_USER_NICK_CHANGE, user=self, new_nick=new))
         self.OnAction()
-        self.DebugLog("OnNickChanged(", old, new, ")")
+        self.DebugLog("changed nick from", old, "to", new)
         self.nick = u"" + new
         
     def OnHostnameChanged(self, old, new):
         self.OnAction()
-        self.DebugLog("OnHostnameChanged(", old, new, ")")
+        self.DebugLog("HOST ", new)
         self.hostname = new
         if self.AutoAuth():
             return True
@@ -270,31 +271,49 @@ class Me(User):
 
     """
     def __init__(self, bot):
-        User.__init__(self, bot, bot.config["nicks"][0])
+        User.__init__(self, bot, bot.config["identity"]["nicks"][0])
         self.nick_index = 0
+        self.attempted_nick = self.nick
         self.bot.SetNick(self.nick)
         
     def Nick(self, nick=None):
         if nick == None:
             nick = self.nick
-        self.nick = nick # Keep track of my nick
+        else:
+            self.nick = nick
+        self.attempted_nick = nick
         self.bot.ChangeNick(nick)
         
     def TryNewNick(self):
         self.DebugLog("TryNewNick()")
-        self.nick_index += 1
-        if self.nick_index < len(self.bot.config["nicks"]):
-            self.Nick(self.bot.config["nicks"][self.nick_index])
-        else:
-            self.Nick(self.nick + self.bot.config["nick_suffix"])
+        self.attempted_nick = self.attempted_nick + self.bot.config["identity"]["nick_suffix"]
+        self.bot.ChangeNick(self.attempted_nick)
 
+class Admin(User):
+    """Admin user
+
+    Represents the command line user.
+
+    """
+    def __init__(self, bot):
+        User.__init__(self, bot, "*admin*")
+        self.account = {"level": 100}
+
+    def Privmsg(self, msg):
+        self.Send(msg)
+
+    def Notice(self, msg):
+        self.Send(msg)
+
+    def Send(self, msg):
+        self.bot.log.Info("bot", msg)
 
 #
 # Virtual windows
 #
 
 class BotWindow:
-    """Window representing an irc channel or query"""
+    """Window representing an IRC channel or query"""
 
     def __init__(self, bot, name=None):
         self.bot = bot
@@ -304,16 +323,16 @@ class BotWindow:
         self.debug = 1
 
     def __repr__(self):
-        return "[[" + self.GetName() + "]]"
+        return "[" + self.GetName() + "]"
 
     def __str__(self):
-        return "[[" + self.GetName() + "]]"
+        return "[" + self.GetName() + "]"
         
     def DebugLog(self, *args):
         args = map(arg_to_str, args)
-        line = " ".join(args)
+        line = self.__str__() + " " + " ".join(args)
         if self.debug:
-            self.bot.BotLog("WIN: ", self.__str__(), line)
+            self.bot.log.Log("win", line)
         
     def GetName(self):
         return self.name
@@ -345,14 +364,11 @@ class BotWindow:
             self.bot.Privmsg(self.GetName(), msg)
             
     def OnPrivmsg(self, user, msg):
-         #self.DebugLog(user, msg)
          message = Message(user.GetNick(), msg, self.GetName())
          self.AppendLog(message)
 
     def OnNotice(self, user, msg):
          self.DebugLog("*NOTICE*", user, msg)
-         #message = Message(user.GetNick(), msg, self.GetName())
-         #self.AppendLog(message)
 
         
 class Query(BotWindow):
@@ -366,7 +382,27 @@ class Query(BotWindow):
 
     def GetNicks(self):
         return [self.user.nick]
+
+class Console(BotWindow):
+    def __init__(self, bot, user):
+        BotWindow.__init__(self, bot)
+        self.zone = IRC_ZONE_QUERY
+        self.user = user
+
+    def GetName(self):
+        return self.user.nick
+
+    def GetNicks(self):
+        return [self.user.nick]
         
+    def Privmsg(self, msg):
+        self.Send(msg)
+
+    def Notice(self, msg):
+        self.Send(msg)
+
+    def Send(self, msg):
+        self.bot.log.Info("bot", msg)
         
 class Channel(BotWindow):
     def __init__(self, bot, name):
@@ -424,7 +460,6 @@ class Channel(BotWindow):
             del self.users[user]
 
     def OnModesChanged(self, modes, user):
-        print modes
         self.bot.HandleEvent(Event(IRC_EVT_CHAN_MODE_CHANGE, self, user, modes=modes))
 
     def OnUserHasMode(self, user, mode):
@@ -483,7 +518,6 @@ class Channel(BotWindow):
         self.bot.HandleEvent(Event(IRC_EVT_CHAN_PART, self, user))
 
     def OnKick(self, user, by, reason):
-        #OnKick(self.GetUser(who), self.GetUser(nick), reason)
         self.DebugLog("*KICK*", user, "by", by, "(", reason, ")")
         self.RemoveUser(user)
         user.OnAction()
@@ -511,11 +545,13 @@ class Channel(BotWindow):
         user.OnAction()
 
     def OnHasUsers(self, users):
-        self.DebugLog("*USERS*", users)
+        modes = {None:"","o":"@","v":"+"}
+        nicks = ", ".join([modes[item[1]]+item[0] for item in users])
+        self.DebugLog("*USERS*", nicks)
         for u in users:
             nick = u[0]
             mode = u[1]
-            user = self.bot.GetUser(nick)
+            user = self.bot.GetUser(nick, True)
             self.AddUser(user, mode)
 
     #
