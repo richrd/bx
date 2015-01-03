@@ -25,7 +25,7 @@ from helpers import *
 
 
 class IRCClient:
-    def __init__(self,host="",port=6667):
+    def __init__(self, host="", port=6667):
         """Independet irc client that will connect and sit in irc doing nothing.
         It can be subclassed to do whatever, with no need to worry about the protocol.
         """
@@ -66,7 +66,7 @@ class IRCClient:
         self.InitializeClient()
 
     def InitializeClient(self):
-        """ Reset variables before connecting. """
+        """Reset variables before connecting."""
         self.DebugLog("InitializeClient()")
         self.nick = None
 
@@ -100,8 +100,8 @@ class IRCClient:
         self.send_buffer = []           # lines queued to be sent
         self.send_time = None           # time of previous send
 
-    def DebugLog(self,*args):
-        args = map(arg_to_str,args)
+    def DebugLog(self, *args):
+        args = map(arg_to_str, args)
         line = " ".join(args)
         self.PrintToLog(line)
 
@@ -112,63 +112,62 @@ class IRCClient:
         if not self.OnClientLog(log):
             print log
 
-    def SetDebugging(self,b):
+    def SetDebugging(self, b):
         self.irc_debugging = b
         
-    def SetHost(self,host):
+    def SetHost(self, host):
         self.host = host
         
-    def SetPort(self,port):
+    def SetPort(self, port):
         self.port = port
         
-    def SetNick(self,nick): # Used to make sure current_nick is up to date
+    def SetNick(self, nick): # Used to make sure current_nick is up to date
         self.nick = nick
         self.current_nick = nick
 
-    def SetSendThrottling(self,seconds):        # Set minimum time to wait between sending lines to the server
+    def SetSendThrottling(self, seconds):        # Set minimum time to wait between sending lines to the server
         self.send_throttling = seconds
         
-    def SetEncoding(self,enc):          # Set encoding to use when sending data
+    def SetEncoding(self, enc):          # Set encoding to use when sending data
         self.encoding = enc
         
-    def SetDecodings(self,decodings):   # Set list of encodings used to try to decode incomming data
+    def SetDecodings(self, decodings):   # Set list of encodings used to try to decode incomming data
         self.decodings = decodings
 
     #
     # Events
     #
     
-    def OnClientLog(self,line):       # Used to intercept logs if returns True
+    def OnClientLog(self, line):       # Used to intercept logs if returns True
         return False
     
-    def OnConnectThrottled(self,reason=""):
-        """ Called when the server refuses to connect for some reason. """
-        self.DebugLog("OnConnectThrottled(",reason,")")
+    def OnConnectThrottled(self, reason=""):
+        """Called when the server refuses to connect for some reason."""
+        self.DebugLog("OnConnectThrottled(", reason, ")")
         self.irc_throttled = 1
     
     def OnConnected(self):
         self.irc_running = 1
-        self.DebugLog("OnConnected()")
         self.DoIntroduce(self.nick)
     
     def OnDisconnected(self):
-        self.DebugLog("OnDisconnected()")
+        pass
         
     def OnLoop(self):
         """Run each time the bot loop is run. Only used if overriden."""
         pass
         
-    def OnReceive(self,data):
+    def OnReceive(self, data):
         """Called when data is received from the server."""
         pass
         
-    def OnNickInUse(self,nick,reason):
+    def OnNickInUse(self, nick, reason):
         self.DebugLog("OnNickInUse(", nick, reason, ")")
         self.nick = self.nick + "_"
         self.current_nick = self.nick
         self.ChangeNick(self.nick)
         
-    def OnPing(self,data=False):
+    def OnPing(self, data=False):
         if data == False:
             data == ""
         self.last_ping_pong = time.time()
@@ -177,16 +176,19 @@ class IRCClient:
     def OnPong(self, data=False):
         self.last_ping_pong = time.time()
         
-    def OnWelcomeInfo(self,info):
-        self.DebugLog("OnWelcomeInfo(",info,")")
-        
-    def OnSupportInfo(self,info):
-        self.DebugLog("OnSupportInfo(",info,")")
-        
-    def OnServerInfo(self,info):
-        self.DebugLog("OnServerInfo(",info,")")
-        
-    def OnMotdLine(self,line):
+    def OnWelcomeInfo(self, info):
+        #self.DebugLog("OnWelcomeInfo(", info, ")")
+        pass
+
+    def OnSupportInfo(self, info):
+        #self.DebugLog("OnSupportInfo(", info, ")")
+        pass
+
+    def OnServerInfo(self, info):
+        #self.DebugLog("OnServerInfo(", info, ")")
+        pass
+
+    def OnMotdLine(self, line):
         pass
         
     def OnReady(self):
@@ -197,11 +199,11 @@ class IRCClient:
         pass
 
     def OnWhoisHostname(self, nick, hostname):
-        self.DebugLog("OnWhoisHostname(", nick, ",", hostname, ")")
+        #self.DebugLog("OnWhoisHostname(", nick, ",", hostname, ")")
         pass
         
     def OnUserNickChange(self, nick, new_nick):
-        self.DebugLog("OnUserNickChange(", nick, new_nick, ")")
+        #self.DebugLog("OnUserNickChange(", nick, new_nick, ")")
         
     def OnUserQuit(self, nick, reason):
         self.DebugLog("OnUserQuit(", nick, reason, ")")
@@ -321,7 +323,7 @@ class IRCClient:
     def Kick(self, chan, nick, message=""):
         self.SendLine("KICK %s %s %s" % (chan, nick, message))
 
-    def Privmsg(self,dest,msg):
+    def Privmsg(self, dest, msg):
         if not msg:
             return False
         lines = self.WrapLine(u"PRIVMSG " + dest + u" :",msg)
@@ -341,8 +343,7 @@ class IRCClient:
         for item in nickmodes:
             nicks.append(item[0])
             modes += item[1]
-        s = u"MODE " + chan + " " + modes + " " + (" ".join(nicks))
-        self.SendLine(s)
+        self.SendLine(u"MODE " + chan + " " + modes + " " + (" ".join(nicks)))
      
     def SetChannelTopic(self, chan, topic):
         self.SendLine("TOPIC " + chan + " :" + topic)
@@ -368,7 +369,7 @@ class IRCClient:
             return nick[1:]
         return nick
         
-    def GetModeChr(self,s):
+    def GetModeChr(self, s):
         if s[:1] in [IRC_MODE_CHR_VOICE, IRC_MODE_CHR_OP]:
             return s[:1]
         return IRC_MODE_CHR_NONE
@@ -378,7 +379,7 @@ class IRCClient:
             return True
         return False
         
-    def GetMode(self,s):
+    def GetMode(self, s):
         modechr = self.GetModeChr(s)
         if modechr == IRC_MODE_CHR_NONE:
             return None
@@ -387,7 +388,7 @@ class IRCClient:
         elif modechr == IRC_MODE_CHR_VOICE:
             return IRC_MODE_VOICE
       
-    def ParseNickHost(self,line):
+    def ParseNickHost(self, line):
         part = line.split(" ")[0][1:]
 
         ind=part.find("!")
@@ -398,10 +399,10 @@ class IRCClient:
             nick = ""
             hostname = part[1:]
         if nick != "":
-            self.OnUserHostname(nick,hostname)
-        return nick,hostname
+            self.OnUserHostname(nick, hostname)
+        return nick, hostname
       
-    def LineIsCommand(self,line):
+    def LineIsCommand(self, line):
         cmds = ["ping", "pong", "join", "part", "kick", "topic", "quit", "privmsg", "nick", "mode", "notice"]
         parts = string.split(line)
         if len(parts) < 2:
@@ -410,7 +411,7 @@ class IRCClient:
             return True
         return False
         
-    def LineIsNumeric(self,line):
+    def LineIsNumeric(self, line):
         parts = string.split(line)
         if len(parts) < 2:
             return False
@@ -429,8 +430,7 @@ class IRCClient:
         parts = string.split(line)
         txt_data = self.GetTextData(line)
         first_word = parts[0].lower()
-        
-        
+                
         if first_word in ["ping", "error", "notice"]:
             if first_word == "ping":
                 self.OnPing(" ".join(parts[1:]))
@@ -673,7 +673,6 @@ class IRCClient:
         self.send_buffer.append(data)
 
     def LoopingSend(self, data):
-        #self.DebugLog("LoopingSend(",data[:-2],")")
         left = data
         while left != "":
             try:
@@ -691,10 +690,10 @@ class IRCClient:
               returned = self.LoopingSend(data)
               return True
             except Exception,e:
-              self.DebugLog("ProcessSend","fail:",data,e)
+              self.DebugLog("ProcessSend", "fail:",data,e)
               return False
         else:
-            self.DebugLog("ProcessSend","not running & connected -> can't send!")
+            self.DebugLog("ProcessSend", "not running & connected -> can't send!")
             return False
             
     def SendLines(self, lines):
