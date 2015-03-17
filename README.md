@@ -49,7 +49,6 @@ To manage the bot on the command line use CTRL+C and type a command.
 
 
 ## To-do
-
 * Release first majour version
 
 ### Documentation
@@ -60,24 +59,25 @@ To manage the bot on the command line use CTRL+C and type a command.
 * Module developement docs and API reference
 
 ### Features
-* Core
-  * Don't start bot if config file is broken
-    * Instead just print an error on the command line
-  * Store config data in same order as it was loaded (not alphabetically)
-  * Use throttle detection to delay reconnecting (if G-lined etc)
-  * Implement ignoring users that haven't authed
-  * Multi server support?
-  * DCC Chat?
-* Config
-  * Rename `avoid_cmd_crash` to `cmd_crash_proof`
-  * Group cmd config
-* Modules
-  * Camera module for taking photos and uploading them via ftp. Aiming to support*
-    * Raspberry Pi
-    * Symbian S60
-    * Linux in general
-  * Ignore and unignore users
-* PyS60-specific functionality
+* [ ] Core
+   * [ ] Don't start bot if config file is broken
+      * [ ] Instead just print an error on the command line
+   * [ ] Store config data in same order as it was loaded (not alphabetically)
+   * [ ] Use throttle detection to delay reconnecting (if G-lined etc)
+   * [ ] Implement ignoring users that haven't authed
+   * [ ] Multi server support?
+   * [ ] DCC Chat?
+* [ ] Config
+   * [ ] Rename `avoid_cmd_crash` to `cmd_crash_proof`
+   * [ ] Group cmd config
+* [ ] Modules
+   * [ ] Camera module for taking photos and uploading them via ftp. Aiming to support
+      * [ ] Raspberry Pi
+      * [ ] Symbian S60
+      * [ ] Linux in general
+   * [ ] Ignore and unignore users
+   * [ ] Autokick unknown or untrusted users from a channel
+* [ ] PyS60-specific functionality (maybe, probably not)
 
 ## Module List
 *   addaccount
