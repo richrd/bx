@@ -287,6 +287,11 @@ class Me(User):
     def TryNewNick(self):
         self.DebugLog("TryNewNick()")
         self.attempted_nick = self.attempted_nick + self.bot.config["identity"]["nick_suffix"]
+        # The attempted nick might not be available but we
+        # store it as the current nick assuming it will succeed
+        # (it eventually will anyway and then nick will be correct)
+        # This is the easiest way to maintain the correct nick
+        self.nick = self.attempted_nick
         self.bot.ChangeNick(self.attempted_nick)
 
 class Admin(User):
