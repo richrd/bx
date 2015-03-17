@@ -43,9 +43,9 @@ class Logs(Command):
             self.bot.log.Error("cmd", get_error_info())
 
     def run_wrapped(self, win, user, data, caller=None):
-        max_age = 15*60
-        log_win = win
-        search = None
+        max_age = 15*60    # Default duration of logs
+        log_win = win      # Window to get logs from
+        search = None      # String search
 
         args = Args(data)
 
@@ -57,14 +57,14 @@ class Logs(Command):
         if args.HasType("duration"):
             max_age = args.Take("duration")
 
-        if (caller and caller.GetPermission()>=5) or user.GetPermission()>=5:
-            if args.HasType("channel"):
-                log_win = self.bot.GetWindow(args.Take("channel"))
-
-            if args.HasType("nick"):
-                log_win = self.bot.GetWindow(args.Take("nick"))
-        else:
-            user.Privmsg("sry, that's not available")
+        if args.HasType("channel") or args.HasType("nick"):
+            if (caller and caller.GetPermission()>=5) or user.GetPermission()>=5:
+                if args.HasType("channel"):
+                    log_win = self.bot.GetWindow(args.Take("channel"))
+                if args.HasType("nick"):
+                    log_win = self.bot.GetWindow(args.Take("nick"))
+            else:
+                user.Privmsg("sry, that's not available")
 
         if args.HasType("search"):
             search = args.Take("search")
@@ -88,7 +88,7 @@ class Logs(Command):
 
     def is_sending(self):
         if self.send_thread != None:
-            if s60:  # Legacy support
+            if s60:  # Legacy support (should deprecate)
                 return self.send_thread.isAlive()
             else:
                 return self.send_thread.is_alive()
