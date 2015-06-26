@@ -326,7 +326,7 @@ class IRCBot(irc.IRCClient):
         self.users.append(user)
         return user
         
-    def GetUser(self, nick, create = False): # FIXME: default create to false
+    def GetUser(self, nick, create = False):
         for user in self.users:
             if user.nick == nick:
                 return user
