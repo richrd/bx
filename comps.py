@@ -569,13 +569,15 @@ class Channel(BotWindow):
     def SetUserModes(self, usermodes, operation=True):
         nickmodes = []
         for item in usermodes:
+            user = item[0]
+            mode = item[1]
             if operation:
-                if self.UserHasMode(item[0], item[1]):
+                if self.UserHasMode(user, mode):
                     continue
             else:
-                if not self.UserHasMode(item[0], item[1]):
+                if not self.UserHasMode(user, mode):
                     continue
-            nickmodes.append( (item[0].GetNick(), item[1]) )
+            nickmodes.append( (user.GetNick(), mode) )
         if nickmodes == []:
             return False
         self.bot.SetChannelUserModes(self.GetName(), nickmodes, operation)
@@ -590,7 +592,7 @@ class Channel(BotWindow):
         usermodes = []
         for user in users:
             usermodes.append((user, mode))
-        self.SetUserModes(usermodes, mode, False)
+        self.SetUserModes(usermodes, False)
         
     def UserHasMode(self, user, mode):
         if user in self.users:
